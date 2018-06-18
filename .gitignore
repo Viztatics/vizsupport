@@ -7,3 +7,5 @@ app.db
 env
 venv
 *.sublime*
+#mac file
+.DS_Store
