@@ -216,17 +216,6 @@ $(function(){
 	            return params.seriesName + '<br/>' + params.name + ' : ' + params.value;
 	        }
 	    },
-	    toolbox: {
-	        show: true,
-	        orient: 'vertical',
-	        left: 'right',
-	        top: 'center',
-	        feature: {
-	            dataView: {readOnly: false},
-	            restore: {},
-	            saveAsImage: {}
-	        }
-	    },
 	    visualMap: {
 	        min: 0,
 	        max: 1000000,
