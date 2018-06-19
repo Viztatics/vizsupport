@@ -174,22 +174,32 @@ $(function(){
 
 	var initMapData = function(mapdata,filedata){
 
+        var maxamount = 0
+        var minamount = filedata[0]['Trans Amt'];
+        var result_data={};
+		result_data.mapdata = [];
 		mapdata.forEach(function(element){
-			$.each(element , function( key, value ) {
-				element['value']=0;
-				delete element['color'];
-				filedata.forEach(function (countrydata){
-					if(element.code==countrydata['OPP_CNTRY']){
-						element['value']=countrydata['Trans Amt'];
+			element['value']=0;
+			delete element['color'];
+			filedata.forEach(function (countrydata){
+				if(element.code==countrydata['OPP_CNTRY']){
+					if(maxamount<countrydata['Trans Amt']){
+						maxamount = countrydata['Trans Amt'];
 					}
-				});
-				delete element['code'];				
-			});
+					if(minamount>countrydata['Trans Amt']){
+						minamount = countrydata['Trans Amt'];
+					}
+					element['value']=countrydata['Trans Amt'];	
+					result_data.mapdata.push(element);					
+				}
+			});	
 		})
 
-		console.log(mapdata);
+		
+		result_data.maxamount = maxamount;
+		result_data.minamount = minamount;
 
-		return mapdata;
+		return result_data;
 	}
 
 	var heatChart = echarts.init(document.getElementById('heatChart'));
@@ -203,10 +213,7 @@ $(function(){
 	    tooltip: {
 	        trigger: 'item',
 	        formatter: function (params) {
-	            var value = (params.value + '').split('.');
-	            value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,')
-	                    + '.' + value[1];
-	            return params.seriesName + '<br/>' + params.name + ' : ' + value;
+	            return params.seriesName + '<br/>' + params.name + ' : ' + params.value;
 	        }
 	    },
 	    toolbox: {
@@ -239,18 +246,22 @@ $(function(){
 	            itemStyle:{
 	                emphasis:{label:{show:true}}
 	            },
-	            data:[
-	            ]
+	            data:[]
 	        }
 	    ]
 	};
+
+	heatChart.setOption(option);
 
 	$( "form" ).submit(function( event ) {
 	  console.log( $( this ).serializeArray() );
 	  event.preventDefault();
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	console.log(data);
-	  	option.series[0].data = initMapData(mapData,data);
+	  	var result_data = initMapData(mapData,data);
+	  	option.series[0].data = result_data.mapdata;
+	  	option.visualMap.max = result_data.maxamount;
+	  	option.visualMap.min = result_data.minamount;
 	  	console.log(option);
 	  	heatChart.setOption(option);
 	  });

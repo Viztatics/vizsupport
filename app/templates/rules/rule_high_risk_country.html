@@ -53,5 +53,6 @@
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
     <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>    
     <script src="{{url_for('static',filename='assets/javascript/rules/rule_high_risk_country.js')}}"></script>
 {% endblock %}
