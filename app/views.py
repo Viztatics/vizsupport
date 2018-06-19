@@ -28,19 +28,15 @@ class RuleView(BaseView):
     route_base = '/rules'
     default_view = 'highRiskCountry'
 
-    @expose('/highRiskCountry',methods=['POST','GET'])
+    @expose('/highRiskCountry')
     @has_access
     def highRiskCountry(self):
 
         if request.method == 'GET':
             return self.render_template('rules/rule_high_risk_country.html')
 
-        if request.method == 'POST':
-
-        	heat_map_result = self.getHeatMapData()
-
-        	return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
-
+    @expose('/highRiskCountry/heatmap',methods=['POST'])
+    @has_access
     def getHeatMapData(self):
 
         def_data_county = 'app/static/csv/rules/highRiskCountry.csv'
@@ -54,7 +50,17 @@ class RuleView(BaseView):
         max_amount = heat_map_result['Trans Amt'].max()
         print(heat_map_result.to_json(orient='records'))
 
-        return heat_map_result
+        return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskCountry/scatterplot',methods=['POST'])
+    @has_access
+    def getScatterPlotData(self):
+
+    	def_data_no_county = 'app/static/csv/rules/highRiskNoCountry.csv'
+
+    	plot_data = pd.read_csv(def_data_no_county,usecols=['Number of Records','Trans Amt'])
+
+    	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
 
 

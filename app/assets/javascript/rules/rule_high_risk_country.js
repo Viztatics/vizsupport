@@ -203,6 +203,7 @@ $(function(){
 	}
 
 	var heatChart = echarts.init(document.getElementById('heatChart'));
+	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 
 	var heatoption = {
 	    title: {
@@ -240,19 +241,82 @@ $(function(){
 	    ]
 	};
 
+	var scatteroption = {
+	    title: {
+	        text: 'Transanction Scatter Chart',	        
+	        left: 'center',
+	        top: 'top'
+	    },	    
+	    grid:{
+	    	right:'15%',
+	    },
+	    xAxis: {
+	    	name:'Number of Records',
+	        splitLine: {
+	            lineStyle: {
+	                type: 'dashed'
+	            }
+	        }
+	    },
+	    yAxis: {
+	    	name:'Trans Amt',
+	        splitLine: {
+	            lineStyle: {
+	                type: 'dashed'
+	            }
+	        },
+	        scale: true
+	    },
+	    series: [{
+	        name: 'Transanction',
+	        data: [
+            ],
+	        type: 'scatter',
+	        symbolSize: 30,
+	        label: {
+	            emphasis: {
+	                show: true,
+	                formatter: function (param) {
+	                	console.log(param.data);
+	                    return "("+param.data[0]+","+param.data[1]+")";
+	                },
+	                position: 'top'
+	            }
+	        },
+	        itemStyle: {
+	            normal: {
+	                shadowBlur: 10,
+	                shadowColor: 'rgba(25, 100, 150, 0.5)',
+	                shadowOffsetY: 5,
+	                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+	                    offset: 0,
+	                    color: 'rgb(129, 227, 238)'
+	                }, {
+	                    offset: 1,
+	                    color: 'rgb(25, 183, 207)'
+	                }])
+	            }
+	        }
+	    }]
+	};
+
 	heatChart.setOption(heatoption);
+	scatterChart.setOption(scatteroption);
 
 	$( "form" ).submit(function( event ) {
 	  console.log( $( this ).serializeArray() );
 	  event.preventDefault();
-	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
-	  	console.log(data);
+	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/heatmap', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	var result_data = initMapData(mapData,data);
 	  	heatoption.series[0].data = result_data.mapdata;
 	  	heatoption.visualMap.max = result_data.maxamount;
 	  	heatoption.visualMap.min = result_data.minamount;
-	  	console.log(heatoption);
 	  	heatChart.setOption(heatoption);
+	  });
+	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
+	  	console.log(data);
+	  	scatteroption.series[0].data = data.data;
+	  	scatterChart.setOption(scatteroption);
 	  });
 	});
 
