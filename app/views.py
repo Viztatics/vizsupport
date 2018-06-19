@@ -37,25 +37,24 @@ class RuleView(BaseView):
 
         if request.method == 'POST':
 
-        	def_data_county = 'app/static/csv/rules/highRiskCountry.csv'
-
-        	heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans Amt'])
-
-        	min_month = heat_map_data['Month of Trans Date'].min()
-
-        	heat_map_result = heat_map_data.loc[heat_map_data['Month of Trans Date'] == min_month]
-
-        	heat_map_result = heat_map_result.groupby('OPP_CNTRY').sum().reset_index()
-
-        	print(heat_map_result.to_json(orient='records'))
-
-        	min_amount = heat_map_result['Trans Amt'].min()
-
-        	max_amount = heat_map_result['Trans Amt'].max()
-
-        	print(heat_map_result.to_json(orient='records'))
+        	heat_map_result = self.getHeatMapData()
 
         	return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
+
+    def getHeatMapData(self):
+
+        def_data_county = 'app/static/csv/rules/highRiskCountry.csv'
+
+        heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans Amt'])
+        min_month = heat_map_data['Month of Trans Date'].min()
+        heat_map_result = heat_map_data.loc[heat_map_data['Month of Trans Date'] == min_month]
+        heat_map_result = heat_map_result.groupby('OPP_CNTRY').sum().reset_index()
+        print(heat_map_result.to_json(orient='records'))
+        min_amount = heat_map_result['Trans Amt'].min()
+        max_amount = heat_map_result['Trans Amt'].max()
+        print(heat_map_result.to_json(orient='records'))
+
+        return heat_map_result
 
 
 

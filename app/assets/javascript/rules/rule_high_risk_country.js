@@ -204,7 +204,7 @@ $(function(){
 
 	var heatChart = echarts.init(document.getElementById('heatChart'));
 
-	var option = {
+	var heatoption = {
 	    title: {
 	        text: 'High Risk Countries',
 	        left: 'center',
@@ -240,7 +240,7 @@ $(function(){
 	    ]
 	};
 
-	heatChart.setOption(option);
+	heatChart.setOption(heatoption);
 
 	$( "form" ).submit(function( event ) {
 	  console.log( $( this ).serializeArray() );
@@ -248,11 +248,11 @@ $(function(){
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	console.log(data);
 	  	var result_data = initMapData(mapData,data);
-	  	option.series[0].data = result_data.mapdata;
-	  	option.visualMap.max = result_data.maxamount;
-	  	option.visualMap.min = result_data.minamount;
-	  	console.log(option);
-	  	heatChart.setOption(option);
+	  	heatoption.series[0].data = result_data.mapdata;
+	  	heatoption.visualMap.max = result_data.maxamount;
+	  	heatoption.visualMap.min = result_data.minamount;
+	  	console.log(heatoption);
+	  	heatChart.setOption(heatoption);
 	  });
 	});
 
