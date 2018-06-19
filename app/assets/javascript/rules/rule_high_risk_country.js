@@ -296,7 +296,12 @@ $(function(){
 	                    color: 'rgb(25, 183, 207)'
 	                }])
 	            }
-	        }
+	        },	        
+            markLine : {
+                data : [
+                    {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+                ]
+            },
 	    }]
 	};
 
