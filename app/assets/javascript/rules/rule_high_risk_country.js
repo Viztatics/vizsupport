@@ -319,8 +319,8 @@ $(function(){
 	  	heatChart.setOption(heatoption);
 	  });
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
-	  	console.log(data);
 	  	scatteroption.series[0].data = data.data;
+	  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
 	  	scatterChart.setOption(scatteroption);
 	  });
 	});
