@@ -4,6 +4,12 @@
     {{ super() }}
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
+    <style type="text/css">
+    	label.error{
+    		color:red;
+    		margin-left: 10px;
+    	}
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +17,7 @@
 		<div class="panel panel-default">
 		  <div class="panel-heading">Query Area</div>
 		  <div class="panel-body">
-		    <form class="form-horizontal">
+		    <form class="form-horizontal" id="highRiskCtyForm">
 		        <div class="form-group">
 		            <label class="col-md-2 control-label" for="reportPath">Choose your data file</label>
 		            <div class="col-md-4 input-group" id="reportPath">Upload</div>

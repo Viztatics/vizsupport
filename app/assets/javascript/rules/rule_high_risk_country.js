@@ -327,8 +327,42 @@ $(function(){
 	heatChart.setOption({baseOption:heatoption,options:[]});
 	scatterChart.setOption(scatteroption);
 
+	$("#reportPath").uploadFile({
+		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+	    maxFileCount: 1,                		   
+	    allowedTypes: 'csv',  				       
+	    showFileSize: false,
+	    showDone: false,                           
+	    showDelete: true,                          
+	    showDownload:false,
+	    onSuccess: function(files,data,xhr,pd){
+	    	$("#file-error")&&$("#file-error").remove();
+	    }
+	});
+
+	$("#highRiskCtyForm").validate({
+		ignore:"input[type=file]",
+	    rules: {
+	      // no quoting necessary
+	      threshNum:{
+	      	required: true,
+	      	digits:true,
+	      }
+	    },
+	});
+
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
+
+	  if( $("input[type=file]")[0].files.length == 0 ){
+	  	$("#file-error").remove();
+	  	$("<label id='file-error' style='color:red;margin-left:10px'>This field is required!</label>").appendTo($('#reportPath'));
+	  }
+
+	  if(!$("#highRiskCtyForm").valid()){
+		  return false;
+	  };
+
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/heatmap', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	var result_data = initMapData(mapData,data);
 	  	heatoption.visualMap.max = result_data.maxamount;
@@ -384,16 +418,6 @@ $(function(){
 	  });
 
 
-	});
-
-	$("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
-	    maxFileCount: 1,                		   
-	    allowedTypes: 'csv',  				       
-	    showFileSize: false,
-	    showDone: false,                           
-	    showDelete: true,                          
-	    showDownload:false,
 	});
 
 })
