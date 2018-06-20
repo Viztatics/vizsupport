@@ -1,0 +1,17 @@
+{
+  "name": "viztatics",
+  "version": "1.0.0",
+  "description": "viztatics.com",
+  "main": "index.js",
+  "repository": "https://github.com/francisliyy/vizdemo.git",
+  "author": "yingxin li",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "echarts": "^4.1.0",
+    "lodash": "^4.17.10"
+  }
+}

@@ -1,0 +1,67 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='')}}"></link>
+{% endblock %}
+
+{% block content %}
+	{{ lib.panel_begin("High Risk Country") }}
+		<div class="panel panel-default">
+		  <div class="panel-heading">Query Area</div>
+		  <div class="panel-body">
+		    <form class="form-horizontal">
+		        <div class="form-group">
+		            <label class="col-md-2 control-label" for="reportPath">Choose your data file</label>
+		            <div class="col-md-4">
+		            	<input type="text" class="form-control" id="reportPath" name="reportPath" maxlength="80" placeholder="c:\Users\admin\MSE_base1.rp">
+		            </div>
+		            <div class="col-md-2">
+		            	<button type="button" class="btn btn-info" style="margin: -5px 0 0 60px">select</button>
+		        	</div>
+
+		        </div>
+		        <div class="form-group">
+		            <label class="col-md-2 control-label" for="threshNum">Define a threshold</label>
+		            <div class="col-md-4">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="100000">
+		            </div>
+		        </div>
+		        <div class="form-group">
+		        	<div class="col-md-offset-2 col-md-2">
+		            	<button type="submit" class="btn btn-primary">Submit</button>
+		        	</div>
+		        </div>
+		    </form>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">Scatter Plot</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <div id="scatterChart" style="height:600px"></div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">Heat MAP</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <div id="heatChart" style="height:600px"></div>
+		    </div>
+		  </div>
+		</div>
+	{{ lib.panel_end() }}
+{% endblock %}
+
+{% block tail_js %}
+	  {{super()}}
+    <script type="text/javascript">
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>    
+    <script src="{{url_for('static',filename='assets/javascript/rules/rule_high_risk_country.js')}}"></script>
+{% endblock %}

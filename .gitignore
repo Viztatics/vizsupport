@@ -8,3 +8,6 @@ env
 venv
 *.sublime*
 nohup.out
+#mac file
+.DS_Store
+
