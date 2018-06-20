@@ -45,7 +45,7 @@ class RuleView(BaseView):
         #min_month = heat_map_data['Month of Trans Date'].min()
         #heat_map_result = heat_map_data.loc[heat_map_data['Month of Trans Date'] == min_month]
         heat_map_result = heat_map_data.groupby(['Month of Trans Date','OPP_CNTRY']).sum().reset_index()
-        print(heat_map_result.to_json(orient='records'))
+        #print(heat_map_result.to_json(orient='records'))
 
         return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
 
@@ -58,6 +58,20 @@ class RuleView(BaseView):
     	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans Count','Trans Amt'])
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
+
+    @expose('/highRiskCountry/alerttable',methods=['POST'])
+    @has_access
+    def getAlertTableData(self):
+
+    	threshold = request.get_json()["threshNum"]
+
+    	def_data_no_county = 'app/static/csv/rules/highRiskNoCountry.csv'
+
+    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','Trans Amt'])
+
+    	table_data = table_data[table_data['Trans Amt']>int(threshold)]
+
+    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
 
 

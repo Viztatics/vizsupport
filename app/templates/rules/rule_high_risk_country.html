@@ -2,7 +2,7 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 {% block head_css %}
     {{ super() }}
-    <link rel="stylesheet" href="{{url_for('static',filename='')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
 {% endblock %}
 
 {% block content %}
@@ -37,6 +37,15 @@
 		</div>
 
 		<div class="panel panel-default">
+		  <div class="panel-heading">Alert Table</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <table id="alertTable" data-show-export="true"></table>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
 		  <div class="panel-heading">Scatter Plot</div>
 		  <div class="panel-body">
 		    <div class="row">
@@ -61,6 +70,9 @@
     <script type="text/javascript">
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js')}}"></script>
+    <script src="//rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js"></script>
     <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>
     <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>    
     <script src="{{url_for('static',filename='assets/javascript/rules/rule_high_risk_country.js')}}"></script>

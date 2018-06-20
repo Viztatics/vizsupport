@@ -293,7 +293,6 @@ $(function(){
 	        data: [
             ],
 	        type: 'scatter',
-	        symbolSize: 30,
 	        label: {
 	            emphasis: {
 	                show: true,
@@ -351,14 +350,40 @@ $(function(){
 			 	timeoptions.push({title: {text: 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:seriesclone});
 			}); 
 	  	})
-	  	console.log({baseOption:heatoption,options:timeoptions});
 	  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);
 	  });
+
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	scatteroption.series[0].data = data.data;
 	  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
 	  	scatterChart.setOption(scatteroption);
 	  });
+
+	  $.ajax({
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/alerttable',
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({reportPath:$('#reportPath').val(),threshNum:$('#threshNum').val()}),
+	  	success:function(data){
+		  	$('#alertTable').bootstrapTable({
+		  		data:data,
+		  		pagination:true,
+		  		exportDataType: 'all',
+			    columns: [{
+			        field: 'ACCOUNT_KEY',
+			        title: 'ACCOUNT'
+			    }, {
+			        field: 'Month of Trans Date',
+			        title: 'Month of Trans Date'
+			    }, {
+			        field: 'Trans Amt',
+			        title: 'Trans Amount'
+			    }],
+			});
+	  	}
+	  });
+
+
 	});
 
 })
