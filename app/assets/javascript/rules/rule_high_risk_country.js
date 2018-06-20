@@ -176,36 +176,57 @@ $(function(){
 
         var maxamount = 0
         var minamount = filedata[0]['Trans Amt'];
-        var result_data={};
-		result_data.mapdata = [];
-		mapdata.forEach(function(element){
-			element['value']=0;
-			delete element['color'];
-			filedata.forEach(function (countrydata){
-				if(element.code==countrydata['OPP_CNTRY']){
-					if(maxamount<countrydata['Trans Amt']){
-						maxamount = countrydata['Trans Amt'];
-					}
-					if(minamount>countrydata['Trans Amt']){
-						minamount = countrydata['Trans Amt'];
-					}
-					element['value']=countrydata['Trans Amt'];	
-					result_data.mapdata.push(element);					
-				}
-			});	
-		})
+        var datamonths = filedata.map(function(item) { return item['Month of Trans Date']; });
+        datamonths = datamonths.filter(function (el, i, arr) {
+			return arr.indexOf(el) === i;
+		});
+        var allmonth_result = {};        
+		allmonth_result.mapdata = [];
 
-		
-		result_data.maxamount = maxamount;
-		result_data.minamount = minamount;
+		datamonths.forEach(function(amonth){
 
-		return result_data;
+			var result_data=[];
+
+			mapdata.forEach(function(element){
+				eleclone = Object.assign({}, element);
+				eleclone['value']=0;
+				delete eleclone['color'];
+				filedata.forEach(function (countrydata){					
+					if(countrydata['Month of Trans Date']==amonth&&eleclone.code==countrydata['OPP_CNTRY']){
+						if(maxamount<countrydata['Trans Amt']){
+							maxamount = countrydata['Trans Amt'];
+						}
+						if(minamount>countrydata['Trans Amt']){
+							minamount = countrydata['Trans Amt'];
+						}
+						eleclone['value']=countrydata['Trans Amt'];	
+						result_data.push(eleclone);					
+					}					
+					
+				});	
+			});
+
+			var obj={};
+			obj[amonth]=result_data;
+			allmonth_result.mapdata.push(obj);
+			delete result_data;
+			delete obj;
+		});
+
+		allmonth_result.maxamount = maxamount;
+		allmonth_result.minamount = minamount;
+
+		return allmonth_result;
 	}
 
 	var heatChart = echarts.init(document.getElementById('heatChart'));
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 
 	var heatoption = {
+		timeline : {
+			axisType:'category',
+	        data : [],
+	    },
 	    title: {
 	        text: 'High Risk Countries',
 	        left: 'center',
@@ -277,7 +298,6 @@ $(function(){
 	            emphasis: {
 	                show: true,
 	                formatter: function (param) {
-	                	console.log(param.data);
 	                    return "("+param.data[0]+","+param.data[1]+")";
 	                },
 	                position: 'top'
@@ -305,18 +325,34 @@ $(function(){
 	    }]
 	};
 
-	heatChart.setOption(heatoption);
+	heatChart.setOption({baseOption:heatoption,options:[]});
 	scatterChart.setOption(scatteroption);
 
 	$( "form" ).submit(function( event ) {
-	  console.log( $( this ).serializeArray() );
 	  event.preventDefault();
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/heatmap', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	var result_data = initMapData(mapData,data);
-	  	heatoption.series[0].data = result_data.mapdata;
 	  	heatoption.visualMap.max = result_data.maxamount;
 	  	heatoption.visualMap.min = result_data.minamount;
-	  	heatChart.setOption(heatoption);
+	  	$.each( result_data.mapdata[0], function( key, value ) {
+	  		heatoption.title.text = 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")";
+		  	heatoption.series[0].data = value;
+		    heatoption.series[0].name = key;
+	  	});
+
+	  	timeoptions=[];
+	  	heatoption.timeline.data = [];
+	  	result_data.mapdata.forEach(function(monthdata){
+	  		$.each( monthdata, function( key, value ) {
+			 	heatoption.timeline.data.push(key.slice(0, 4)+"-"+key.slice(4, 6));
+			 	seriesclone = Object.assign({},heatoption.series[0]);
+			 	seriesclone.name = key;
+			 	seriesclone.data = value;
+			 	timeoptions.push({title: {text: 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:seriesclone});
+			}); 
+	  	})
+	  	console.log({baseOption:heatoption,options:timeoptions});
+	  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);
 	  });
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	scatteroption.series[0].data = data.data;
