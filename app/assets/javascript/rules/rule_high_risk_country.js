@@ -272,7 +272,7 @@ $(function(){
 	    	right:'15%',
 	    },
 	    xAxis: {
-	    	name:'Number of Records',
+	    	name:'Trans Count',
 	        splitLine: {
 	            lineStyle: {
 	                type: 'dashed'
