@@ -1,10 +1,13 @@
 from flask import render_template, request, Response
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
+from werkzeug import secure_filename
 from app import appbuilder, db
+from app.fileUtils import *
 
 import numpy as np
 import pandas as pd
+import json
 
 """
     Create your Views::
@@ -27,6 +30,12 @@ class RuleView(BaseView):
     
     route_base = '/rules'
     default_view = 'highRiskCountry'
+
+    ALLOWED_RND_EXTENSIONS = set(['csv'])
+
+    def allowed_file(self,filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in self.ALLOWED_RND_EXTENSIONS
 
     @expose('/highRiskCountry')
     @has_access
@@ -72,6 +81,24 @@ class RuleView(BaseView):
     	table_data = table_data[table_data['Trans Amt']>int(threshold)]
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskCountry/upload',methods=['POST','DELETE'])
+    @has_access
+    def getAlertTableData(self):
+
+    	if request.method == 'POST':
+            files = request.files['file']
+
+            if files:
+                filename = secure_filename(files.filename)
+
+                mime_type = files.content_type
+
+                if not self.allowed_file(files.filename):
+                    result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+                
+
+    	return  json.dumps({})
 
 
 

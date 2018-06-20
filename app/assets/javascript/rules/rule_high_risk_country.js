@@ -386,4 +386,14 @@ $(function(){
 
 	});
 
+	$("#reportPath").uploadFile({
+		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+	    maxFileCount: 1,                		   
+	    allowedTypes: 'csv',  				       
+	    showFileSize: false,
+	    showDone: false,                           
+	    showDelete: true,                          
+	    showDownload:false,
+	});
+
 })

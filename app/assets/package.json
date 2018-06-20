@@ -13,6 +13,8 @@
   "dependencies": {
     "bootstrap-table": "^1.12.1",
     "echarts": "^4.1.0",
+    "jquery-file-upload": "^4.0.11",
+    "jquery-validation": "^1.17.0",
     "lodash": "^4.17.10"
   }
 }

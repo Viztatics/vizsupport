@@ -239,6 +239,12 @@ async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
 
+"async@>= 0.1.22":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
+  dependencies:
+    lodash "^4.17.10"
+
 atob@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.1.tgz#ae2d5a729477f289d60dd7f96a6314a22dd6c22a"
@@ -899,6 +905,13 @@ for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
 
+form@:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/form/-/form-0.2.4.tgz#69a0e9bf9003e7d6e4eee7f9d16239148a129a21"
+  dependencies:
+    async ">= 0.1.22"
+    validator ">= 0.4.9"
+
 fragment-cache@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/fragment-cache/-/fragment-cache-0.2.1.tgz#4290fad27f13e89be7f33799c6bc5a0abfff0d19"
@@ -1267,6 +1280,23 @@ isobject@^2.0.0:
 isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
+
+jquery-file-upload@^4.0.11:
+  version "4.0.11"
+  resolved "https://registry.yarnpkg.com/jquery-file-upload/-/jquery-file-upload-4.0.11.tgz#840d74af95791d3df8472d47ac803734c61f32fb"
+  dependencies:
+    form ""
+    jquery ">=1.6"
+
+jquery-validation@^1.17.0:
+  version "1.17.0"
+  resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.17.0.tgz#ab66b6b583d7740b9bbd148993e50e8ac041f35b"
+  dependencies:
+    jquery "^1.7 || ^2.0 || ^3.1"
+
+jquery@>=1.6, "jquery@^1.7 || ^2.0 || ^3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
 
 json-parse-better-errors@^1.0.2:
   version "1.0.2"
@@ -2364,6 +2394,10 @@ util@^0.10.3:
 v8-compile-cache@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.0.0.tgz#526492e35fc616864284700b7043e01baee09f0a"
+
+"validator@>= 0.4.9":
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-10.4.0.tgz#ee99a44afb3bb5ed350a159f056ca72a204cfc3c"
 
 vm-browserify@0.0.4:
   version "0.0.4"
