@@ -68,9 +68,9 @@ class RuleView(BaseView):
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
-    @expose('/highRiskCountry/alerttable',methods=['POST'])
+    @expose('/highRiskCountry/tabledata',methods=['POST'])
     @has_access
-    def getAlertTableData(self):
+    def getTableData(self):
 
     	threshold = request.get_json()["threshNum"]
 

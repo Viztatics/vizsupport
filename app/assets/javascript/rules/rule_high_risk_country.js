@@ -343,7 +343,6 @@ $(function(){
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
-	      // no quoting necessary
 	      threshNum:{
 	      	required: true,
 	      	digits:true,
@@ -393,7 +392,7 @@ $(function(){
 	  });
 
 	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/alerttable',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata',
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({reportPath:$('#reportPath').val(),threshNum:$('#threshNum').val()}),
