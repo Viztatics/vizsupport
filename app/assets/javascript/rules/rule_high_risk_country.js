@@ -353,15 +353,14 @@ $(function(){
 
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
-
-	  if( $("input[type=file]")[0].files.length == 0 ){
-	  	$("#file-error").remove();
-	  	$("<label id='file-error' style='color:red;margin-left:10px'>This field is required!</label>").appendTo($('#reportPath'));
+	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
+	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
+	  	if(filecount ==0){
+	  		$("#file-error").remove();
+	  		$("<label id='file-error' style='color:red;margin-left:10px'>This field is required!</label>").appendTo($('#reportPath'));
+	  	}	  	
+	  	return false;
 	  }
-
-	  if(!$("#highRiskCtyForm").valid()){
-		  return false;
-	  };
 
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/heatmap', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
 	  	var result_data = initMapData(mapData,data);
