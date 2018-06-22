@@ -281,12 +281,21 @@ $(function(){
 	    },
 	    yAxis: {
 	    	name:'Trans Amt',
+	    	type: 'log',
+	    	logBase:10,
 	        splitLine: {
 	            lineStyle: {
 	                type: 'dashed'
 	            }
 	        },
-	        scale: true
+	        axisLabel : {
+                formatter: function(params){
+                	console.log(params);
+                	return "$"+params/1000+"K"
+
+                }
+            },
+            min:1000
 	    },
 	    series: [{
 	        name: 'Transanction',
