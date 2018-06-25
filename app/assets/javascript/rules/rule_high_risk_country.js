@@ -280,7 +280,7 @@ $(function(){
 		    	console.log(params);
 	            return "Account Key: "+params.data[2]+"<br/>"
 		                          +"Trans Month:  "+params.data[3]+"<br/>"
-		                          +"Trans Count:"+params.data[0]+"<br/>"
+		                          +"Trans Count: "+params.data[0]+"<br/>"
 		                          +"Trans Amt: "+params.data[1];
 		    },
         },
