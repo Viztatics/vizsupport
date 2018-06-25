@@ -89,7 +89,7 @@ class RuleView(BaseView):
 
     @expose('/highRiskCountry/upload',methods=['POST','DELETE'])
     @has_access
-    def getHighRiskCountryAlertTableData(self):
+    def getHighRiskCountryFileData(self):
 
     	if request.method == 'POST':
             files = request.files['file']
@@ -116,6 +116,64 @@ class RuleView(BaseView):
 
         if request.method == 'GET':
             return self.render_template('rules/rule_high_risk_volume.html')
+
+    @expose('/highRiskVolume/scatterplot',methods=['POST'])
+    @has_access
+    def getHighRiskVolumeScatterPlotData(self):
+
+    	transCodeType = request.get_json()["transCodeType"]
+
+    	crDb = request.get_json()["crDb"]
+
+    	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
+
+    	plot_data = pd.read_csv(def_volume_data)
+
+    	plot_data = plot_data[(plot_data['Trans Code Type']==transCodeType)&(plot_data['Cr_Db']==crDb)]
+    	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','Month of Trans Date']]
+
+    	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
+
+    @expose('/highRiskVolume/tabledata',methods=['POST'])
+    @has_access
+    def getHighRiskVolumeTableData(self):
+
+    	transCodeType = request.get_json()["transCodeType"]
+
+    	crDb = request.get_json()["crDb"]
+
+    	amtThreshold = request.get_json()["amtThreshNum"]
+
+    	cntThreshold = request.get_json()["cntThreshNum"]
+
+    	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
+
+    	table_data = pd.read_csv(def_volume_data)
+
+    	table_data = table_data[(table_data['TRANS_AMT']>int(amtThreshold))&(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+
+    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT']]
+    	
+
+    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskVolume/upload',methods=['POST','DELETE'])
+    @has_access
+    def getHighRiskVolumeFileData(self):
+
+    	if request.method == 'POST':
+            files = request.files['file']
+
+            if files:
+                filename = secure_filename(files.filename)
+
+                mime_type = files.content_type
+
+                if not self.allowed_file(files.filename):
+                    result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+                
+
+    	return  json.dumps({})
 
 
 

@@ -18,7 +18,6 @@ $(function(){
 	        borderColor: '#777',
 	        borderWidth: 1,
 		    formatter : function (params) {
-		    	console.log(params);
 	            return "Account Key: "+params.data[2]+"<br/>"
 		                          +"Trans Month:  "+params.data[3]+"<br/>"
 		                          +"Trans Count: "+params.data[0]+"<br/>"
@@ -80,7 +79,7 @@ $(function(){
 	scatterChart.setOption(scatteroption);
 
 	$("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
 	    maxFileCount: 1,                		   
 	    allowedTypes: 'csv',  				       
 	    showFileSize: false,
@@ -113,18 +112,28 @@ $(function(){
 	  	return false;
 	  }
 
-	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
-	  	console.log(data.data);
-	  	scatteroption.series[0].data = data.data;
-	  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
-	  	scatterChart.setOption(scatteroption);
-	  });
-
 	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot',
 	  	type: 'POST',
 	  	contentType:'application/json',
-	  	data: JSON.stringify({reportPath:$('#reportPath').val(),threshNum:$('#threshNum').val()}),
+	  	data: JSON.stringify({
+	  		transCodeType:$('#transCodeType').val(),crDb:$('#crDb').val()
+	  	}),
+	  	success:function(data){
+		  	scatteroption.series[0].data = data.data;
+		  	scatteroption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
+		  	scatterChart.setOption(scatteroption);
+	  	}
+	  });
+	  
+	  $.ajax({
+	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/tabledata',
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({reportPath:$('#reportPath').val()
+	  		,transCodeType:$('#transCodeType').val(),crDb:$('#crDb').val()
+	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  	}),
 	  	success:function(data){
 		  	$('#alertTable').bootstrapTable({
 		  		data:data,
@@ -137,7 +146,7 @@ $(function(){
 			        field: 'Month of Trans Date',
 			        title: 'Month of Trans Date'
 			    }, {
-			        field: 'Trans Amt',
+			        field: 'TRANS_AMT',
 			        title: 'Trans Amount'
 			    }],
 			});
