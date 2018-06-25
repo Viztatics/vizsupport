@@ -37,6 +37,10 @@ class RuleView(BaseView):
         return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in self.ALLOWED_RND_EXTENSIONS
 
+    """
+    Rule1: High Risk Countries
+    """        
+
     @expose('/highRiskCountry')
     @has_access
     def highRiskCountry(self):
@@ -46,7 +50,7 @@ class RuleView(BaseView):
 
     @expose('/highRiskCountry/heatmap',methods=['POST'])
     @has_access
-    def getHeatMapData(self):
+    def getHighRiskCountryHeatMapData(self):
 
         def_data_county = 'app/static/csv/rules/highRiskCountry.csv'
 
@@ -60,7 +64,7 @@ class RuleView(BaseView):
 
     @expose('/highRiskCountry/scatterplot',methods=['POST'])
     @has_access
-    def getScatterPlotData(self):
+    def getHighRiskCountryScatterPlotData(self):
 
     	def_data_no_county = 'app/static/csv/rules/highRiskNoCountry.csv'
 
@@ -71,7 +75,7 @@ class RuleView(BaseView):
 
     @expose('/highRiskCountry/tabledata',methods=['POST'])
     @has_access
-    def getTableData(self):
+    def getHighRiskCountryTableData(self):
 
     	threshold = request.get_json()["threshNum"]
 
@@ -85,7 +89,7 @@ class RuleView(BaseView):
 
     @expose('/highRiskCountry/upload',methods=['POST','DELETE'])
     @has_access
-    def getAlertTableData(self):
+    def getHighRiskCountryAlertTableData(self):
 
     	if request.method == 'POST':
             files = request.files['file']
@@ -102,6 +106,18 @@ class RuleView(BaseView):
     	return  json.dumps({})
 
 
+    """
+    Rule2: High Risk Volume
+    """        
+
+    @expose('/highRiskVolume')
+    @has_access
+    def highRiskVolume(self):
+
+        if request.method == 'GET':
+            return self.render_template('rules/rule_high_risk_volume.html')
+
+
 
 @appbuilder.app.errorhandler(404)
 def page_not_found(e):
@@ -110,5 +126,6 @@ def page_not_found(e):
 db.create_all()
 
 appbuilder.add_view(RuleView, "High Risk Countries", category='Rules')
+appbuilder.add_link("High Risk Volume", href='/rules/highRiskVolume', category='Rules')
 
 
