@@ -83,7 +83,7 @@ class RuleView(BaseView):
 
     	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','Trans Amt'])
 
-    	table_data = table_data[table_data['Trans Amt']>int(threshold)]
+    	table_data = table_data[table_data['Trans Amt']>=int(threshold)]
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
@@ -150,7 +150,7 @@ class RuleView(BaseView):
 
     	table_data = pd.read_csv(def_volume_data)
 
-    	table_data = table_data[(table_data['TRANS_AMT']>int(amtThreshold))&(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
 
     	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT']]
     	

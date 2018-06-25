@@ -1,6 +1,20 @@
 $(function(){
 
-	
+	$('#alertTable').bootstrapTable({
+  		pagination:true,
+  		exportDataType: 'all',
+	    columns: [{
+	        field: 'ACCOUNT_KEY',
+	        title: 'ACCOUNT'
+	    }, {
+	        field: 'Month of Trans Date',
+	        title: 'Month of Trans Date'
+	    }, {
+	        field: 'TRANS_AMT',
+	        title: 'Trans Amount'
+	    }],
+	});
+
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 
 	var scatteroption = {
@@ -135,21 +149,10 @@ $(function(){
 	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
 	  	}),
 	  	success:function(data){
-		  	$('#alertTable').bootstrapTable({
-		  		data:data,
-		  		pagination:true,
-		  		exportDataType: 'all',
-			    columns: [{
-			        field: 'ACCOUNT_KEY',
-			        title: 'ACCOUNT'
-			    }, {
-			        field: 'Month of Trans Date',
-			        title: 'Month of Trans Date'
-			    }, {
-			        field: 'TRANS_AMT',
-			        title: 'Trans Amount'
-			    }],
-			});
+
+            debugger;
+	  		$('#alertTable').bootstrapTable('load',data);
+
 	  	}
 	  });
 

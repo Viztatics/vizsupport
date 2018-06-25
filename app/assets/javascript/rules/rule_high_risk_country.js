@@ -1,5 +1,20 @@
 $(function(){
 
+	$('#alertTable').bootstrapTable({
+		  		pagination:true,
+		  		exportDataType: 'all',
+			    columns: [{
+			        field: 'ACCOUNT_KEY',
+			        title: 'ACCOUNT'
+			    }, {
+			        field: 'Month of Trans Date',
+			        title: 'Month of Trans Date'
+			    }, {
+			        field: 'Trans Amt',
+			        title: 'Trans Amount'
+			    }],
+			});
+
 	var mapData = [
 			{'code':'AF' , 'name':'Afghanistan', 'value':32358260, 'color':'#eea638'},
 			{'code':'AL' , 'name':'Albania', 'value':3215988, 'color':'#d8854f'},
@@ -410,21 +425,7 @@ $(function(){
 	  	contentType:'application/json',
 	  	data: JSON.stringify({reportPath:$('#reportPath').val(),threshNum:$('#threshNum').val()}),
 	  	success:function(data){
-		  	$('#alertTable').bootstrapTable({
-		  		data:data,
-		  		pagination:true,
-		  		exportDataType: 'all',
-			    columns: [{
-			        field: 'ACCOUNT_KEY',
-			        title: 'ACCOUNT'
-			    }, {
-			        field: 'Month of Trans Date',
-			        title: 'Month of Trans Date'
-			    }, {
-			        field: 'Trans Amt',
-			        title: 'Trans Amount'
-			    }],
-			});
+	  		$('#alertTable').bootstrapTable('load',data);		  	
 	  	}
 	  });
 
