@@ -271,6 +271,19 @@ $(function(){
 	    grid:{
 	    	right:'15%',
 	    },
+	    tooltip : {
+	        padding: 10,
+	        backgroundColor: '#222',
+	        borderColor: '#777',
+	        borderWidth: 1,
+		    formatter : function (params) {
+		    	console.log(params);
+	            return "Account Key: "+params.data[2]+"<br/>"
+		                          +"Trans Month:  "+params.data[3]+"<br/>"
+		                          +"Trans Count:"+params.data[0]+"<br/>"
+		                          +"Trans Amt: "+params.data[1];
+		    },
+        },
 	    xAxis: {
 	    	name:'Trans Count',
 	        splitLine: {
@@ -290,7 +303,6 @@ $(function(){
 	        },
 	        axisLabel : {
                 formatter: function(params){
-                	console.log(params);
                 	return "$"+params/1000+"K"
 
                 }
@@ -302,15 +314,6 @@ $(function(){
 	        data: [
             ],
 	        type: 'scatter',
-	        label: {
-	            emphasis: {
-	                show: true,
-	                formatter: function (param) {
-	                    return "("+param.data[0]+","+param.data[1]+")";
-	                },
-	                position: 'top'
-	            }
-	        },
 	        itemStyle: {
 	            normal: {
 	                shadowBlur: 10,
@@ -395,6 +398,7 @@ $(function(){
 	  });
 
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
+	  	console.log(data.data);
 	  	scatteroption.series[0].data = data.data;
 	  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
 	  	scatterChart.setOption(scatteroption);

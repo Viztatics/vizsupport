@@ -64,7 +64,8 @@ class RuleView(BaseView):
 
     	def_data_no_county = 'app/static/csv/rules/highRiskNoCountry.csv'
 
-    	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans Count','Trans Amt'])
+    	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans Count','Trans Amt','ACCOUNT_KEY','Month of Trans Date'])
+    	plot_data = plot_data[['Trans Count','Trans Amt','ACCOUNT_KEY','Month of Trans Date']]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
