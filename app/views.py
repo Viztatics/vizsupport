@@ -120,6 +120,24 @@ class RuleView(BaseView):
         if request.method == 'GET':
             return self.render_template('rules/rule_high_risk_volume.html')
 
+    @expose('/highRiskVolume/statisticsdata',methods=['POST'])
+    @has_access
+    def getHighRiskVolumeStatisticsData(self):
+
+    	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
+
+    	table_data = pd.read_csv(def_volume_data)
+
+    	min_data = table_data['TRANS_AMT'].min()
+
+    	max_data = table_data['TRANS_AMT'].max()
+    	
+    	median_data = table_data['TRANS_AMT'].median()
+
+    	mean_data = table_data['TRANS_AMT'].mean()
+
+    	return Response(pd.io.json.dumps([{'min_data':min_data,'max_data':max_data,'median_data':median_data,'mean_data':mean_data}]), mimetype='application/json')
+
     @expose('/highRiskVolume/scatterplot',methods=['POST'])
     @has_access
     def getHighRiskVolumeScatterPlotData(self):

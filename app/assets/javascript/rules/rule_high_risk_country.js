@@ -11,7 +11,13 @@ $(function(){
 			        title: 'Month of Trans Date'
 			    }, {
 			        field: 'Trans Amt',
-			        title: 'Trans Amount'
+			        title: 'Trans Amount',
+			        formatter: function formatter(value, row, index, field) {
+			        	return (value).toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						});
+					},
 			    }],
 			});
 
@@ -250,7 +256,10 @@ $(function(){
 	    tooltip: {
 	        trigger: 'item',
 	        formatter: function (params) {
-	            return params.seriesName + '<br/>' + params.name + ' : ' + params.value;
+	            return params.seriesName + '<br/>' + params.name + ' : ' + (params.value).toLocaleString('en-US', {
+																						  style: 'currency',
+																						  currency: 'USD',
+																						});
 	        }
 	    },
 	    visualMap: {
@@ -296,7 +305,10 @@ $(function(){
 	            return "Account Key: "+params.data[2]+"<br/>"
 		                          +"Trans Month:  "+params.data[3]+"<br/>"
 		                          +"Trans Count: "+params.data[0]+"<br/>"
-		                          +"Trans Amt: "+params.data[1];
+		                          +"Trans Amt: "+(params.data[1]).toLocaleString('en-US', {
+															  style: 'currency',
+															  currency: 'USD',
+															});
 		    },
         },
 	    xAxis: {

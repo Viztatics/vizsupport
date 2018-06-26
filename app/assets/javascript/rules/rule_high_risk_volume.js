@@ -1,5 +1,46 @@
 $(function(){
 
+    $('#statisticsTable').bootstrapTable({
+  		pagination:false,
+	    columns: [{
+	        field: 'min_data',
+	        title: 'MIN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			},
+	    }, {
+	        field: 'max_data',
+	        title: 'MAX',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'median_data',
+	        title: 'MEDIAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'mean_data',
+	        title: 'MEAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }],
+	});
+
 	$('#alertTable').bootstrapTable({
   		pagination:true,
   		exportDataType: 'all',
@@ -11,7 +52,13 @@ $(function(){
 	        title: 'Month of Trans Date'
 	    }, {
 	        field: 'TRANS_AMT',
-	        title: 'Trans Amount'
+	        title: 'Trans Amount',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
 	    }, {
 	        field: 'TRANS_CNT',
 	        title: 'Trans Count'
@@ -38,7 +85,10 @@ $(function(){
 	            return "Account Key: "+params.data[2]+"<br/>"
 		                          +"Trans Month:  "+params.data[3]+"<br/>"
 		                          +"Trans Count: "+params.data[0]+"<br/>"
-		                          +"Trans Amt: "+params.data[1];
+		                          +"Trans Amt: "+(params.data[1]).toLocaleString('en-US', {
+															  style: 'currency',
+															  currency: 'USD',
+															});
 		    },
         },
 	    xAxis: {
@@ -130,6 +180,18 @@ $(function(){
 	  }
 
 	  $.ajax({
+	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata',
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({}),
+	  	success:function(data){
+
+	  		$('#statisticsTable').bootstrapTable('load',data);
+
+	  	}
+	  });
+
+	  $.ajax({
 	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot',
 	  	type: 'POST',
 	  	contentType:'application/json',
@@ -157,7 +219,6 @@ $(function(){
 
 	  	}
 	  });
-
 
 	});
 
