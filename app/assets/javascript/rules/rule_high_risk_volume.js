@@ -12,6 +12,9 @@ $(function(){
 	    }, {
 	        field: 'TRANS_AMT',
 	        title: 'Trans Amount'
+	    }, {
+	        field: 'TRANS_CNT',
+	        title: 'Trans Count'
 	    }],
 	});
 
@@ -150,7 +153,6 @@ $(function(){
 	  	}),
 	  	success:function(data){
 
-            debugger;
 	  		$('#alertTable').bootstrapTable('load',data);
 
 	  	}

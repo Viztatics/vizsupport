@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import json
 
+import boto3
+
 """
     Create your Views::
 
@@ -30,6 +32,7 @@ class RuleView(BaseView):
     
     route_base = '/rules'
     default_view = 'highRiskCountry'
+    s3 = boto3.resource('s3')
 
     ALLOWED_RND_EXTENSIONS = set(['csv'])
 
@@ -152,7 +155,7 @@ class RuleView(BaseView):
 
     	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
 
-    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT']]
+    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]
     	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
@@ -161,7 +164,11 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskVolumeFileData(self):
 
-    	if request.method == 'POST':
+        if request.method == 'POST':
+
+            for bucket in self.s3.buckets.all():
+                print(bucket.name)
+
             files = request.files['file']
 
             if files:
@@ -173,7 +180,7 @@ class RuleView(BaseView):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
                 
 
-    	return  json.dumps({})
+        return  json.dumps({})
 
 
 
