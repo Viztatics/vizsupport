@@ -151,7 +151,7 @@ class RuleView(BaseView):
     	plot_data = pd.read_csv(def_volume_data)
 
     	plot_data = plot_data[(plot_data['Trans Code Type']==transCodeType)&(plot_data['Cr_Db']==crDb)]
-    	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','Month of Trans Date']]
+    	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','Month of Trans Date','outlier']]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
