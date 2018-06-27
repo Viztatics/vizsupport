@@ -33,6 +33,7 @@ class RuleView(BaseView):
     route_base = '/rules'
     default_view = 'highRiskCountry'
     s3 = boto3.resource('s3')
+    bucket_name='vizrules'
 
     ALLOWED_RND_EXTENSIONS = set(['csv'])
 
@@ -49,6 +50,7 @@ class RuleView(BaseView):
     def highRiskCountry(self):
 
         if request.method == 'GET':
+        	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
             return self.render_template('rules/rule_high_risk_country.html')
 
     @expose('/highRiskCountry/heatmap',methods=['POST'])
@@ -118,6 +120,7 @@ class RuleView(BaseView):
     def highRiskVolume(self):
 
         if request.method == 'GET':
+            #self.s3.Object('vizrules', 'highRiskVolume/highValueVolume.csv').put(Body=open('app/static/csv/rules/highValueVolume.csv', 'rb'))
             return self.render_template('rules/rule_high_risk_volume.html')
 
     @expose('/highRiskVolume/statisticsdata',methods=['POST'])
@@ -187,10 +190,7 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskVolumeFileData(self):
 
-        if request.method == 'POST':
-
-            for bucket in self.s3.buckets.all():
-                print(bucket.name)
+        if request.method == 'POST':            
 
             files = request.files['file']
 
@@ -201,7 +201,8 @@ class RuleView(BaseView):
 
                 if not self.allowed_file(files.filename):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
-                
+                #else:
+                #	self.s3.Object('vizrules', 'highRiskVolume/'+filename).put(Body=files)
 
         return  json.dumps({})
 

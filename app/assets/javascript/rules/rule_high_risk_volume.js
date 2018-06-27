@@ -195,6 +195,10 @@ $(function(){
 	    showDone: false,                           
 	    showDelete: true,                          
 	    showDownload:false,
+	    onLoad: function(obj)
+	    {
+	    	obj.createProgress('highRiskVolume.csv');      
+	    },
 	    onSuccess: function(files,data,xhr,pd){
 	    	$("#file-error")&&$("#file-error").remove();
 	    }
