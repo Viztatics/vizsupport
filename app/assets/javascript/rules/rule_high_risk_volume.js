@@ -92,7 +92,8 @@ $(function(){
 	        },	        
             markLine : {
                 data : [
-                    {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+                    {name: 'ythreshold',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+                    {name: 'xthreshold',xAxis: 5, itemStyle:{normal:{color:'#1e90ff'}}},
                 ]
             },
 	    },{
@@ -240,6 +241,7 @@ $(function(){
 	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
 		  	scatteroption.series[0].data = normaldata;
 		  	scatteroption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
+		  	scatteroption.series[0].markLine.data[1].xAxis=$('#cntThreshNum').val();
 		  	scatteroption.series[1].data = outlierdata;
 		  	scatterChart.setOption(scatteroption);
 	  	}
