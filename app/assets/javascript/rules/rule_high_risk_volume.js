@@ -1,69 +1,20 @@
 $(function(){
 
-    $('#statisticsTable').bootstrapTable({
-  		pagination:false,
-	    columns: [{
-	        field: 'min_data',
-	        title: 'MIN',
-	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
-				  style: 'currency',
-				  currency: 'USD',
-				});
-			},
-	    }, {
-	        field: 'max_data',
-	        title: 'MAX',
-	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
-				  style: 'currency',
-				  currency: 'USD',
-				});
-			}
-	    }, {
-	        field: 'median_data',
-	        title: 'MEDIAN',
-	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
-				  style: 'currency',
-				  currency: 'USD',
-				});
-			}
-	    }, {
-	        field: 'mean_data',
-	        title: 'MEAN',
-	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
-				  style: 'currency',
-				  currency: 'USD',
-				});
-			}
-	    }],
-	});
+	var getHighRiskVolumeStatics=function(includeOutlier){
 
-	$('#alertTable').bootstrapTable({
-  		pagination:true,
-  		exportDataType: 'all',
-	    columns: [{
-	        field: 'ACCOUNT_KEY',
-	        title: 'ACCOUNT'
-	    }, {
-	        field: 'Month of Trans Date',
-	        title: 'Month of Trans Date'
-	    }, {
-	        field: 'TRANS_AMT',
-	        title: 'Trans Amount',
-	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
-				  style: 'currency',
-				  currency: 'USD',
-				});
-			}
-	    }, {
-	        field: 'TRANS_CNT',
-	        title: 'Trans Count'
-	    }],
-	});
+		$.ajax({
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier}),
+		  	success:function(data){
+
+		  		$('#statisticsTable').bootstrapTable('load',data);
+
+		  	}
+		});
+
+	};
 
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 
@@ -168,6 +119,73 @@ $(function(){
 
 	scatterChart.setOption(scatteroption);
 
+	$('#statisticsTable').bootstrapTable({
+  		pagination:false,
+	    columns: [{
+	        field: 'min_data',
+	        title: 'MIN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			},
+	    }, {
+	        field: 'max_data',
+	        title: 'MAX',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'median_data',
+	        title: 'MEDIAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'mean_data',
+	        title: 'MEAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }],
+	});
+
+	$('#alertTable').bootstrapTable({
+  		pagination:true,
+  		exportDataType: 'all',
+	    columns: [{
+	        field: 'ACCOUNT_KEY',
+	        title: 'ACCOUNT'
+	    }, {
+	        field: 'Month of Trans Date',
+	        title: 'Month of Trans Date'
+	    }, {
+	        field: 'TRANS_AMT',
+	        title: 'Trans Amount',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'TRANS_CNT',
+	        title: 'Trans Count'
+	    }],
+	});
+
+	getHighRiskVolumeStatics(0);
+
 	$("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
 	    maxFileCount: 1,                		   
@@ -191,6 +209,13 @@ $(function(){
 	    },
 	});
 
+	$("#isOutlier").on('change', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		getHighRiskVolumeStatics($(this).val());
+
+	});
+
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
@@ -201,18 +226,6 @@ $(function(){
 	  	}	  	
 	  	return false;
 	  }
-
-	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata',
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({}),
-	  	success:function(data){
-
-	  		$('#statisticsTable').bootstrapTable('load',data);
-
-	  	}
-	  });
 
 	  $.ajax({
 	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot',

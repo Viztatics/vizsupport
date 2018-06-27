@@ -126,7 +126,12 @@ class RuleView(BaseView):
 
     	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
 
+    	outlier = request.get_json()["outlier"]
+
     	table_data = pd.read_csv(def_volume_data)
+
+    	if outlier!='1':
+    		table_data = table_data[table_data['outlier']!=1]
 
     	min_data = table_data['TRANS_AMT'].min()
 
