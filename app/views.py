@@ -49,9 +49,16 @@ class RuleView(BaseView):
     @has_access
     def highRiskCountry(self):
 
-        if request.method == 'GET':
+    	keyname = ''
+    	if request.method == 'GET':
+    		for bucket in self.s3.buckets.all():
+    			for key in bucket.objects.all():
+    				words = key.key.split('/')
+    				if len(words)==2 and words[0]=='highRiskCountry' and words[1]!='':
+    					keyname=words[1]
+    					print(keyname)
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-            return self.render_template('rules/rule_high_risk_country.html')
+    		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname)
 
     @expose('/highRiskCountry/heatmap',methods=['POST'])
     @has_access

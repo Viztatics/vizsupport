@@ -366,7 +366,7 @@ $(function(){
 	heatChart.setOption({baseOption:heatoption,options:[]});
 	scatterChart.setOption(scatteroption);
 
-	$("#reportPath").uploadFile({
+	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
 	    maxFileCount: 1,                		   
 	    allowedTypes: 'csv',  				       
@@ -376,12 +376,14 @@ $(function(){
 	    showDownload:false,
 	    onLoad: function(obj)
 	    {
-	    	obj.createProgress('highRiskCountry.csv');      
+	    	
 	    },
 	    onSuccess: function(files,data,xhr,pd){
 	    	$("#file-error")&&$("#file-error").remove();
 	    }
 	});
+
+	$('#reportPath').data('keyname')&upfile.createProgress($('#reportPath').data('keyname')); 
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
