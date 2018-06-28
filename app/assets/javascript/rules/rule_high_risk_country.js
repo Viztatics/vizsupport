@@ -376,7 +376,7 @@ $(function(){
 	    showDownload:false,
 	    onLoad: function(obj)
 	    {
-	    	obj.createProgress('highRiskVolume.csv');      
+	    	obj.createProgress('highRiskCountry.csv');      
 	    },
 	    onSuccess: function(files,data,xhr,pd){
 	    	$("#file-error")&&$("#file-error").remove();
