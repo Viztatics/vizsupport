@@ -197,7 +197,9 @@ $(function(){
 	    showDownload:false,
 	    onLoad: function(obj)
 	    {
-	    	$('#reportPath').data('keyname')&obj.createProgress($('#reportPath').data('keyname'));   
+	    	if(typeof(obj.createProgress)=="function"){
+	    		$('#reportPath').data('keyname')&obj.createProgress($('#reportPath').data('keyname'));
+	    	}	    	   
 	    },
 	    deleteCallback: function(data,pd)
 	    {
@@ -223,6 +225,8 @@ $(function(){
 	    	$("#file-error")&&$("#file-error").remove();
 	    }
 	});
+
+	$('#reportPath').data('keyname')&upfile.createProgress($('#reportPath').data('keyname'));
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
