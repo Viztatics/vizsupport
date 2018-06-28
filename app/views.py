@@ -153,9 +153,15 @@ class RuleView(BaseView):
 
     	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
 
+    	transCodeType = request.get_json()["transCodeType"]
+
+    	crDb = request.get_json()["crDb"]
+
     	outlier = request.get_json()["outlier"]
 
     	table_data = pd.read_csv(def_volume_data)
+
+    	table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
 
     	if outlier!='1':
     		table_data = table_data[table_data['outlier']!=1]

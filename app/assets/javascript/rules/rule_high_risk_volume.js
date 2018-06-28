@@ -6,7 +6,7 @@ $(function(){
 		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata',
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier}),
+		  	data: JSON.stringify({'outlier':includeOutlier,transCodeType:$('#transCodeType').val(),crDb:$('#crDb').val()}),
 		  	success:function(data){
 
 		  		$('#statisticsTable').bootstrapTable('load',data);
@@ -243,6 +243,9 @@ $(function(){
 
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
+
+	  getHighRiskVolumeStatics($("#isOutlier").val());
+
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
 	  	if(filecount ==0){
