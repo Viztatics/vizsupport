@@ -56,7 +56,6 @@ class RuleView(BaseView):
     				words = key.key.split('/')
     				if len(words)==2 and words[0]=='highRiskCountry' and words[1]!='':
     					keyname=words[1]
-    					print(keyname)
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
     		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname)
 
@@ -103,7 +102,7 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskCountryFileData(self):
 
-    	if request.method == 'POST':
+        if request.method == 'POST':
             files = request.files['file']
 
             if files:
@@ -113,9 +112,21 @@ class RuleView(BaseView):
 
                 if not self.allowed_file(files.filename):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+
+                else:
+                    self.s3.Object('vizrules', 'highRiskCountry/'+filename).put(Body=files)
+
+        if request.method == 'DELETE':
+            keyname = request.get_json()["keyname"]
+            bucket = self.s3.Bucket(self.bucket_name)
+            for key in bucket.objects.all():
+                 
+                 words = key.key.split('/')
+                 if len(words)==2 and words[0]=='highRiskCountry' and words[1]==keyname:
+                     key.delete()
                 
 
-    	return  json.dumps({})
+        return  json.dumps({})
 
 
     """
@@ -126,9 +137,15 @@ class RuleView(BaseView):
     @has_access
     def highRiskVolume(self):
 
-        if request.method == 'GET':
-            #self.s3.Object('vizrules', 'highRiskVolume/highValueVolume.csv').put(Body=open('app/static/csv/rules/highValueVolume.csv', 'rb'))
-            return self.render_template('rules/rule_high_risk_volume.html')
+    	keyname = ''
+    	if request.method == 'GET':
+    		for bucket in self.s3.buckets.all():
+    			for key in bucket.objects.all():
+    				words = key.key.split('/')
+    				if len(words)==2 and words[0]=='highRiskVolume' and words[1]!='':
+    					keyname=words[1]
+        	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
+    		return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname)
 
     @expose('/highRiskVolume/statisticsdata',methods=['POST'])
     @has_access
@@ -208,8 +225,19 @@ class RuleView(BaseView):
 
                 if not self.allowed_file(files.filename):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
-                #else:
-                #	self.s3.Object('vizrules', 'highRiskVolume/'+filename).put(Body=files)
+                else:
+                    self.s3.Object('vizrules', 'highRiskVolume/'+filename).put(Body=files)
+
+        if request.method == 'DELETE':
+            keyname = request.get_json()["keyname"]
+            print(keyname)
+            bucket = self.s3.Bucket(self.bucket_name)
+            for key in bucket.objects.all():
+                 print(key.key)
+                 words = key.key.split('/')
+                 if len(words)==2 and words[0]=='highRiskVolume' and words[1]==keyname:
+                     key.delete()
+
 
         return  json.dumps({})
 

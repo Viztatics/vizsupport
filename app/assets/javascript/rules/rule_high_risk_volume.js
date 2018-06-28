@@ -187,7 +187,7 @@ $(function(){
 
 	getHighRiskVolumeStatics(0);
 
-	$("#reportPath").uploadFile({
+	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
 	    maxFileCount: 1,                		   
 	    allowedTypes: 'csv',  				       
@@ -197,7 +197,27 @@ $(function(){
 	    showDownload:false,
 	    onLoad: function(obj)
 	    {
-	    	obj.createProgress('highRiskVolume.csv');      
+	    	$('#reportPath').data('keyname')&obj.createProgress($('#reportPath').data('keyname'));   
+	    },
+	    deleteCallback: function(data,pd)
+	    {
+
+	        $.ajax({
+	            cache: false,
+	            url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
+	            type: "DELETE",
+	            dataType: "json",
+	            contentType:'application/json',
+	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
+	            success: function(data) 
+	            {
+	                if(!data){
+	                    pd.statusbar.hide();        
+	                 }else{
+	                    console.log(data.message); 
+	                 }
+	              }
+	        }); 
 	    },
 	    onSuccess: function(files,data,xhr,pd){
 	    	$("#file-error")&&$("#file-error").remove();
