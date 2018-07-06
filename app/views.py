@@ -3,7 +3,8 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from werkzeug import secure_filename
 from app import appbuilder, db
-from app.fileUtils import *
+from .fileUtils import *
+from .models import Company
 
 import numpy as np
 import pandas as pd
@@ -28,6 +29,10 @@ import boto3
 """
     Application wide 404 error handler
 """
+class CompanyModelView(ModelView):
+    datamodel = SQLAInterface(Company)
+
+
 class RuleView(BaseView):
     
     route_base = '/rules'
@@ -254,7 +259,8 @@ def page_not_found(e):
     return render_template('404.html', base_template=appbuilder.base_template, appbuilder=appbuilder), 404
 
 db.create_all()
-
+appbuilder.add_separator("Security")
+appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
 appbuilder.add_view(RuleView, "High Risk Countries", category='Rules')
 appbuilder.add_link("High Risk Volume", href='/rules/highRiskVolume', category='Rules')
 
