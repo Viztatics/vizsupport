@@ -1,5 +1,47 @@
 $(function(){
 
+	var upfile = $("#reportPath").uploadFile({
+		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+	    maxFileCount: 1,                		   
+	    allowedTypes: 'csv',  				       
+	    showFileSize: false,
+	    showDone: false,                           
+	    showDelete: true,                          
+	    showDownload:false,
+	    onLoad: function(obj)
+	    {	    	
+	    },
+	    deleteCallback: function(data,pd)
+	    {
+
+	        $.ajax({
+	            cache: false,
+	            url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+	            type: "DELETE",
+	            dataType: "json",
+	            contentType:'application/json',
+	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
+	            success: function(data) 
+	            {
+	                if(!data){
+	                    pd.statusbar.hide();        
+	                 }else{
+	                    console.log(data.message); 
+	                 }
+	              }
+	        }); 
+	    },
+	    onSuccess: function(files,data,xhr,pd){
+	    	$("#file-error")&&$("#file-error").remove();
+	    }
+	});
+
+	console.log($('#reportPath').data('keyname'));
+
+	if($('#reportPath').data('keyname')&&upfile){
+		upfile.createProgress($('#reportPath').data('keyname'));
+	}
+
 	$('#alertTable').bootstrapTable({
 		  		pagination:true,
 		  		exportDataType: 'all',
@@ -364,46 +406,7 @@ $(function(){
 	};
 
 	heatChart.setOption({baseOption:heatoption,options:[]});
-	scatterChart.setOption(scatteroption);
-
-	var upfile = $("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
-	    maxFileCount: 1,                		   
-	    allowedTypes: 'csv',  				       
-	    showFileSize: false,
-	    showDone: false,                           
-	    showDelete: true,                          
-	    showDownload:false,
-	    onLoad: function(obj)
-	    {
-	    	
-	    },
-	    deleteCallback: function(data,pd)
-	    {
-
-	        $.ajax({
-	            cache: false,
-	            url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
-	            type: "DELETE",
-	            dataType: "json",
-	            contentType:'application/json',
-	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
-	            success: function(data) 
-	            {
-	                if(!data){
-	                    pd.statusbar.hide();        
-	                 }else{
-	                    console.log(data.message); 
-	                 }
-	              }
-	        }); 
-	    },
-	    onSuccess: function(files,data,xhr,pd){
-	    	$("#file-error")&&$("#file-error").remove();
-	    }
-	});
-
-	$('#reportPath').data('keyname')&upfile.createProgress($('#reportPath').data('keyname')); 
+	scatterChart.setOption(scatteroption); 
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
