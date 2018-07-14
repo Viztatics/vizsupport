@@ -40,8 +40,8 @@ class RuleView(BaseView):
     default_view = 'highRiskCountry'
     s3 = boto3.resource(
         's3',
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        aws_access_key_id=ACCESS_KEY_ID,
+        aws_secret_access_key=SECRET_ACCESS_KEY,
     )
     #s3 = boto3.resource('s3')
     bucket_name='vizrules'

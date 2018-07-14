@@ -79,9 +79,9 @@ IMG_UPLOAD_URL = '/static/uploads/'
 #IMG_SIZE = (300, 200, True)
 APP_NAME = "Viztatics"
 
-AWS_ACCESS_KEY_ID = "AKIAJ22YAVJAG3BY3OZQ"
+ACCESS_KEY_ID = "AKIAJ22YAVJAG3BY3OZQ"
 
-AWS_SECRET_ACCESS_KEY = "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"
+SECRET_ACCESS_KEY = "Eemvhxto1Yvdpz5QLRQyD6ZrRMONhsth64I93Ivb"
 
 # Theme configuration
 # these are located on static/appbuilder/css/themes
