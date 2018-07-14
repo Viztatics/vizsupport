@@ -3,6 +3,7 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from werkzeug import secure_filename
 from app import appbuilder, db
+from config import *
 from .fileUtils import *
 from .models import Company
 
@@ -37,7 +38,12 @@ class RuleView(BaseView):
     
     route_base = '/rules'
     default_view = 'highRiskCountry'
-    s3 = boto3.resource('s3')
+    s3 = boto3.resource(
+        's3',
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+    #s3 = boto3.resource('s3')
     bucket_name='vizrules'
 
     ALLOWED_RND_EXTENSIONS = set(['csv'])
