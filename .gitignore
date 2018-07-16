@@ -10,4 +10,5 @@ venv
 nohup.out
 #mac file
 .DS_Store
+config.py
 
