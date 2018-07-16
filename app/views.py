@@ -10,8 +10,9 @@ from .models import Company
 import numpy as np
 import pandas as pd
 import json
+from pathlib import Path,PurePath
 
-import boto3
+#import boto3
 
 """
     Create your Views::
@@ -38,11 +39,15 @@ class RuleView(BaseView):
     
     route_base = '/rules'
     default_view = 'highRiskCountry'
+    HIGH_RISK_COUNTRY_WIRE_FOLDER = 'highRiskCountryWire'
+    CASH_ACTIVITY_LIMIT_FOLDER = 'cashActivityLimit'
+    """
     s3 = boto3.resource(
         's3',
         aws_access_key_id=ACCESS_KEY_ID,
         aws_secret_access_key=SECRET_ACCESS_KEY,
     )
+    """
     #s3 = boto3.resource('s3')
     bucket_name='vizrules'
 
@@ -53,7 +58,7 @@ class RuleView(BaseView):
             filename.rsplit('.', 1)[1].lower() in self.ALLOWED_RND_EXTENSIONS
 
     """
-    Rule1: High Risk Countries
+    Rule1: High Risk Countries Wire
     """        
 
     @expose('/highRiskCountry')
@@ -62,11 +67,18 @@ class RuleView(BaseView):
 
     	keyname = ''
     	if request.method == 'GET':
+    		"""
     		for bucket in self.s3.buckets.all():
     			for key in bucket.objects.all():
     				words = key.key.split('/')
     				if len(words)==2 and words[0]=='highRiskCountry' and words[1]!='':
     					keyname=words[1]
+    		"""
+    		if not os.path.exists(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER):
+    			os.makedirs(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER)
+    		p = Path(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER)
+    		for child in p.iterdir():
+    				keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
     		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname)
 
@@ -125,17 +137,24 @@ class RuleView(BaseView):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
 
                 else:
+                    if not os.path.exists(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER):
+                        os.makedirs(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER)
+                    files.save(os.path.join((RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER), filename))
+                    """
                     self.s3.Object('vizrules', 'highRiskCountry/'+filename).put(Body=files)
+                    """
 
         if request.method == 'DELETE':
             keyname = request.get_json()["keyname"]
+            os.remove(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+keyname)
+            """
             bucket = self.s3.Bucket(self.bucket_name)
             for key in bucket.objects.all():
                  
                  words = key.key.split('/')
                  if len(words)==2 and words[0]=='highRiskCountry' and words[1]==keyname:
                      key.delete()
-                
+            """    
 
         return  json.dumps({})
 
@@ -150,11 +169,18 @@ class RuleView(BaseView):
 
     	keyname = ''
     	if request.method == 'GET':
+    		"""
     		for bucket in self.s3.buckets.all():
     			for key in bucket.objects.all():
     				words = key.key.split('/')
     				if len(words)==2 and words[0]=='highRiskVolume' and words[1]!='':
     					keyname=words[1]
+    		"""
+    		if not os.path.exists(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER):
+    			os.makedirs(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER)
+    		p = Path(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER)
+    		for child in p.iterdir():
+    				keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
     		return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname)
 
@@ -243,17 +269,24 @@ class RuleView(BaseView):
                 if not self.allowed_file(files.filename):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
                 else:
+                    if not os.path.exists(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER):
+                        os.makedirs(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER)
+                    files.save(os.path.join((RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER), filename))
+                    """
                     self.s3.Object('vizrules', 'highRiskVolume/'+filename).put(Body=files)
+                    """
 
         if request.method == 'DELETE':
             keyname = request.get_json()["keyname"]
-            print(keyname)
+            os.remove(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER+"/"+keyname)
+            """
             bucket = self.s3.Bucket(self.bucket_name)
             for key in bucket.objects.all():
                  print(key.key)
                  words = key.key.split('/')
                  if len(words)==2 and words[0]=='highRiskVolume' and words[1]==keyname:
                      key.delete()
+            """
 
 
         return  json.dumps({})

@@ -196,10 +196,7 @@ $(function(){
 	    showDelete: true,                          
 	    showDownload:false,
 	    onLoad: function(obj)
-	    {
-	    	if(typeof(obj.createProgress)=="function"){
-	    		$('#reportPath').data('keyname')&obj.createProgress($('#reportPath').data('keyname'));
-	    	}	    	   
+	    {    	   
 	    },
 	    deleteCallback: function(data,pd)
 	    {
