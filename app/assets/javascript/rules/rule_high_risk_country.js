@@ -23,15 +23,15 @@ $(function(){
 	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
 	            success: function(data) 
 	            {
+	            	$('#reportPath').data('keyname', "");
 	                if(!data){
 	                    pd.statusbar.hide();        
-	                 }else{
-	                    console.log(data.message); 
 	                 }
 	              }
 	        }); 
 	    },
 	    onSuccess: function(files,data,xhr,pd){
+	    	$('#reportPath').data('keyname', files[0]);
 	    	$("#file-error")&&$("#file-error").remove();
 	    }
 	});
