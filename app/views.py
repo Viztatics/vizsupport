@@ -1,6 +1,7 @@
 from flask import render_template, request, Response
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
+from flask_login import current_user
 from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
@@ -11,6 +12,7 @@ import numpy as np
 import pandas as pd
 import json
 from pathlib import Path,PurePath
+import shutil
 
 #import boto3
 
@@ -66,6 +68,8 @@ class RuleView(BaseView):
     def highRiskCountry(self):
 
     	keyname = ''
+    	src_file = RULE_DEFAULT_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/highRiskCountry.csv"
+    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
     	if request.method == 'GET':
     		"""
     		for bucket in self.s3.buckets.all():
@@ -74,11 +78,13 @@ class RuleView(BaseView):
     				if len(words)==2 and words[0]=='highRiskCountry' and words[1]!='':
     					keyname=words[1]
     		"""
-    		if not os.path.exists(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER):
-    			os.makedirs(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER)
-    		p = Path(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER)
+    		if not os.path.exists(dst_path):   
+    			os.makedirs(dst_path)
+    		if not os.listdir(dst_path):
+    			shutil.copy(src_file, dst_path)
+    		p = Path(dst_path)
     		for child in p.iterdir():
-    				keyname = PurePath(child).name
+    			keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
     		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname)
 
@@ -125,6 +131,8 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskCountryFileData(self):
 
+        dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+
         if request.method == 'POST':
             files = request.files['file']
 
@@ -137,16 +145,16 @@ class RuleView(BaseView):
                     result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
 
                 else:
-                    if not os.path.exists(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER):
-                        os.makedirs(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER)
-                    files.save(os.path.join((RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER), filename))
+                    if not os.path.exists(dst_path):
+                        os.makedirs(dst_path)
+                    files.save(os.path.join((dst_path), filename))
                     """
                     self.s3.Object('vizrules', 'highRiskCountry/'+filename).put(Body=files)
                     """
 
         if request.method == 'DELETE':
             keyname = request.get_json()["keyname"]
-            os.remove(RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+keyname)
+            os.remove(dst_path+"/"+keyname)
             """
             bucket = self.s3.Bucket(self.bucket_name)
             for key in bucket.objects.all():
