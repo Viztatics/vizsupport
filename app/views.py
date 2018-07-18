@@ -88,13 +88,48 @@ class RuleView(BaseView):
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
     		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname)
 
+    @expose('/highRiskCountry/statisticsdata',methods=['POST'])
+    def getHighRiskCountryStatisticsData(self):
+
+    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	#transCodeType = request.get_json()["transCodeType"]
+
+    	#crDb = request.get_json()["crDb"]
+
+    	outlier = request.get_json()["outlier"]
+
+    	table_data = pd.read_csv(dst_path+"/"+dst_file)
+
+    	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+
+    	if outlier!='1':
+    		table_data = table_data[table_data['outlier']!=1]
+
+    	min_data = table_data['Trans_Amt'].min()
+
+    	max_data = table_data['Trans_Amt'].max()
+    	
+    	median_data = table_data['Trans_Amt'].median()
+
+    	mean_data = table_data['Trans_Amt'].mean()
+
+    	return Response(pd.io.json.dumps([{'min_data':min_data,'max_data':max_data,'median_data':median_data,'mean_data':mean_data}]), mimetype='application/json')
+    
+
     @expose('/highRiskCountry/heatmap',methods=['POST'])
     @has_access
     def getHighRiskCountryHeatMapData(self):
 
+        dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
         def_data_county = 'app/static/csv/rules/highRiskCountry.csv'
 
-        heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans Amt'])
+        heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans_Amt'])
         #min_month = heat_map_data['Month of Trans Date'].min()
         #heat_map_result = heat_map_data.loc[heat_map_data['Month of Trans Date'] == min_month]
         heat_map_result = heat_map_data.groupby(['Month of Trans Date','OPP_CNTRY']).sum().reset_index()
@@ -108,7 +143,7 @@ class RuleView(BaseView):
 
     	def_data_no_county = 'app/static/csv/rules/highRiskNoCountry.csv'
 
-    	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans Count','Trans Amt','ACCOUNT_KEY','Month of Trans Date'])
+    	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date'])
     	plot_data = plot_data[['Trans Count','Trans Amt','ACCOUNT_KEY','Month of Trans Date']]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
@@ -121,9 +156,9 @@ class RuleView(BaseView):
 
     	def_data_no_county = 'app/static/csv/rules/highRiskNoCountry.csv'
 
-    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','Trans Amt'])
+    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','Trans_Amt'])
 
-    	table_data = table_data[table_data['Trans Amt']>=int(threshold)]
+    	table_data = table_data[table_data['Trans_Amt']>=int(threshold)]
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
@@ -308,7 +343,7 @@ def page_not_found(e):
 db.create_all()
 appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
-appbuilder.add_view(RuleView, "High Risk Countries", category='Rules')
+appbuilder.add_view(RuleView, "High Risk Country Wire Activity", category='Rules')
 appbuilder.add_link("High Risk Volume", href='/rules/highRiskVolume', category='Rules')
 
 

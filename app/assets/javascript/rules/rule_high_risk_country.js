@@ -1,5 +1,22 @@
 $(function(){
 
+	var getHighRiskCountryStatics=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/statisticsdata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+		  		$('#statisticsTable').bootstrapTable('load',data);
+
+		  	}
+		});
+
+	};
+
 	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
 	    maxFileCount: 1,                		   
@@ -41,6 +58,49 @@ $(function(){
 	if($('#reportPath').data('keyname')&&upfile){
 		upfile.createProgress($('#reportPath').data('keyname'));
 	}
+
+	$('#statisticsTable').bootstrapTable({
+  		pagination:false,
+	    columns: [{
+	        field: 'min_data',
+	        title: 'MIN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			},
+	    }, {
+	        field: 'max_data',
+	        title: 'MAX',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'median_data',
+	        title: 'MEDIAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'mean_data',
+	        title: 'MEAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }],
+	});
+
+	getHighRiskCountryStatics(1);
 
 	$('#alertTable').bootstrapTable({
 		  		pagination:true,
@@ -418,8 +478,18 @@ $(function(){
 	    },
 	});
 
+	$("#isOutlier").on('change', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		getHighRiskCountryStatics($(this).val());
+
+	});
+
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
+
+	  getHighRiskCountryStatics($("#isOutlier").val());
+
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
 	  	if(filecount ==0){
