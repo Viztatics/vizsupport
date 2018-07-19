@@ -101,12 +101,14 @@ class RuleView(BaseView):
 
     	outlier = request.get_json()["outlier"]
 
-    	table_data = pd.read_csv(dst_path+"/"+dst_file)
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier'])
+
+    	table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
     	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
 
     	if outlier!='1':
-    		table_data = table_data[table_data['outlier']!=1]
+    		table_data = table_data[table_data['outlier']<1]
 
     	min_data = table_data['Trans_Amt'].min()
 
