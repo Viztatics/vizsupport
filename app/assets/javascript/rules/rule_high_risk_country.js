@@ -112,7 +112,7 @@ $(function(){
 			        field: 'Month of Trans Date',
 			        title: 'Month of Trans Date'
 			    }, {
-			        field: 'Trans Amt',
+			        field: 'Trans_Amt',
 			        title: 'Trans Amount',
 			        formatter: function formatter(value, row, index, field) {
 			        	return (value).toLocaleString('en-US', {
@@ -298,7 +298,7 @@ $(function(){
 	var initMapData = function(mapdata,filedata){
 
         var maxamount = 0
-        var minamount = filedata[0]['Trans Amt'];
+        var minamount = filedata[0]['Trans_Amt'];
         var datamonths = filedata.map(function(item) { return item['Month of Trans Date']; });
         datamonths = datamonths.filter(function (el, i, arr) {
 			return arr.indexOf(el) === i;
@@ -316,13 +316,13 @@ $(function(){
 				delete eleclone['color'];
 				filedata.forEach(function (countrydata){					
 					if(countrydata['Month of Trans Date']==amonth&&eleclone.code==countrydata['OPP_CNTRY']){
-						if(maxamount<countrydata['Trans Amt']){
-							maxamount = countrydata['Trans Amt'];
+						if(maxamount<countrydata['Trans_Amt']){
+							maxamount = countrydata['Trans_Amt'];
 						}
-						if(minamount>countrydata['Trans Amt']){
-							minamount = countrydata['Trans Amt'];
+						if(minamount>countrydata['Trans_Amt']){
+							minamount = countrydata['Trans_Amt'];
 						}
-						eleclone['value']=countrydata['Trans Amt'];	
+						eleclone['value']=countrydata['Trans_Amt'];	
 						result_data.push(eleclone);					
 					}					
 					
@@ -499,42 +499,50 @@ $(function(){
 	  	return false;
 	  }
 
-	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/heatmap', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
-	  	var result_data = initMapData(mapData,data);
-	  	heatoption.visualMap.max = result_data.maxamount;
-	  	heatoption.visualMap.min = result_data.minamount;
-	  	$.each( result_data.mapdata[0], function( key, value ) {
-	  		heatoption.title.text = 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")";
-		  	heatoption.series[0].data = value;
-		    heatoption.series[0].name = key;
-	  	});
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/heatmap',
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
+	  	success:function(data){
+	  		var result_data = initMapData(mapData,data);
+		  	heatoption.visualMap.max = result_data.maxamount;
+		  	heatoption.visualMap.min = result_data.minamount;
+		  	$.each( result_data.mapdata[0], function( key, value ) {
+		  		heatoption.title.text = 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")";
+			  	heatoption.series[0].data = value;
+			    heatoption.series[0].name = key;
+		  	});
 
-	  	timeoptions=[];
-	  	heatoption.timeline.data = [];
-	  	result_data.mapdata.forEach(function(monthdata){
-	  		$.each( monthdata, function( key, value ) {
-			 	heatoption.timeline.data.push(key.slice(0, 4)+"-"+key.slice(4, 6));
-			 	seriesclone = Object.assign({},heatoption.series[0]);
-			 	seriesclone.name = key;
-			 	seriesclone.data = value;
-			 	timeoptions.push({title: {text: 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:seriesclone});
-			}); 
-	  	})
-	  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);
+		  	timeoptions=[];
+		  	heatoption.timeline.data = [];
+		  	result_data.mapdata.forEach(function(monthdata){
+		  		$.each( monthdata, function( key, value ) {
+				 	heatoption.timeline.data.push(key.slice(0, 4)+"-"+key.slice(4, 6));
+				 	seriesclone = Object.assign({},heatoption.series[0]);
+				 	seriesclone.name = key;
+				 	seriesclone.data = value;
+				 	timeoptions.push({title: {text: 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:seriesclone});
+				}); 
+		  	})
+		  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);		  	
+	  	}
 	  });
 
 	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
-	  	console.log(data.data);
+	  	
 	  	scatteroption.series[0].data = data.data;
 	  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
 	  	scatterChart.setOption(scatteroption);
 	  });
 
 	  $.ajax({
+	  	cache: false,
 	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata',
 	  	type: 'POST',
 	  	contentType:'application/json',
-	  	data: JSON.stringify({reportPath:$('#reportPath').val(),threshNum:$('#threshNum').val()}),
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
 	  	success:function(data){
 	  		$('#alertTable').bootstrapTable('load',data);		  	
 	  	}
