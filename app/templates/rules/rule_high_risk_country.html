@@ -56,16 +56,16 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Alert Table</div>
+		  <div class="panel-heading">Scatter Identification</div>
 		  <div class="panel-body">
 		    <div class="row">
-		        <table id="alertTable" data-show-export="true"></table>
+		        <div id="scatterChart" style="height:600px"></div>
 		    </div>
 		  </div>
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Heat MAP</div>
+		  <div class="panel-heading">Geography Heat MAP</div>
 		  <div class="panel-body">
 		    <div class="row">
 		        <div id="heatChart" style="height:600px"></div>
@@ -74,13 +74,14 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Scatter Plot</div>
+		  <div class="panel-heading">Alert Table</div>
 		  <div class="panel-body">
 		    <div class="row">
-		        <div id="scatterChart" style="height:600px"></div>
+		        <table id="alertTable" data-show-export="true"></table>
 		    </div>
 		  </div>
 		</div>
+
 
 	{{ lib.panel_end() }}
 {% endblock %}
