@@ -142,6 +142,34 @@ class RuleView(BaseView):
 
     	return Response(percentile_data.to_json(orient='records'), mimetype='application/json')
 
+    @expose('/highRiskCountry/paretodata',methods=['POST'])
+    def getHighRiskCountryParetoData(self):
+
+    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	outlier = request.get_json()["outlier"]
+
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Trans_Amt','outlier'])
+
+    	table_data = table_data.groupby(['ACCOUNT_KEY'],as_index=False).sum()
+
+    	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+
+    	if outlier!='1':
+    		table_data = table_data[table_data['outlier']==0]   
+
+    	bar_data = table_data.sort_values(by='Trans_Amt', ascending=False)
+
+    	line_data = bar_data['Trans_Amt'].cumsum()/bar_data['Trans_Amt'].sum()*100.00
+
+    	line_data = pd.Series(line_data, name='percentage')
+
+    	pareto_data = pd.concat([bar_data, line_data], axis=1, sort=False)
+
+    	return Response(pareto_data.to_json(orient='records'), mimetype='application/json')
+
     @expose('/highRiskCountry/heatmap',methods=['POST'])
     @has_access
     def getHighRiskCountryHeatMapData(self):

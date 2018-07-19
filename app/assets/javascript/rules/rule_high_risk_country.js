@@ -3,6 +3,7 @@ $(function(){
 	var heatChart = echarts.init(document.getElementById('heatChart'));
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileChart = echarts.init(document.getElementById('percentileChart'));
+	var paretoChart = echarts.init(document.getElementById('paretoChart'));
 
 	var heatoption = {
 		timeline : {
@@ -149,7 +150,7 @@ $(function(){
 
 	var lineoption = {
 	    title : {
-	        text: 'PERCENTILE DISTRIBUTION',
+	        text: 'Percentile Distribution',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
@@ -182,11 +183,68 @@ $(function(){
 	        }
 	    ]
 	};
+
+	var linebaroption = {
+		title : {
+	        text: 'Pareto Analysis',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    legend: {
+	        data:['Trans Amount','Cumulative Percentage']
+	    },
+	    grid:{
+	    	y2:'12%',
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            axisLabel : {
+	            	rotate:30,
+	            },
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value',
+	            axisLabel : {
+	                formatter: function(params){
+	                	return "$"+params/1000+"K"
+
+	                }
+	            },
+	        },
+	        {
+	            type : 'value',
+	            axisLabel : {
+	                formatter: '{value} %'
+	            }
+	        }
+	    ],
+	    series : [
+
+	        {
+	            name:'Trans Amount',
+	            type:'bar',
+	            data:[]
+	        },
+	        {
+	            name:'Cumulative Percentage',
+	            type:'line',
+	            yAxisIndex: 1,
+	            data:[]
+	        }
+	    ]
+	};
+                    
                     
 
 	heatChart.setOption({baseOption:heatoption,options:[]});
 	scatterChart.setOption(scatteroption);
 	percentileChart.setOption(lineoption);
+	paretoChart.setOption(linebaroption);
 
 	var getHighRiskCountryStatics=function(includeOutlier){
 
@@ -219,6 +277,28 @@ $(function(){
 			  	percentileChart.setOption(lineoption);
 
 		  	}
+		});
+
+	};
+
+	var getHighRiskCountryPareto=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/paretodata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+				console.log(data);
+				data.forEach(function(singledata){
+					linebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
+					linebaroption.series[0].data.push(singledata['Trans_Amt']);
+			  		linebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
+				    paretoChart.setOption(linebaroption);
+			  	})
+			}
 		});
 
 	};
@@ -308,6 +388,7 @@ $(function(){
 
 	getHighRiskCountryStatics(1);
 	getHighRiskCountryPercentile(1);
+	getHighRiskCountryPareto(1);
 
 	$('#alertTable').bootstrapTable({
 		  		pagination:true,
