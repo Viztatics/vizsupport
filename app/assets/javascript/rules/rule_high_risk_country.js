@@ -530,11 +530,18 @@ $(function(){
 	  	}
 	  });
 
-	  $.post($SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot', JSON.stringify($( this ).serializeArray()), function(data, textStatus, xhr) {
-	  	
-	  	scatteroption.series[0].data = data.data;
-	  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
-	  	scatterChart.setOption(scatteroption);
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot',
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
+	  	success:function(data){
+	  		console.log(data.data)
+	  		scatteroption.series[0].data = data.data;
+		  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
+		  	scatterChart.setOption(scatteroption);		  	
+	  	}
 	  });
 
 	  $.ajax({
