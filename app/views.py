@@ -129,6 +129,8 @@ class RuleView(BaseView):
 
         dst_file = request.get_json()["filename"]
 
+        threshold = request.get_json()["threshNum"]
+
         def_data_county = dst_path+"/"+dst_file
 
         heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans_Amt'])
@@ -136,6 +138,7 @@ class RuleView(BaseView):
         #heat_map_result = heat_map_data.loc[heat_map_data['Month of Trans Date'] == min_month]
         heat_map_result = heat_map_data.groupby(['Month of Trans Date','OPP_CNTRY']).sum().reset_index()
         #print(heat_map_result.to_json(orient='records'))
+        heat_map_result = heat_map_result[heat_map_result['Trans_Amt']>=int(threshold)]
 
         return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
 

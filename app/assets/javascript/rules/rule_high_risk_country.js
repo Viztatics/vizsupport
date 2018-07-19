@@ -371,7 +371,7 @@ $(function(){
 	        realtime: false,
 	        calculable: true,
 	        inRange: {
-	            color: ['lightskyblue','yellow', 'orangered']
+	            color: ['lightskyblue','yellow', 'orangered','red']
 	        }
 	    },
 	    series: [
