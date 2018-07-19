@@ -56,6 +56,10 @@ $(function(){
 	    grid:{
 	    	right:'15%',
 	    },
+	    legend: {
+	        right: 10,
+	        data: ['Normal', 'Outlier']
+	    },
 	    tooltip : {
 	        padding: 10,
 	        backgroundColor: '#222',
@@ -98,7 +102,7 @@ $(function(){
             min:1000
 	    },
 	    series: [{
-	        name: 'Transanction',
+	        name: 'Normal',
 	        data: [
             ],
 	        type: 'scatter',
@@ -121,6 +125,25 @@ $(function(){
                     {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
                 ]
             },
+	    },{
+	        name: 'Outlier',
+	        data: [
+            ],
+	        type: 'scatter',
+	        itemStyle: {
+	            normal: {
+	                shadowBlur: 10,
+	                shadowColor: 'rgba(120, 36, 50, 0.5)',
+	                shadowOffsetY: 5,
+	                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+	                    offset: 0,
+	                    color: 'rgb(251, 118, 123)'
+	                }, {
+	                    offset: 1,
+	                    color: 'rgb(204, 46, 72)'
+	                }])
+	            }
+	        },	
 	    }]
 	};
 
@@ -603,9 +626,12 @@ $(function(){
 	  	contentType:'application/json',
 	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
 	  	success:function(data){
-	  		console.log(data.data)
-	  		scatteroption.series[0].data = data.data;
+	  		var normaldata = [];
+	  		var outlierdata = [];
+	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
+		  	scatteroption.series[0].data = normaldata;
 		  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
+	  		scatteroption.series[1].data = outlierdata;
 		  	scatterChart.setOption(scatteroption);		  	
 	  	}
 	  });
