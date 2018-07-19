@@ -103,12 +103,12 @@ class RuleView(BaseView):
 
     	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier'])
 
-    	table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
+    	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
     	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
 
     	if outlier!='1':
-    		table_data = table_data[table_data['outlier']<1]
+    		table_data = table_data[table_data['outlier'].isnull()]
 
     	min_data = table_data['Trans_Amt'].min()
 
@@ -120,6 +120,27 @@ class RuleView(BaseView):
 
     	return Response(pd.io.json.dumps([{'min_data':min_data,'max_data':max_data,'median_data':median_data,'mean_data':mean_data}]), mimetype='application/json')
     
+    @expose('/highRiskCountry/percentiledata',methods=['POST'])
+    def getHighRiskCountryPercentileData(self):
+
+    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	outlier = request.get_json()["outlier"]
+
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier'])
+
+    	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
+
+    	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+
+    	if outlier!='1':
+    		table_data = table_data[table_data['outlier'].isnull()]    	
+
+    	percentile_data = table_data['Trans_Amt'].quantile([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1])
+
+    	return Response(percentile_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/highRiskCountry/heatmap',methods=['POST'])
     @has_access
@@ -153,7 +174,7 @@ class RuleView(BaseView):
     	def_data_no_county = dst_path+"/"+dst_file
 
     	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date'])
-    	plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
+    	#plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
     	plot_data = plot_data[['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date']]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
@@ -170,9 +191,9 @@ class RuleView(BaseView):
 
     	def_data_no_county = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','Trans_Amt'])
+    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt'])
 
-    	table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
+    	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
     	table_data = table_data[table_data['Trans_Amt']>=int(threshold)]
 

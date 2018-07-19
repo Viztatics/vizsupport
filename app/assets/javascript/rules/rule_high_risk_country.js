@@ -1,5 +1,170 @@
 $(function(){
 
+	var heatChart = echarts.init(document.getElementById('heatChart'));
+	var scatterChart = echarts.init(document.getElementById('scatterChart'));
+	var percentileChart = echarts.init(document.getElementById('percentileChart'));
+
+	var heatoption = {
+		timeline : {
+			axisType:'category',
+	        data : [],
+	    },
+	    title: {
+	        text: 'High Risk Countries',
+	        left: 'center',
+	        top: 'top'
+	    },
+	    tooltip: {
+	        trigger: 'item',
+	        formatter: function (params) {
+	            return params.seriesName + '<br/>' + params.name + ' : ' + (params.value).toLocaleString('en-US', {
+																						  style: 'currency',
+																						  currency: 'USD',
+																						});
+	        }
+	    },
+	    visualMap: {
+	        min: 0,
+	        max: 1000000,
+	        text:['High','Low'],
+	        realtime: false,
+	        calculable: true,
+	        inRange: {
+	            color: ['lightskyblue','yellow', 'orangered','red']
+	        }
+	    },
+	    series: [
+	        {
+	            name: 'High Risk Countries',
+	            type: 'map',
+	            mapType: 'world',
+	            roam: true,
+	            itemStyle:{
+	                emphasis:{label:{show:true}}
+	            },
+	            data:[]
+	        }
+	    ]
+	};
+
+	var scatteroption = {
+	    title: {
+	        text: 'Transanction Scatter Chart',	        
+	        left: 'center',
+	        top: 'top'
+	    },	    
+	    grid:{
+	    	right:'15%',
+	    },
+	    tooltip : {
+	        padding: 10,
+	        backgroundColor: '#222',
+	        borderColor: '#777',
+	        borderWidth: 1,
+		    formatter : function (params) {
+		    	console.log(params);
+	            return "Account Key: "+params.data[2]+"<br/>"
+		                          +"Trans Month:  "+params.data[3]+"<br/>"
+		                          +"Trans Count: "+params.data[0]+"<br/>"
+		                          +"Trans Amt: "+(params.data[1]).toLocaleString('en-US', {
+															  style: 'currency',
+															  currency: 'USD',
+															});
+		    },
+        },
+	    xAxis: {
+	    	name:'Trans Count',
+	        splitLine: {
+	            lineStyle: {
+	                type: 'dashed'
+	            }
+	        }
+	    },
+	    yAxis: {
+	    	name:'Trans Amt',
+	    	type: 'log',
+	    	logBase:10,
+	        splitLine: {
+	            lineStyle: {
+	                type: 'dashed'
+	            }
+	        },
+	        axisLabel : {
+                formatter: function(params){
+                	return "$"+params/1000+"K"
+
+                }
+            },
+            min:1000
+	    },
+	    series: [{
+	        name: 'Transanction',
+	        data: [
+            ],
+	        type: 'scatter',
+	        itemStyle: {
+	            normal: {
+	                shadowBlur: 10,
+	                shadowColor: 'rgba(25, 100, 150, 0.5)',
+	                shadowOffsetY: 5,
+	                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+	                    offset: 0,
+	                    color: 'rgb(129, 227, 238)'
+	                }, {
+	                    offset: 1,
+	                    color: 'rgb(25, 183, 207)'
+	                }])
+	            }
+	        },	        
+            markLine : {
+                data : [
+                    {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+                ]
+            },
+	    }]
+	};
+
+	var lineoption = {
+	    title : {
+	        text: 'PERCENTILE DISTRIBUTION',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            boundaryGap : false,
+	            data : ['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type: 'log',
+	    		logBase:10,
+	            axisLabel : {
+	                formatter: function(params){
+	                	return "$"+params/1000+"K"
+
+	                }
+	            },
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'',
+	            type:'line',
+	            smooth: true,
+	            data:[]
+	        }
+	    ]
+	};
+                    
+
+	heatChart.setOption({baseOption:heatoption,options:[]});
+	scatterChart.setOption(scatteroption);
+	percentileChart.setOption(lineoption);
+
 	var getHighRiskCountryStatics=function(includeOutlier){
 
 		$.ajax({
@@ -11,6 +176,24 @@ $(function(){
 		  	success:function(data){
 
 		  		$('#statisticsTable').bootstrapTable('load',data);
+
+		  	}
+		});
+
+	};
+
+	var getHighRiskCountryPercentile=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/percentiledata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+		  		lineoption.series[0].data = data.map(x=>x.toFixed(2));
+			  	percentileChart.setOption(lineoption);
 
 		  	}
 		});
@@ -101,6 +284,7 @@ $(function(){
 	});
 
 	getHighRiskCountryStatics(1);
+	getHighRiskCountryPercentile(1);
 
 	$('#alertTable').bootstrapTable({
 		  		pagination:true,
@@ -112,6 +296,12 @@ $(function(){
 			        field: 'Month of Trans Date',
 			        title: 'Month of Trans Date'
 			    }, {
+			        field: 'OPP_CNTRY',
+			        title: 'Opposite Country'
+			    },{
+			        field: 'Country Name',
+			        title: 'Country Name'
+			    },{
 			        field: 'Trans_Amt',
 			        title: 'Trans Amount',
 			        formatter: function formatter(value, row, index, field) {
@@ -342,132 +532,6 @@ $(function(){
 		return allmonth_result;
 	}
 
-	var heatChart = echarts.init(document.getElementById('heatChart'));
-	var scatterChart = echarts.init(document.getElementById('scatterChart'));
-
-	var heatoption = {
-		timeline : {
-			axisType:'category',
-	        data : [],
-	    },
-	    title: {
-	        text: 'High Risk Countries',
-	        left: 'center',
-	        top: 'top'
-	    },
-	    tooltip: {
-	        trigger: 'item',
-	        formatter: function (params) {
-	            return params.seriesName + '<br/>' + params.name + ' : ' + (params.value).toLocaleString('en-US', {
-																						  style: 'currency',
-																						  currency: 'USD',
-																						});
-	        }
-	    },
-	    visualMap: {
-	        min: 0,
-	        max: 1000000,
-	        text:['High','Low'],
-	        realtime: false,
-	        calculable: true,
-	        inRange: {
-	            color: ['lightskyblue','yellow', 'orangered','red']
-	        }
-	    },
-	    series: [
-	        {
-	            name: 'High Risk Countries',
-	            type: 'map',
-	            mapType: 'world',
-	            roam: true,
-	            itemStyle:{
-	                emphasis:{label:{show:true}}
-	            },
-	            data:[]
-	        }
-	    ]
-	};
-
-	var scatteroption = {
-	    title: {
-	        text: 'Transanction Scatter Chart',	        
-	        left: 'center',
-	        top: 'top'
-	    },	    
-	    grid:{
-	    	right:'15%',
-	    },
-	    tooltip : {
-	        padding: 10,
-	        backgroundColor: '#222',
-	        borderColor: '#777',
-	        borderWidth: 1,
-		    formatter : function (params) {
-		    	console.log(params);
-	            return "Account Key: "+params.data[2]+"<br/>"
-		                          +"Trans Month:  "+params.data[3]+"<br/>"
-		                          +"Trans Count: "+params.data[0]+"<br/>"
-		                          +"Trans Amt: "+(params.data[1]).toLocaleString('en-US', {
-															  style: 'currency',
-															  currency: 'USD',
-															});
-		    },
-        },
-	    xAxis: {
-	    	name:'Trans Count',
-	        splitLine: {
-	            lineStyle: {
-	                type: 'dashed'
-	            }
-	        }
-	    },
-	    yAxis: {
-	    	name:'Trans Amt',
-	    	type: 'log',
-	    	logBase:10,
-	        splitLine: {
-	            lineStyle: {
-	                type: 'dashed'
-	            }
-	        },
-	        axisLabel : {
-                formatter: function(params){
-                	return "$"+params/1000+"K"
-
-                }
-            },
-            min:1000
-	    },
-	    series: [{
-	        name: 'Transanction',
-	        data: [
-            ],
-	        type: 'scatter',
-	        itemStyle: {
-	            normal: {
-	                shadowBlur: 10,
-	                shadowColor: 'rgba(25, 100, 150, 0.5)',
-	                shadowOffsetY: 5,
-	                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
-	                    offset: 0,
-	                    color: 'rgb(129, 227, 238)'
-	                }, {
-	                    offset: 1,
-	                    color: 'rgb(25, 183, 207)'
-	                }])
-	            }
-	        },	        
-            markLine : {
-                data : [
-                    {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
-                ]
-            },
-	    }]
-	};
-
-	heatChart.setOption({baseOption:heatoption,options:[]});
-	scatterChart.setOption(scatteroption); 
-
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
@@ -482,13 +546,15 @@ $(function(){
 		event.preventDefault();
 		/* Act on the event */
 		getHighRiskCountryStatics($(this).val());
+		getHighRiskCountryPercentile($(this).val());
 
 	});
 
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
 
-	  getHighRiskCountryStatics($("#isOutlier").val());
+	  getHighRiskCountryStatics($("#isOutlier").val());	  
+	  getHighRiskCountryPercentile($("#isOutlier").val());	  
 
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
