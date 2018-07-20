@@ -14,6 +14,7 @@ $(function(){
 		  	success:function(data){
 
 		  		$('#statisticsAmountTable').bootstrapTable('load',data);
+		  		$('#statisticsCountTable').bootstrapTable('load',data);
 
 		  	}
 		});
@@ -155,6 +156,47 @@ $(function(){
 			}
 	    }, {
 	        field: 'amt_mean_data',
+	        title: 'MEAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value|0).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }],
+	});
+
+	$('#statisticsCountTable').bootstrapTable({
+  		pagination:false,
+	    columns: [{
+	        field: 'cnt_min_data',
+	        title: 'MIN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value|0).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			},
+	    }, {
+	        field: 'cnt_max_data',
+	        title: 'MAX',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value|0).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'cnt_median_data',
+	        title: 'MEDIAN',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value|0).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			}
+	    }, {
+	        field: 'cnt_mean_data',
 	        title: 'MEAN',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
