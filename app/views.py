@@ -40,8 +40,7 @@ class CompanyModelView(ModelView):
 class RuleView(BaseView):
     
     route_base = '/rules'
-    default_view = 'highRiskCountry'
-    HIGH_RISK_COUNTRY_WIRE_FOLDER = 'highRiskCountryWire'
+    HIGH_RISK_COUNTRY_FOLDER_PREFIX = 'highRiskCountry'
     CASH_ACTIVITY_LIMIT_FOLDER = 'cashActivityLimit'
     """
     s3 = boto3.resource(
@@ -63,13 +62,14 @@ class RuleView(BaseView):
     Rule1: High Risk Countries Wire
     """        
 
-    @expose('/highRiskCountry')
+    @expose('/highRiskCountry/<transCode>')
     @has_access
-    def highRiskCountry(self):
+    def highRiskCountry(self,transCode):
 
     	keyname = ''
-    	src_file = RULE_DEFAULT_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/highRiskCountry.csv"
-    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+    	src_file = RULE_DEFAULT_FOLDER+highRiskCountryFolder+"/highRiskCountry.csv"
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
     	if request.method == 'GET':
     		"""
     		for bucket in self.s3.buckets.all():
@@ -86,12 +86,14 @@ class RuleView(BaseView):
     		for child in p.iterdir():
     			keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-    		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname)
+    		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname,transCode=transCode)
 
-    @expose('/highRiskCountry/statisticsdata',methods=['POST'])
-    def getHighRiskCountryStatisticsData(self):
+    @expose('/highRiskCountry/statisticsdata/<transCode>',methods=['POST'])
+    def getHighRiskCountryStatisticsData(self,transCode):
 
-    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
     	dst_file = request.get_json()["filename"]
 
@@ -120,10 +122,12 @@ class RuleView(BaseView):
 
     	return Response(pd.io.json.dumps([{'min_data':min_data,'max_data':max_data,'median_data':median_data,'mean_data':mean_data}]), mimetype='application/json')
     
-    @expose('/highRiskCountry/percentiledata',methods=['POST'])
-    def getHighRiskCountryPercentileData(self):
+    @expose('/highRiskCountry/percentiledata/<transCode>',methods=['POST'])
+    def getHighRiskCountryPercentileData(self,transCode):
 
-    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
     	dst_file = request.get_json()["filename"]
 
@@ -142,10 +146,12 @@ class RuleView(BaseView):
 
     	return Response(percentile_data.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskCountry/paretodata',methods=['POST'])
-    def getHighRiskCountryParetoData(self):
+    @expose('/highRiskCountry/paretodata/<transCode>',methods=['POST'])
+    def getHighRiskCountryParetoData(self,transCode):
 
-    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
     	dst_file = request.get_json()["filename"]
 
@@ -170,11 +176,13 @@ class RuleView(BaseView):
 
     	return Response(pareto_data.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskCountry/heatmap',methods=['POST'])
+    @expose('/highRiskCountry/heatmap/<transCode>',methods=['POST'])
     @has_access
-    def getHighRiskCountryHeatMapData(self):
+    def getHighRiskCountryHeatMapData(self,transCode):
 
-        dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
         dst_file = request.get_json()["filename"]
 
@@ -191,11 +199,13 @@ class RuleView(BaseView):
 
         return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskCountry/scatterplot',methods=['POST'])
+    @expose('/highRiskCountry/scatterplot/<transCode>',methods=['POST'])
     @has_access
-    def getHighRiskCountryScatterPlotData(self):
+    def getHighRiskCountryScatterPlotData(self,transCode):
 
-    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
     	dst_file = request.get_json()["filename"]
 
@@ -207,11 +217,13 @@ class RuleView(BaseView):
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
-    @expose('/highRiskCountry/tabledata',methods=['POST'])
+    @expose('/highRiskCountry/tabledata/<transCode>',methods=['POST'])
     @has_access
-    def getHighRiskCountryTableData(self):
+    def getHighRiskCountryTableData(self,transCode):
 
-    	dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
     	dst_file = request.get_json()["filename"]
 
@@ -227,11 +239,13 @@ class RuleView(BaseView):
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskCountry/upload',methods=['POST','DELETE'])
+    @expose('/highRiskCountry/upload/<transCode>',methods=['POST','DELETE'])
     @has_access
-    def getHighRiskCountryFileData(self):
+    def getHighRiskCountryFileData(self,transCode):
 
-        dst_path = RULE_UPLOAD_FOLDER+self.HIGH_RISK_COUNTRY_WIRE_FOLDER+"/"+str(current_user.id)
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
         if request.method == 'POST':
             files = request.files['file']
@@ -408,7 +422,8 @@ def page_not_found(e):
 db.create_all()
 appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
-appbuilder.add_view(RuleView, "High Risk Country Wire Activity", category='Rules')
+appbuilder.add_view(RuleView, "High Risk Country Wire Activity", href='/rules/highRiskCountry/Wire',category='Rules')
+appbuilder.add_link("High Risk Country ACH Activity", href='/rules/highRiskCountry/ACH', category='Rules')
 appbuilder.add_link("High Risk Volume", href='/rules/highRiskVolume', category='Rules')
 
 

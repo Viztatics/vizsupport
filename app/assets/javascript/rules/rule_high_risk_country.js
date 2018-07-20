@@ -1,5 +1,9 @@
 $(function(){
 
+	var pathname = window.location.pathname;
+	var patharr = pathname.split("/");
+	var transcode = patharr[patharr.length - 1];
+
 	var heatChart = echarts.init(document.getElementById('heatChart'));
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileChart = echarts.init(document.getElementById('percentileChart'));
@@ -11,7 +15,7 @@ $(function(){
 	        data : [],
 	    },
 	    title: {
-	        text: 'High Risk Countries',
+	        text: 'High Risk Countries '+transcode+ ' Activity',
 	        left: 'center',
 	        top: 'top'
 	    },
@@ -239,18 +243,18 @@ $(function(){
 	    ]
 	};
                     
-                    
-
-	heatChart.setOption({baseOption:heatoption,options:[]});
-	scatterChart.setOption(scatteroption);
+    
 	percentileChart.setOption(lineoption);
-	paretoChart.setOption(linebaroption);
+	paretoChart.setOption(linebaroption);                
+	scatterChart.setOption(scatteroption);
+	heatChart.setOption({baseOption:heatoption,options:[]});
+
 
 	var getHighRiskCountryStatics=function(includeOutlier){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/statisticsdata',
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/statisticsdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
@@ -267,7 +271,7 @@ $(function(){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/percentiledata',
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/percentiledata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
@@ -285,7 +289,7 @@ $(function(){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/paretodata',
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/paretodata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
@@ -304,7 +308,7 @@ $(function(){
 	};
 
 	var upfile = $("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload/'+transcode,
 	    maxFileCount: 1,                		   
 	    allowedTypes: 'csv',  				       
 	    showFileSize: false,
@@ -319,7 +323,7 @@ $(function(){
 
 	        $.ajax({
 	            cache: false,
-	            url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload',
+	            url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload/'+transcode,
 	            type: "DELETE",
 	            dataType: "json",
 	            contentType:'application/json',
@@ -671,7 +675,7 @@ $(function(){
 
 	  $.ajax({
 	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/heatmap',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/heatmap/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
@@ -693,7 +697,7 @@ $(function(){
 				 	seriesclone = Object.assign({},heatoption.series[0]);
 				 	seriesclone.name = key;
 				 	seriesclone.data = value;
-				 	timeoptions.push({title: {text: 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:seriesclone});
+				 	timeoptions.push({title: {text: 'High Risk Country ' +transcode+ ' Activity('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:seriesclone});
 				}); 
 		  	})
 		  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);		  	
@@ -702,7 +706,7 @@ $(function(){
 
 	  $.ajax({
 	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
@@ -719,7 +723,7 @@ $(function(){
 
 	  $.ajax({
 	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
