@@ -36,7 +36,7 @@ import shutil
 
 def transDesc(transCode):
 
-	return 'WIRE TRANSFER' if transCode=='Wire' else transCode
+	return 'WIRE TRANSFER' if transCode=='Wire' else transCode.upper()
 
 class CompanyModelView(ModelView):
     datamodel = SQLAInterface(Company)
