@@ -277,8 +277,10 @@ $(function(){
 		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
-		  		lineoption.series[0].data = data.map(x=>x.toFixed(2));
-			  	percentileChart.setOption(lineoption);
+		  		if(data){
+		  			lineoption.series[0].data = data.map(x=>x.toFixed(2));
+			  		percentileChart.setOption(lineoption);
+		  		}	  		
 
 		  	}
 		});
@@ -295,13 +297,17 @@ $(function(){
 		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
-				console.log(data);
-				data.forEach(function(singledata){
-					linebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-					linebaroption.series[0].data.push(singledata['Trans_Amt'].toFixed(2));
-			  		linebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-				    paretoChart.setOption(linebaroption);
-			  	})
+				if(data){
+					linebaroption.xAxis[0].data=[];
+					linebaroption.series[0].data=[];
+					linebaroption.series[1].data=[];
+					data.forEach(function(singledata){
+						linebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
+						linebaroption.series[0].data.push(singledata['Trans_Amt'].toFixed(2));
+				  		linebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
+					    paretoChart.setOption(linebaroption);
+				  	})
+				}				
 			}
 		});
 
@@ -355,7 +361,7 @@ $(function(){
 	        field: 'min_data',
 	        title: 'MIN',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
@@ -364,7 +370,7 @@ $(function(){
 	        field: 'max_data',
 	        title: 'MAX',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
@@ -373,7 +379,7 @@ $(function(){
 	        field: 'median_data',
 	        title: 'MEDIAN',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
@@ -382,7 +388,7 @@ $(function(){
 	        field: 'mean_data',
 	        title: 'MEAN',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
@@ -655,6 +661,7 @@ $(function(){
 		/* Act on the event */
 		getHighRiskCountryStatics($(this).val());
 		getHighRiskCountryPercentile($(this).val());
+		getHighRiskCountryPareto($(this).val());
 
 	});
 
@@ -662,7 +669,8 @@ $(function(){
 	  event.preventDefault();
 
 	  getHighRiskCountryStatics($("#isOutlier").val());	  
-	  getHighRiskCountryPercentile($("#isOutlier").val());	  
+	  getHighRiskCountryPercentile($("#isOutlier").val());
+	  getHighRiskCountryPareto($("#isOutlier").val());	  
 
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){

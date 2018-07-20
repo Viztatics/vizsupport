@@ -367,6 +367,74 @@ class RuleView(BaseView):
     	return Response(pd.io.json.dumps([{'amt_min_data':amt_min_data,'amt_max_data':amt_max_data,'amt_median_data':amt_median_data,'amt_mean_data':amt_mean_data
     		,'cnt_min_data':cnt_min_data,'cnt_max_data':cnt_max_data,'cnt_median_data':cnt_median_data,'cnt_mean_data':cnt_mean_data}]), mimetype='application/json')
 
+    @expose('/highRiskVolume/percentiledata/<amount>/<transCode>',methods=['POST'])
+    def getHighRiskVolumnPercentileData(self,amount,transCode):
+
+    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	crDb = request.get_json()["crDb"]
+
+    	outlier = request.get_json()["outlier"]
+
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['TRANS_AMT','TRANS_CNT','Cr_Db','outlier','Trans Code Type'])
+
+    	table_data = table_data[(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
+
+    	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
+
+    	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+
+    	if outlier!='1':
+    		table_data = table_data[table_data['outlier'].isnull()]
+
+    	if amount=='amt':
+    	 	percentile_data = table_data['TRANS_AMT'].quantile([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1])
+    	else:
+    		percentile_data = table_data['TRANS_CNT'].quantile([0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1])
+
+    	return Response(percentile_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskVolume/paretodata/<amount>/<transCode>',methods=['POST'])
+    def getHighRiskVolumnParetoData(self,amount,transCode):
+
+    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	crDb = request.get_json()["crDb"]
+
+    	outlier = request.get_json()["outlier"]
+
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY','TRANS_CNT','Cr_Db','TRANS_AMT','outlier','Trans Code Type'])
+
+    	table_data = table_data[(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
+
+    	table_data = table_data.groupby(['ACCOUNT_KEY'],as_index=False).sum()
+
+    	#table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+
+    	if outlier!='1':
+    		table_data = table_data[table_data['outlier']==0] 
+
+    	if amount=='amt':  
+
+    		bar_data = table_data.sort_values(by='TRANS_AMT', ascending=False)
+    		line_data = bar_data['TRANS_AMT'].cumsum()/bar_data['TRANS_AMT'].sum()*100.00
+
+    	else:
+    		bar_data = table_data.sort_values(by='TRANS_CNT', ascending=False)
+    		line_data = bar_data['TRANS_CNT'].cumsum()/bar_data['TRANS_CNT'].sum()*100.00    		
+    	line_data = pd.Series(line_data, name='percentage')
+    	pareto_data = pd.concat([bar_data, line_data], axis=1, sort=False)
+
+    	return Response(pareto_data.to_json(orient='records'), mimetype='application/json')
+
     @expose('/highRiskVolume/scatterplot',methods=['POST'])
     @has_access
     def getHighRiskVolumeScatterPlotData(self):
@@ -460,6 +528,6 @@ appbuilder.add_link("Cash Activity Limit", href='/rules/highRiskVolume/Cash', ca
 appbuilder.add_link("Check Activity Limit", href='/rules/highRiskVolume/Check', category='Rules')
 appbuilder.add_link("Remote Deposit Activity Limit", href='/rules/highRiskVolume/Remote', category='Rules')
 appbuilder.add_link("Wire Transfer Activity Limit", href='/rules/highRiskVolume/Wire', category='Rules')
-appbuilder.add_link("ACH Transfer Limit", href='/rules/highRiskVolume/ACH', category='Rules')
+appbuilder.add_link("ACH Transfer Activity Limit", href='/rules/highRiskVolume/ACH', category='Rules')
 
 

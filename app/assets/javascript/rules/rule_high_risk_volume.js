@@ -4,24 +4,11 @@ $(function(){
 	var patharr = pathname.split("/");
 	var transcode = patharr[patharr.length - 1];
 
-	var getHighRiskVolumeStatics=function(includeOutlier){
-
-		$.ajax({
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata/'+transcode,
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
-		  	success:function(data){
-
-		  		$('#statisticsAmountTable').bootstrapTable('load',data);
-		  		$('#statisticsCountTable').bootstrapTable('load',data);
-
-		  	}
-		});
-
-	};
-
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
+	var percentileAmountChart = echarts.init(document.getElementById('percentileAmountChart'));
+	var paretoAmountChart = echarts.init(document.getElementById('paretoAmountChart'));
+	var percentileCountChart = echarts.init(document.getElementById('percentileCountChart'));
+	var paretoCountChart = echarts.init(document.getElementById('paretoCountChart'));
 
 	var scatteroption = {
 	    title: {
@@ -123,7 +110,285 @@ $(function(){
 	    }]
 	};
 
+	var amtlineoption = {
+	    title : {
+	        text: 'Amount Percentile Distribution',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            boundaryGap : false,
+	            data : ['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type: 'log',
+	    		logBase:10,
+	            axisLabel : {
+	                formatter: function(params){
+	                	return "$"+params/1000+"K"
+
+	                }
+	            },
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'',
+	            type:'line',
+	            smooth: true,
+	            data:[]
+	        }
+	    ]
+	};
+
+	var amtlinebaroption = {
+		title : {
+	        text: 'Amount Pareto Analysis',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    legend: {
+	        data:['Trans Amount','Cumulative Percentage']
+	    },
+	    grid:{
+	    	y2:'12%',
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            axisLabel : {
+	            	rotate:30,
+	            },
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value',
+	            axisLabel : {
+	                formatter: function(params){
+	                	return "$"+params/1000+"K"
+
+	                }
+	            },
+	        },
+	        {
+	            type : 'value',
+	            axisLabel : {
+	                formatter: '{value} %'
+	            }
+	        }
+	    ],
+	    series : [
+
+	        {
+	            name:'Trans Amount',
+	            type:'bar',
+	            data:[]
+	        },
+	        {
+	            name:'Cumulative Percentage',
+	            type:'line',
+	            yAxisIndex: 1,
+	            data:[]
+	        }
+	    ]
+	};
+
+	var cntlineoption = {
+	    title : {
+	        text: 'Count Percentile Distribution',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            boundaryGap : false,
+	            data : ['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type: 'value',
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'',
+	            type:'line',
+	            smooth: true,
+	            data:[]
+	        }
+	    ]
+	};
+
+	var cntlinebaroption = {
+		title : {
+	        text: 'Count Pareto Analysis',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    legend: {
+	        data:['Trans Count','Cumulative Percentage']
+	    },
+	    grid:{
+	    	y2:'12%',
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            axisLabel : {
+	            	rotate:30,
+	            },
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value',
+	        },
+	        {
+	            type : 'value',
+	            axisLabel : {
+	                formatter: '{value} %'
+	            }
+	        }
+	    ],
+	    series : [
+
+	        {
+	            name:'Trans Count',
+	            type:'bar',
+	            data:[]
+	        },
+	        {
+	            name:'Cumulative Percentage',
+	            type:'line',
+	            yAxisIndex: 1,
+	            data:[]
+	        }
+	    ]
+	};
+
 	scatterChart.setOption(scatteroption);
+	percentileAmountChart.setOption(amtlineoption);
+	paretoAmountChart.setOption(amtlinebaroption);
+	percentileCountChart.setOption(cntlineoption);
+	paretoCountChart.setOption(cntlinebaroption);
+
+	var getHighRiskVolumeStatics=function(includeOutlier){
+
+		$.ajax({
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+		  		$('#statisticsAmountTable').bootstrapTable('load',data);
+		  		$('#statisticsCountTable').bootstrapTable('load',data);
+
+		  	}
+		});
+
+	};
+
+	var getHighRiskVolumeAmountPercentile=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/percentiledata/amt/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+		  		if(data){
+		  			amtlineoption.series[0].data = data.map(x=>x.toFixed(2));
+			  		percentileAmountChart.setOption(amtlineoption);
+		  		}
+
+		  	}
+		});
+
+	};
+
+	var getHighRiskVolumeAmountPareto=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/paretodata/amt/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+		  		if(data){
+	  				amtlinebaroption.xAxis[0].data=[];
+	  				amtlinebaroption.series[0].data=[];
+	  				amtlinebaroption.series[1].data=[];
+		  			data.forEach(function(singledata){
+						amtlinebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
+						amtlinebaroption.series[0].data.push(singledata['TRANS_AMT'].toFixed(2));
+				  		amtlinebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
+					    paretoAmountChart.setOption(amtlinebaroption);
+				  	})
+		  		}				
+			}
+		});
+
+	};
+
+	var getHighRiskVolumeCountPercentile=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/percentiledata/cnt/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+		  		cntlineoption.series[0].data = data.map(x=>x.toFixed(2));
+			  	percentileCountChart.setOption(cntlineoption);
+
+		  	}
+		});
+
+	};
+
+	var getHighRiskVolumeCountPareto=function(includeOutlier){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/paretodata/cnt/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	success:function(data){
+
+	  			cntlinebaroption.xAxis[0].data=[];
+	  			cntlinebaroption.series[0].data=[];
+	  			cntlinebaroption.series[1].data=[];
+				data.forEach(function(singledata){
+					cntlinebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
+					cntlinebaroption.series[0].data.push(singledata['TRANS_CNT'].toFixed(2));
+			  		cntlinebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
+				    paretoCountChart.setOption(cntlinebaroption);
+			  	})
+			}
+		});
+
+	};
 
 	$('#statisticsAmountTable').bootstrapTable({
   		pagination:false,
@@ -232,6 +497,10 @@ $(function(){
 	});
 
 	getHighRiskVolumeStatics(1);
+	getHighRiskVolumeAmountPercentile(1);
+	getHighRiskVolumeAmountPareto(1);
+	getHighRiskVolumeCountPercentile(1);
+	getHighRiskVolumeCountPareto(1);
 
 	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
@@ -287,13 +556,22 @@ $(function(){
 		event.preventDefault();
 		/* Act on the event */
 		getHighRiskVolumeStatics($("#isOutlier").val());
+		getHighRiskVolumeAmountPercentile($("#isOutlier").val());
+		getHighRiskVolumeAmountPareto($("#isOutlier").val());
+		getHighRiskVolumeCountPercentile($("#isOutlier").val());
+		getHighRiskVolumeCountPareto($("#isOutlier").val());		
 
 	});
 
 	$("#isOutlier").on('change', function(event) {
 		event.preventDefault();
 		/* Act on the event */
-		getHighRiskVolumeStatics($(this).val());
+		getHighRiskVolumeStatics($(this).val());		
+		getHighRiskVolumeAmountPercentile($(this).val());
+		getHighRiskVolumeAmountPareto($(this).val());
+		getHighRiskVolumeCountPercentile($(this).val());
+		getHighRiskVolumeCountPareto($(this).val());		
+
 
 	});
 
@@ -301,6 +579,10 @@ $(function(){
 	  event.preventDefault();
 
 	  getHighRiskVolumeStatics($("#isOutlier").val());
+	  getHighRiskVolumeAmountPercentile($("#isOutlier").val());
+	  getHighRiskVolumeAmountPareto($("#isOutlier").val());
+	  getHighRiskVolumeCountPercentile($("#isOutlier").val());
+	  getHighRiskVolumeCountPareto($("#isOutlier").val());
 
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
