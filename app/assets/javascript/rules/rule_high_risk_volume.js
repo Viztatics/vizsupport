@@ -1,15 +1,19 @@
 $(function(){
 
+	var pathname = window.location.pathname;
+	var patharr = pathname.split("/");
+	var transcode = patharr[patharr.length - 1];
+
 	var getHighRiskVolumeStatics=function(includeOutlier){
 
 		$.ajax({
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata',
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,transCodeType:$('#transCodeType').val(),crDb:$('#crDb').val()}),
+		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
-		  		$('#statisticsTable').bootstrapTable('load',data);
+		  		$('#statisticsAmountTable').bootstrapTable('load',data);
 
 		  	}
 		});
@@ -120,40 +124,40 @@ $(function(){
 
 	scatterChart.setOption(scatteroption);
 
-	$('#statisticsTable').bootstrapTable({
+	$('#statisticsAmountTable').bootstrapTable({
   		pagination:false,
 	    columns: [{
-	        field: 'min_data',
+	        field: 'amt_min_data',
 	        title: 'MIN',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
 			},
 	    }, {
-	        field: 'max_data',
+	        field: 'amt_max_data',
 	        title: 'MAX',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
 			}
 	    }, {
-	        field: 'median_data',
+	        field: 'amt_median_data',
 	        title: 'MEDIAN',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
 			}
 	    }, {
-	        field: 'mean_data',
+	        field: 'amt_mean_data',
 	        title: 'MEAN',
 	        formatter: function formatter(value, row, index, field) {
-	        	return (value).toLocaleString('en-US', {
+	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
 				  currency: 'USD',
 				});
@@ -185,7 +189,7 @@ $(function(){
 	    }],
 	});
 
-	getHighRiskVolumeStatics(0);
+	getHighRiskVolumeStatics(1);
 
 	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
@@ -210,6 +214,7 @@ $(function(){
 	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
 	            success: function(data) 
 	            {
+	            	$('#reportPath').data('keyname', "");
 	                if(!data){
 	                    pd.statusbar.hide();        
 	                 }else{
@@ -219,6 +224,7 @@ $(function(){
 	        }); 
 	    },
 	    onSuccess: function(files,data,xhr,pd){
+	    	$('#reportPath').data('keyname', files[0]);
 	    	$("#file-error")&&$("#file-error").remove();
 	    }
 	});
@@ -233,6 +239,13 @@ $(function(){
 	      	digits:true,
 	      }
 	    },
+	});
+
+	$("#crDb").on('change', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		getHighRiskVolumeStatics($("#isOutlier").val());
+
 	});
 
 	$("#isOutlier").on('change', function(event) {

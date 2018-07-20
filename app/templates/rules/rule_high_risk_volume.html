@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-	{{ lib.panel_begin("High Value Volume") }}
+	{{ lib.panel_begin("High Value Volume "+transCode) }}
 		<div class="panel panel-default">
 		  <div class="panel-heading">Query Area</div>
 		  <div class="panel-body">
@@ -21,27 +21,7 @@
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="reportPath">Choose your data file</label><a href="../../static/csv/rules/Trans_Min_High_Risk_Transfer.xlsx" target="_blank" id="filelink">Sample File</a></div>
 		            <div class="col-md-4 input-group" id="reportPath" data-keyname={{keyname}}>Upload</div>		            
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="transCodeType">Trans Code Type</label></div>
-		            <div class="col-md-4 input-group">
-		            	<select class="form-control" id="transCodeType">
-						  <option value="ACH" selected="selected">ACH</option>
-						  <option value="CASH">CASH</option>
-						  <option value="CHECK">CHECK</option>
-						  <option value="WIRE TRANSFER">WIRE TRANSFER</option>
-						</select>
-		            </div>		            
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="crDb">Credit or Debit</label></div>
-		            <div class="col-md-4 input-group">
-		            	<select class="form-control" id="crDb">
-						  <option value="Credit" selected="selected">Credit</option>
-						  <option value="Debit">Debit</option>
-						</select>
-		            </div>		            
-		        </div>
+		        </div>		        
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="amtThreshNum">Amount Threshold</label></div>
 		            <div class="col-md-4 input-group">
@@ -64,8 +44,17 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Statistics Table</div>
+		  <div class="panel-heading">Statistics on Data</div>
 		  <div class="panel-body">
+		  	<div class="form-group form-inline">
+	            <div class="col-md-2 input-group"><label for="crDb">Credit or Debit</label></div>
+	            <div class="col-md-4 input-group">
+	            	<select class="form-control" id="crDb">
+					  <option value="Credit" selected="selected">Credit</option>
+					  <option value="Debit">Debit</option>
+					</select>
+	            </div>		            
+	        </div>
 		  	<div class="form-group form-inline">
 	            <div class="col-md-2 input-group"><label for="isOutlier">Include Outlier</label></div>
 	            <div class="col-md-4 input-group">
@@ -74,18 +63,24 @@
 					  <option value="0">no</option>
 					</select>
 	            </div>		            
+		    </div>		    
+		    <div class="row">
+		        <table id="statisticsAmountTable"></table>
 		    </div>
 		    <div class="row">
-		        <table id="statisticsTable"></table>
+		        <div id="percentileAmountChart" style="height:600px"></div>
 		    </div>
-		  </div>
-		</div>
-
-		<div class="panel panel-default">
-		  <div class="panel-heading">Alert Table</div>
-		  <div class="panel-body">
 		    <div class="row">
-		        <table id="alertTable" data-show-export="true"></table>
+		        <div id="paretoAmountChart" style="height:600px"></div>
+		    </div>
+		    <div class="row">
+		        <table id="statisticsCountTable"></table>
+		    </div>
+		    <div class="row">
+		        <div id="percentileCountChart" style="height:600px"></div>
+		    </div>
+		    <div class="row">
+		        <div id="paretoCountChart" style="height:600px"></div>
 		    </div>
 		  </div>
 		</div>
@@ -95,6 +90,15 @@
 		  <div class="panel-body">
 		    <div class="row">
 		        <div id="scatterChart" style="height:600px"></div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">Alert Table</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <table id="alertTable" data-show-export="true"></table>
 		    </div>
 		  </div>
 		</div>

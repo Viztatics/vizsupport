@@ -46,7 +46,7 @@ class RuleView(BaseView):
     
     route_base = '/rules'
     HIGH_RISK_COUNTRY_FOLDER_PREFIX = 'highRiskCountry'
-    CASH_ACTIVITY_LIMIT_FOLDER = 'cashActivityLimit'
+    HIGH_VALUE_VOLUMN_FOLDER_PREFIX = 'highValueVolume'
     """
     s3 = boto3.resource(
         's3',
@@ -301,11 +301,14 @@ class RuleView(BaseView):
     Rule2: High Risk Volume
     """        
 
-    @expose('/highRiskVolume')
+    @expose('/highRiskVolume/<transCode>')
     @has_access
-    def highRiskVolume(self):
+    def highRiskVolume(self,transCode):
 
     	keyname = ''
+    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+    	src_file = RULE_DEFAULT_FOLDER+highRiskVolumnFolder+"/highValueVolume.csv"
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
     	if request.method == 'GET':
     		"""
     		for bucket in self.s3.buckets.all():
@@ -314,42 +317,55 @@ class RuleView(BaseView):
     				if len(words)==2 and words[0]=='highRiskVolume' and words[1]!='':
     					keyname=words[1]
     		"""
-    		if not os.path.exists(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER):
-    			os.makedirs(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER)
-    		p = Path(RULE_UPLOAD_FOLDER+self.CASH_ACTIVITY_LIMIT_FOLDER)
+    		if not os.path.exists(dst_path):   
+    			os.makedirs(dst_path)
+    		if not os.listdir(dst_path):
+    			shutil.copy(src_file, dst_path)
+    		p = Path(dst_path)
     		for child in p.iterdir():
-    				keyname = PurePath(child).name
+    			keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-    		return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname)
+    		return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname,transCode=transCode)
 
-    @expose('/highRiskVolume/statisticsdata',methods=['POST'])
+    @expose('/highRiskVolume/statisticsdata/<transCode>',methods=['POST'])
     @has_access
-    def getHighRiskVolumeStatisticsData(self):
+    def getHighRiskVolumeStatisticsData(self,transCode):
 
-    	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
+    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
 
-    	transCodeType = request.get_json()["transCodeType"]
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
 
     	crDb = request.get_json()["crDb"]
 
     	outlier = request.get_json()["outlier"]
 
-    	table_data = pd.read_csv(def_volume_data)
+    	table_data = pd.read_csv(dst_path+"/"+dst_file)
 
-    	table_data = table_data[(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+    	table_data = table_data[(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
 
     	if outlier!='1':
     		table_data = table_data[table_data['outlier']!=1]
 
-    	min_data = table_data['TRANS_AMT'].min()
+    	amt_min_data = table_data['TRANS_AMT'].min()
 
-    	max_data = table_data['TRANS_AMT'].max()
+    	amt_max_data = table_data['TRANS_AMT'].max()
     	
-    	median_data = table_data['TRANS_AMT'].median()
+    	amt_median_data = table_data['TRANS_AMT'].median()
 
-    	mean_data = table_data['TRANS_AMT'].mean()
+    	amt_mean_data = table_data['TRANS_AMT'].mean()
 
-    	return Response(pd.io.json.dumps([{'min_data':min_data,'max_data':max_data,'median_data':median_data,'mean_data':mean_data}]), mimetype='application/json')
+    	cnt_min_data = table_data['TRANS_CNT'].min()
+
+    	cnt_max_data = table_data['TRANS_CNT'].max()
+    	
+    	cnt_median_data = table_data['TRANS_CNT'].median()
+
+    	cnt_mean_data = table_data['TRANS_CNT'].mean()
+
+    	return Response(pd.io.json.dumps([{'amt_min_data':amt_min_data,'amt_max_data':amt_max_data,'amt_median_data':amt_median_data,'amt_mean_data':amt_mean_data
+    		,'cnt_min_data':cnt_min_data,'cnt_max_data':cnt_max_data,'cnt_median_data':cnt_median_data,'cnt_mean_data':cnt_mean_data}]), mimetype='application/json')
 
     @expose('/highRiskVolume/scatterplot',methods=['POST'])
     @has_access
@@ -440,6 +456,10 @@ appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
 appbuilder.add_view(RuleView, "High Risk Country Wire Activity", href='/rules/highRiskCountry/Wire',category='Rules')
 appbuilder.add_link("High Risk Country ACH Activity", href='/rules/highRiskCountry/ACH', category='Rules')
-appbuilder.add_link("High Risk Volume", href='/rules/highRiskVolume', category='Rules')
+appbuilder.add_link("Cash Activity Limit", href='/rules/highRiskVolume/Cash', category='Rules')
+appbuilder.add_link("Check Activity Limit", href='/rules/highRiskVolume/Check', category='Rules')
+appbuilder.add_link("Remote Deposit Activity Limit", href='/rules/highRiskVolume/Remote', category='Rules')
+appbuilder.add_link("Wire Transfer Activity Limit", href='/rules/highRiskVolume/Wire', category='Rules')
+appbuilder.add_link("ACH Transfer Limit", href='/rules/highRiskVolume/ACH', category='Rules')
 
 
