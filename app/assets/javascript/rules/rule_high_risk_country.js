@@ -298,7 +298,7 @@ $(function(){
 				console.log(data);
 				data.forEach(function(singledata){
 					linebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-					linebaroption.series[0].data.push(singledata['Trans_Amt']);
+					linebaroption.series[0].data.push(singledata['Trans_Amt'].toFixed(2));
 			  		linebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
 				    paretoChart.setOption(linebaroption);
 			  	})

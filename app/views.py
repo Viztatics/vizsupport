@@ -91,6 +91,8 @@ class RuleView(BaseView):
     @expose('/highRiskCountry/statisticsdata/<transCode>',methods=['POST'])
     def getHighRiskCountryStatisticsData(self,transCode):
 
+    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
+
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
     	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -103,7 +105,9 @@ class RuleView(BaseView):
 
     	outlier = request.get_json()["outlier"]
 
-    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier'])
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier','Trans_Code_Type'])
+
+    	table_data = table_data[table_data['Trans_Code_Type']==transDesc(transCode)]
 
     	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
@@ -125,6 +129,8 @@ class RuleView(BaseView):
     @expose('/highRiskCountry/percentiledata/<transCode>',methods=['POST'])
     def getHighRiskCountryPercentileData(self,transCode):
 
+    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
+
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
     	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -133,7 +139,9 @@ class RuleView(BaseView):
 
     	outlier = request.get_json()["outlier"]
 
-    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier'])
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Month of Trans Date','Trans_Amt','outlier','Trans_Code_Type'])
+
+    	table_data = table_data[table_data['Trans_Code_Type']==transDesc(transCode)]
 
     	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
@@ -149,6 +157,8 @@ class RuleView(BaseView):
     @expose('/highRiskCountry/paretodata/<transCode>',methods=['POST'])
     def getHighRiskCountryParetoData(self,transCode):
 
+    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
+
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
     	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -157,7 +167,9 @@ class RuleView(BaseView):
 
     	outlier = request.get_json()["outlier"]
 
-    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Trans_Amt','outlier'])
+    	table_data = pd.read_csv(dst_path+"/"+dst_file,usecols=['ACCOUNT_KEY', 'Trans_Amt','outlier','Trans_Code_Type'])
+
+    	table_data = table_data[table_data['Trans_Code_Type']==transDesc(transCode)]
 
     	table_data = table_data.groupby(['ACCOUNT_KEY'],as_index=False).sum()
 
@@ -180,6 +192,8 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskCountryHeatMapData(self,transCode):
 
+        transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
+
         highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
         dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -190,18 +204,23 @@ class RuleView(BaseView):
 
         def_data_county = dst_path+"/"+dst_file
 
-        heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans_Amt'])
+        heat_map_data = pd.read_csv(def_data_county,usecols=['Month of Trans Date','OPP_CNTRY','Trans_Amt','Trans_Code_Type'])
+
+        heat_map_data = heat_map_data[(heat_map_data['Trans_Code_Type']==transDesc(transCode))&(heat_map_data['OPP_CNTRY'].notnull())&((heat_map_data['OPP_CNTRY'])!='US')]
+
         #min_month = heat_map_data['Month of Trans Date'].min()
         #heat_map_result = heat_map_data.loc[heat_map_data['Month of Trans Date'] == min_month]
         heat_map_result = heat_map_data.groupby(['Month of Trans Date','OPP_CNTRY']).sum().reset_index()
         #print(heat_map_result.to_json(orient='records'))
-        heat_map_result = heat_map_result[heat_map_result['Trans_Amt']>=int(threshold)]
+        heat_map_result = heat_map_result[(heat_map_result['Trans_Amt']>=int(threshold))]
 
         return Response(heat_map_result.to_json(orient='records'), mimetype='application/json')
 
     @expose('/highRiskCountry/scatterplot/<transCode>',methods=['POST'])
     @has_access
     def getHighRiskCountryScatterPlotData(self,transCode):
+
+    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
 
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
@@ -211,15 +230,19 @@ class RuleView(BaseView):
 
     	def_data_no_county = dst_path+"/"+dst_file
 
-    	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date','outlier'])
+    	plot_data = pd.read_csv(def_data_no_county,usecols=['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date','outlier','Trans_Code_Type'])
     	#plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
-    	plot_data = plot_data[['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date','outlier']]
+    	plot_data = plot_data[['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date','outlier','Trans_Code_Type']]
+
+    	plot_data = plot_data[plot_data['Trans_Code_Type']==transDesc(transCode)]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
     @expose('/highRiskCountry/tabledata/<transCode>',methods=['POST'])
     @has_access
     def getHighRiskCountryTableData(self,transCode):
+
+    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
 
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
@@ -231,11 +254,11 @@ class RuleView(BaseView):
 
     	def_data_no_county = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt'])
+    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt','Trans_Code_Type'])
 
     	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
-    	table_data = table_data[table_data['Trans_Amt']>=int(threshold)]
+    	table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
