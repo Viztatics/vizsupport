@@ -33,6 +33,11 @@ import shutil
 """
     Application wide 404 error handler
 """
+
+def transDesc(transCode):
+
+	return 'WIRE TRANSFER' if transCode=='Wire' else transCode
+
 class CompanyModelView(ModelView):
     datamodel = SQLAInterface(Company)
 
@@ -91,8 +96,6 @@ class RuleView(BaseView):
     @expose('/highRiskCountry/statisticsdata/<transCode>',methods=['POST'])
     def getHighRiskCountryStatisticsData(self,transCode):
 
-    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
-
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
     	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -129,8 +132,6 @@ class RuleView(BaseView):
     @expose('/highRiskCountry/percentiledata/<transCode>',methods=['POST'])
     def getHighRiskCountryPercentileData(self,transCode):
 
-    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
-
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
     	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -156,8 +157,6 @@ class RuleView(BaseView):
 
     @expose('/highRiskCountry/paretodata/<transCode>',methods=['POST'])
     def getHighRiskCountryParetoData(self,transCode):
-
-    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
 
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
@@ -192,8 +191,6 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskCountryHeatMapData(self,transCode):
 
-        transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
-
         highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
         dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -220,8 +217,6 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskCountryScatterPlotData(self,transCode):
 
-    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
-
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
     	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
@@ -241,8 +236,6 @@ class RuleView(BaseView):
     @expose('/highRiskCountry/tabledata/<transCode>',methods=['POST'])
     @has_access
     def getHighRiskCountryTableData(self,transCode):
-
-    	transDesc = lambda x: 'WIRE TRANSFER' if transCode=='Wire' else 'ACH'
 
     	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
