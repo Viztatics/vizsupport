@@ -4,6 +4,45 @@ $(function(){
 	var patharr = pathname.split("/");
 	var transcode = patharr[patharr.length - 1];
 
+	var upfile = $("#reportPath").uploadFile({
+		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
+	    maxFileCount: 1,                		   
+	    allowedTypes: 'csv',  				       
+	    showFileSize: false,
+	    showDone: false,                           
+	    showDelete: true,                          
+	    showDownload:false,
+	    onLoad: function(obj)
+	    { 
+	    	obj.createProgress($('#reportPath').data('keyname'));   	   
+	    },
+	    deleteCallback: function(data,pd)
+	    {
+
+	        $.ajax({
+	            cache: false,
+	            url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
+	            type: "DELETE",
+	            dataType: "json",
+	            contentType:'application/json',
+	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
+	            success: function(data) 
+	            {
+	            	$('#reportPath').data('keyname', "");
+	                if(!data){
+	                    pd.statusbar.hide();        
+	                 }else{
+	                    console.log(data.message); 
+	                 }
+	              }
+	        }); 
+	    },
+	    onSuccess: function(files,data,xhr,pd){
+	    	$('#reportPath').data('keyname', files[0]);
+	    	$("#file-error")&&$("#file-error").remove();
+	    }
+	});
+
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileAmountChart = echarts.init(document.getElementById('percentileAmountChart'));
 	var paretoAmountChart = echarts.init(document.getElementById('paretoAmountChart'));
@@ -313,7 +352,7 @@ $(function(){
 		  	success:function(data){
 
 		  		if(data){
-		  			amtlineoption.series[0].data = data.map(x=>x.toFixed(2));
+		  			amtlineoption.series[0].data = data.map(x=>!x?0:x.toFixed(2));
 			  		percentileAmountChart.setOption(amtlineoption);
 		  		}
 
@@ -358,9 +397,10 @@ $(function(){
 		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
-		  		cntlineoption.series[0].data = data.map(x=>x.toFixed(2));
-			  	percentileCountChart.setOption(cntlineoption);
-
+		  		if(data){
+		  			cntlineoption.series[0].data = data.map(x=>!x?0:x.toFixed(2));
+			  	    percentileCountChart.setOption(cntlineoption);
+		  		}
 		  	}
 		});
 
@@ -502,53 +542,17 @@ $(function(){
 	getHighRiskVolumeCountPercentile(1);
 	getHighRiskVolumeCountPareto(1);
 
-	var upfile = $("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
-	    maxFileCount: 1,                		   
-	    allowedTypes: 'csv',  				       
-	    showFileSize: false,
-	    showDone: false,                           
-	    showDelete: true,                          
-	    showDownload:false,
-	    onLoad: function(obj)
-	    {    	   
-	    },
-	    deleteCallback: function(data,pd)
-	    {
-
-	        $.ajax({
-	            cache: false,
-	            url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
-	            type: "DELETE",
-	            dataType: "json",
-	            contentType:'application/json',
-	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
-	            success: function(data) 
-	            {
-	            	$('#reportPath').data('keyname', "");
-	                if(!data){
-	                    pd.statusbar.hide();        
-	                 }else{
-	                    console.log(data.message); 
-	                 }
-	              }
-	        }); 
-	    },
-	    onSuccess: function(files,data,xhr,pd){
-	    	$('#reportPath').data('keyname', files[0]);
-	    	$("#file-error")&&$("#file-error").remove();
-	    }
-	});
-
-	$('#reportPath').data('keyname')&upfile.createProgress($('#reportPath').data('keyname'));
-
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
-	      threshNum:{
+	      amtThreshNum:{
 	      	required: true,
 	      	digits:true,
-	      }
+	      },
+	      cntThreshNum:{
+	      	required: true,
+	      	digits:true,
+	      },
 	    },
 	});
 
@@ -594,11 +598,11 @@ $(function(){
 	  }
 
 	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({
-	  		transCodeType:$('#transCodeType').val(),crDb:$('#crDb').val()
+	  		'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')
 	  	}),
 	  	success:function(data){
 	  		var normaldata = [];
@@ -613,11 +617,10 @@ $(function(){
 	  });
 	  
 	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/tabledata',
+	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/tabledata/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
-	  	data: JSON.stringify({reportPath:$('#reportPath').val()
-	  		,transCodeType:$('#transCodeType').val(),crDb:$('#crDb').val()
+	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),crDb:$('#crDb').val()
 	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
 	  	}),
 	  	success:function(data){

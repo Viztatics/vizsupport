@@ -435,28 +435,36 @@ class RuleView(BaseView):
 
     	return Response(pareto_data.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskVolume/scatterplot',methods=['POST'])
+    @expose('/highRiskVolume/scatterplot/<transCode>',methods=['POST'])
     @has_access
-    def getHighRiskVolumeScatterPlotData(self):
+    def getHighRiskVolumeScatterPlotData(self,transCode):
 
-    	transCodeType = request.get_json()["transCodeType"]
+    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
 
     	crDb = request.get_json()["crDb"]
 
-    	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
+    	def_volume_data = dst_path+"/"+dst_file
 
     	plot_data = pd.read_csv(def_volume_data)
 
-    	plot_data = plot_data[(plot_data['Trans Code Type']==transCodeType)&(plot_data['Cr_Db']==crDb)]
+    	plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
     	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','Month of Trans Date','outlier']]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
-    @expose('/highRiskVolume/tabledata',methods=['POST'])
+    @expose('/highRiskVolume/tabledata/<transCode>',methods=['POST'])
     @has_access
-    def getHighRiskVolumeTableData(self):
+    def getHighRiskVolumeTableData(self,transCode):
 
-    	transCodeType = request.get_json()["transCodeType"]
+    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
 
     	crDb = request.get_json()["crDb"]
 
@@ -464,14 +472,13 @@ class RuleView(BaseView):
 
     	cntThreshold = request.get_json()["cntThreshNum"]
 
-    	def_volume_data = 'app/static/csv/rules/highValueVolume.csv'
+    	def_volume_data = dst_path+"/"+dst_file
 
     	table_data = pd.read_csv(def_volume_data)
 
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transCodeType)&(table_data['Cr_Db']==crDb)]
+    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
 
-    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]
-    	
+    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]    	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
