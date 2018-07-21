@@ -1,0 +1,130 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
+    <style type="text/css">
+    	label.error{
+    		color:red;
+    		margin-left: 10px;
+    	}
+    </style>
+{% endblock %}
+
+{% block content %}
+	{{ lib.panel_begin(transCode+' Activity Profiling') }}
+		<div class="panel panel-default">
+		  <div class="panel-heading">Query Area</div>
+		  <div class="panel-body">
+		    <form id="highRiskCtyForm">
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="reportPath">Choose your data file</label><a href="../../static/csv/rules/Trans_Min_High_Risk_Transfer.xlsx" target="_blank" id="filelink">Sample File</a></div>
+		            <div class="col-md-4 input-group" id="reportPath" data-keyname={{keyname}}>Upload</div>		            
+		        </div>		        
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="amtThreshNum">Amount Threshold</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum" name="amtThreshNum" placeholder="100000" value="100000">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="cntThreshNum">Count Threshold</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="cntThreshNum" name="cntThreshNum" placeholder="100000" value="5">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="minSD">Minimun Standard Deviation</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="minSD" name="minSD" placeholder="" value="">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="yearMon">Year/Month(yyyymm)</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="6" id="yearMon" name="yearMon" placeholder="201801" value="">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="monNum">number of historical months</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="monNum" name="monNum" placeholder="7" value="">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		        	<div class="col-md-offset-2 col-md-2 input-group">
+		            	<button type="submit" class="btn btn-primary">Submit</button>
+		        	</div>
+		        </div>
+		    </form>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">Statistics on Data</div>
+		  <div class="panel-body">
+		  	<div class="form-group form-inline">
+	            <div class="col-md-2 input-group"><label for="isOutlier">Include Outlier</label></div>
+	            <div class="col-md-4 input-group">
+	            	<select class="form-control" id="isOutlier">
+					  <option value="1" selected="selected">Yes</option>
+					  <option value="0">no</option>
+					</select>
+	            </div>		            
+		    </div>		    
+		    <div class="row">
+		        <table id="statisticsAmountTable"></table>
+		    </div>
+		    <div class="row">
+		        <div id="percentileAmountChart" style="height:600px"></div>
+		    </div>
+		    <div class="row">
+		        <div id="paretoAmountChart" style="height:600px"></div>
+		    </div>
+		    <div class="row">
+		        <table id="statisticsCountTable"></table>
+		    </div>
+		    <div class="row">
+		        <div id="percentileCountChart" style="height:600px"></div>
+		    </div>
+		    <div class="row">
+		        <div id="paretoCountChart" style="height:600px"></div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">Scatter Plot</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <div id="scatterChart" style="height:600px"></div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">Alert Table</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <table id="alertTable" data-show-export="true"></table>
+		    </div>
+		  </div>
+		</div>
+
+	{{ lib.panel_end() }}
+{% endblock %}
+
+{% block tail_js %}
+	  {{super()}}
+    <script type="text/javascript">
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js')}}"></script>
+    <script src="//rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-validation/dist/jquery.validate.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>    
+    <script src="{{url_for('static',filename='assets/javascript/rules/rule_high_risk_profiling.js')}}"></script>
+{% endblock %}

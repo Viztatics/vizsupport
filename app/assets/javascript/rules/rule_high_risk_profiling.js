@@ -5,7 +5,7 @@ $(function(){
 	var transcode = patharr[patharr.length - 1];
 
 	var upfile = $("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
+		url: $SCRIPT_ROOT+'/rules/profiling/upload',
 	    maxFileCount: 1,                		   
 	    allowedTypes: 'csv',  				       
 	    showFileSize: false,
@@ -21,7 +21,7 @@ $(function(){
 
 	        $.ajax({
 	            cache: false,
-	            url: $SCRIPT_ROOT+'/rules/highRiskVolume/upload',
+	            url: $SCRIPT_ROOT+'/rules/profiling/upload',
 	            type: "DELETE",
 	            dataType: "json",
 	            contentType:'application/json',
@@ -324,13 +324,13 @@ $(function(){
 	percentileCountChart.setOption(cntlineoption);
 	paretoCountChart.setOption(cntlinebaroption);
 
-	var getHighRiskVolumeStatics=function(includeOutlier){
+	var getprofilingStatics=function(includeOutlier){
 
 		$.ajax({
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/statisticsdata/'+transcode,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/statisticsdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
 		  		$('#statisticsAmountTable').bootstrapTable('load',data);
@@ -341,14 +341,14 @@ $(function(){
 
 	};
 
-	var getHighRiskVolumeAmountPercentile=function(includeOutlier){
+	var getprofilingAmountPercentile=function(includeOutlier){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/percentiledata/amt/'+transcode,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/percentiledata/amt/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
 		  		if(data){
@@ -361,14 +361,14 @@ $(function(){
 
 	};
 
-	var getHighRiskVolumeAmountPareto=function(includeOutlier){
+	var getprofilingAmountPareto=function(includeOutlier){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/paretodata/amt/'+transcode,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/paretodata/amt/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
 		  		if(data){
@@ -387,14 +387,14 @@ $(function(){
 
 	};
 
-	var getHighRiskVolumeCountPercentile=function(includeOutlier){
+	var getprofilingCountPercentile=function(includeOutlier){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/percentiledata/cnt/'+transcode,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/percentiledata/cnt/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
 		  		if(data){
@@ -406,14 +406,14 @@ $(function(){
 
 	};
 
-	var getHighRiskVolumeCountPareto=function(includeOutlier){
+	var getprofilingCountPareto=function(includeOutlier){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/paretodata/cnt/'+transcode,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/paretodata/cnt/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
+		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
 	  			cntlinebaroption.xAxis[0].data=[];
@@ -507,7 +507,7 @@ $(function(){
 	        field: 'ACCOUNT_KEY',
 	        title: 'ACCOUNT'
 	    }, {
-	        field: 'Month of Trans Date',
+	        field: 'YearMonth',
 	        title: 'Month of Trans Date'
 	    }, {
 	        field: 'TRANS_AMT',
@@ -524,11 +524,11 @@ $(function(){
 	    }],
 	});
 
-	getHighRiskVolumeStatics(1);
-	getHighRiskVolumeAmountPercentile(1);
-	getHighRiskVolumeAmountPareto(1);
-	getHighRiskVolumeCountPercentile(1);
-	getHighRiskVolumeCountPareto(1);
+	getprofilingStatics(1);
+	getprofilingAmountPercentile(1);
+	getprofilingAmountPareto(1);
+	getprofilingCountPercentile(1);
+	getprofilingCountPareto(1);
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
@@ -544,25 +544,14 @@ $(function(){
 	    },
 	});
 
-	$("#crDb").on('change', function(event) {
-		event.preventDefault();
-		/* Act on the event */
-		getHighRiskVolumeStatics($("#isOutlier").val());
-		getHighRiskVolumeAmountPercentile($("#isOutlier").val());
-		getHighRiskVolumeAmountPareto($("#isOutlier").val());
-		getHighRiskVolumeCountPercentile($("#isOutlier").val());
-		getHighRiskVolumeCountPareto($("#isOutlier").val());		
-
-	});
-
 	$("#isOutlier").on('change', function(event) {
 		event.preventDefault();
 		/* Act on the event */
-		getHighRiskVolumeStatics($(this).val());		
-		getHighRiskVolumeAmountPercentile($(this).val());
-		getHighRiskVolumeAmountPareto($(this).val());
-		getHighRiskVolumeCountPercentile($(this).val());
-		getHighRiskVolumeCountPareto($(this).val());		
+		getprofilingStatics($(this).val());		
+		getprofilingAmountPercentile($(this).val());
+		getprofilingAmountPareto($(this).val());
+		getprofilingCountPercentile($(this).val());
+		getprofilingCountPareto($(this).val());		
 
 
 	});
@@ -570,11 +559,11 @@ $(function(){
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
 
-	  getHighRiskVolumeStatics($("#isOutlier").val());
-	  getHighRiskVolumeAmountPercentile($("#isOutlier").val());
-	  getHighRiskVolumeAmountPareto($("#isOutlier").val());
-	  getHighRiskVolumeCountPercentile($("#isOutlier").val());
-	  getHighRiskVolumeCountPareto($("#isOutlier").val());
+	  getprofilingStatics($("#isOutlier").val());
+	  getprofilingAmountPercentile($("#isOutlier").val());
+	  getprofilingAmountPareto($("#isOutlier").val());
+	  getprofilingCountPercentile($("#isOutlier").val());
+	  getprofilingCountPareto($("#isOutlier").val());
 
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
@@ -586,11 +575,11 @@ $(function(){
 	  }
 
 	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot/'+transcode,
+	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterplot/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({
-	  		'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')
+	  		'filename':$('#reportPath').data('keyname')
 	  	}),
 	  	success:function(data){
 	  		var normaldata = [];
@@ -605,7 +594,7 @@ $(function(){
 	  });
 	  
 	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/tabledata/'+transcode,
+	  	url: $SCRIPT_ROOT+'/rules/profiling/tabledata/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),crDb:$('#crDb').val()
