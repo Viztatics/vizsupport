@@ -324,6 +324,11 @@ $(function(){
 	percentileCountChart.setOption(cntlineoption);
 	paretoCountChart.setOption(cntlinebaroption);
 
+	scatterChart.on('click', function(data){
+		console.log(data);
+		$('#scatterModal').modal('show'); 
+	});
+
 	var getprofilingStatics=function(includeOutlier){
 
 		$.ajax({
