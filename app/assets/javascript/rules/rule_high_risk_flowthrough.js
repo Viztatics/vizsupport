@@ -62,23 +62,35 @@ $(function(){
 		    formatter : function (params) {
 	            return "Account Key: "+params.data[2]+"<br/>"
 		                          +"Trans Month:  "+params.data[3]+"<br/>"
-		                          +"Trans Count: "+params.data[0]+"<br/>"
-		                          +"Trans Amt: "+(params.data[1]|0).toLocaleString('en-US', {
+		                          +"Dollar In: "+(params.data[0]|0).toLocaleString('en-US', {
+															  style: 'currency',
+															  currency: 'USD',
+															})+"<br/>"
+		                          +"Dollar out: "+(params.data[1]|0).toLocaleString('en-US', {
 															  style: 'currency',
 															  currency: 'USD',
 															});
 		    },
         },
 	    xAxis: {
-	    	name:'Trans Count',
+	    	name:'Dollar In',
+	    	type: 'log',
+	    	logBase:10,
 	        splitLine: {
 	            lineStyle: {
 	                type: 'dashed'
 	            }
-	        }
+	        },
+	        axisLabel : {
+                formatter: function(params){
+                	return "$"+params/1000+"K"
+
+                }
+            },
+            min:1000
 	    },
 	    yAxis: {
-	    	name:'Trans Amt',
+	    	name:'Dollar Out',
 	    	type: 'log',
 	    	logBase:10,
 	        splitLine: {
@@ -114,9 +126,26 @@ $(function(){
 	            }
 	        },	        
             markLine : {
-                data : [
-                    {name: 'ythreshold',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
-                ]
+                data: [
+                	[
+				        {
+				            name: 'lower',
+				            coord: [1000, 1111]
+				        },
+				        {
+				            coord: [1000000, 900000]
+				        }
+				    ],
+	                [
+				        {
+				            name: 'upper',
+				            coord: [1000, 1100]
+				        },
+				        {
+				            coord: [1000000, 1100000]
+				        }
+				    ],					    
+				]
             },
 	    },{
 	        name: 'Outlier',
@@ -199,7 +228,6 @@ $(function(){
 	  		var outlierdata = [];
 	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
 		  	scatteroption.series[0].data = normaldata;
-		  	scatteroption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
 		  	scatteroption.series[1].data = outlierdata;
 		  	scatterChart.setOption(scatteroption);
 	  	}

@@ -804,11 +804,11 @@ class RuleView(BaseView):
 
     	def_volume_data = dst_path+"/"+dst_file
 
-    	plot_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+    	plot_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','outlier'])
 
-    	plot_data['TRANS_CNT'] = plot_data['Credit+TRANS_CNT'] + plot_data['Debit+TRANS_CNT']
+    	#plot_data['TRANS_CNT'] = plot_data['Credit+TRANS_CNT'] + plot_data['Debit+TRANS_CNT']
 
-    	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
+    	plot_data = plot_data[['Debit+TRANS_AMT','Credit+TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
 
     	#plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
 
