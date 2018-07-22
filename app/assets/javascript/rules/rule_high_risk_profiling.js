@@ -329,17 +329,6 @@ $(function(){
 	    legend: {
 	        data:['蒸发量','降水量']
 	    },
-	    toolbox: {
-	        show : true,
-	        feature : {
-	            mark : {show: true},
-	            dataView : {show: true, readOnly: false},
-	            magicType : {show: true, type: ['line', 'bar']},
-	            restore : {show: true},
-	            saveAsImage : {show: true}
-	        }
-	    },
-	    calculable : true,
 	    xAxis : [
 	        {
 	            type : 'category',

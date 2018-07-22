@@ -48,6 +48,7 @@ class RuleView(BaseView):
     HIGH_RISK_COUNTRY_FOLDER_PREFIX = 'highRiskCountry'
     HIGH_VALUE_VOLUMN_FOLDER_PREFIX = 'highValueVolume'
     ACTIVITY_PROFILING_FOLDER_PREFIX = 'activityProfiling'
+    ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX = 'activityPattern'
     """
     s3 = boto3.resource(
         's3',
@@ -759,6 +760,126 @@ class RuleView(BaseView):
 
         return  json.dumps({})
 
+    """
+    Rule4: FLow-Through
+    """        
+
+    @expose('/flowthrough')
+    @has_access
+    def activityflowthrough(self):
+
+    	keyname = ''
+    	flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+    	src_file = RULE_DEFAULT_FOLDER+flowthroughFolder+"/activityflowthrough.csv"
+    	dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+    	if request.method == 'GET':
+    		"""
+    		for bucket in self.s3.buckets.all():
+    			for key in bucket.objects.all():
+    				words = key.key.split('/')
+    				if len(words)==2 and words[0]=='highRiskVolume' and words[1]!='':
+    					keyname=words[1]
+    		"""
+    		if not os.path.exists(dst_path):   
+    			os.makedirs(dst_path)
+    		if not os.listdir(dst_path):
+    			shutil.copy(src_file, dst_path)
+    		p = Path(dst_path)
+    		for child in p.iterdir():
+    			keyname = PurePath(child).name
+        	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
+    		return self.render_template('rules/rule_high_risk_flowthrough.html',keyname=keyname)
+
+    @expose('/flowthrough/scatterplot',methods=['POST'])
+    @has_access
+    def getFlowthroughScatterPlotData(self):
+
+    	flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+
+    	dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	#crDb = request.get_json()["crDb"]
+
+    	def_volume_data = dst_path+"/"+dst_file
+
+    	plot_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+
+    	plot_data['TRANS_CNT'] = plot_data['Credit+TRANS_CNT'] + plot_data['Debit+TRANS_CNT']
+
+    	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
+
+    	#plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
+
+    	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
+
+    @expose('/flowthrough/tabledata',methods=['POST'])
+    @has_access
+    def getFlowthroughTableData(self):
+
+    	flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+
+    	dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	#crDb = request.get_json()["crDb"]
+
+    	amtThreshold = request.get_json()["amtThreshNum"]
+
+    	def_volume_data = dst_path+"/"+dst_file
+
+    	table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+
+    	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
+
+    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))] 	
+
+    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/flowthrough/upload',methods=['POST','DELETE'])
+    @has_access
+    def getFlowthroughFileData(self):
+
+        flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+
+        dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+
+        if request.method == 'POST':
+            files = request.files['file']
+
+            if files:
+                filename = secure_filename(files.filename)
+
+                mime_type = files.content_type
+
+                if not self.allowed_file(files.filename):
+                    result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+
+                else:
+                    if not os.path.exists(dst_path):
+                        os.makedirs(dst_path)
+                    files.save(os.path.join((dst_path), filename))
+                    """
+                    self.s3.Object('vizrules', 'highRiskCountry/'+filename).put(Body=files)
+                    """
+
+        if request.method == 'DELETE':
+            keyname = request.get_json()["keyname"]
+            os.remove(dst_path+"/"+keyname)
+            """
+            bucket = self.s3.Bucket(self.bucket_name)
+            for key in bucket.objects.all():
+                 
+                 words = key.key.split('/')
+                 if len(words)==2 and words[0]=='highRiskCountry' and words[1]==keyname:
+                     key.delete()
+            """    
+
+        return  json.dumps({})
+
+
 
 
 @appbuilder.app.errorhandler(404)
@@ -780,5 +901,5 @@ appbuilder.add_link("Check Activity profiling", href='/rules/profiling/Check', c
 appbuilder.add_link("Remote Deposit Activity profiling", href='/rules/profiling/Remote', category='Rules')
 appbuilder.add_link("Wire Transfer Activity profiling", href='/rules/profiling/Wire', category='Rules')
 appbuilder.add_link("ACH Transfer Activity profiling", href='/rules/profiling/ACH', category='Rules')
-
+appbuilder.add_link("FLow-Through Activity Pattern", href='/rules/flowthrough', category='Rules')
 
