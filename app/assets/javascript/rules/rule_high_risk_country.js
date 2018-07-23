@@ -321,8 +321,13 @@ $(function(){
 	    showDone: false,                           
 	    showDelete: true,                          
 	    showDownload:false,
+	    statusBarWidth:590,
 	    onLoad: function(obj)
-	    {	    	
+	    {	
+	    	if (typeof obj.createProgress !== "undefined") { 
+			    obj.createProgress($('#reportPath').data('keyname'));
+			}
+	    	//     	
 	    },
 	    deleteCallback: function(data,pd)
 	    {

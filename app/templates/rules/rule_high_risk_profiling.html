@@ -20,7 +20,8 @@
 		    <form id="highRiskCtyForm">
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="reportPath">Choose your data file</label><a href="../../static/csv/rules/Trans_Min_High_Risk_Transfer.xlsx" target="_blank" id="filelink">Sample File</a></div>
-		            <div class="col-md-4 input-group" id="reportPath" data-keyname={{keyname}}>Upload</div>		            
+		            <div class="col-md-4 input-group" id="reportPath" data-keyname={{keyname}}>Upload</div>
+		            <div class="col-md-12 input-group"><font color='red'> * Upload CSV file with Following data elements in the specific sequence : [ACCOUNT_KEY,YearMonth,TRANS_AMT,SD of 6 Month,Mean of 6 Month,Credit+TRANS_CNT,Credit+TRANS_AMT,Debit+TRANS_CNT,Debit+TRANS_AMT,outlier]</font></div>		            
 		        </div>		        
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="amtThreshNum">Amount Threshold</label></div>
