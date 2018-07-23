@@ -435,7 +435,7 @@ $(function(){
   		pagination:false,
 	    columns: [{
 	        field: 'amt_min_data',
-	        title: 'MIN',
+	        title: 'MIN_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -444,7 +444,7 @@ $(function(){
 			},
 	    }, {
 	        field: 'amt_max_data',
-	        title: 'MAX',
+	        title: 'MAX_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -453,7 +453,7 @@ $(function(){
 			}
 	    }, {
 	        field: 'amt_median_data',
-	        title: 'MEDIAN',
+	        title: 'MEDIAN_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -462,7 +462,7 @@ $(function(){
 			}
 	    }, {
 	        field: 'amt_mean_data',
-	        title: 'MEAN',
+	        title: 'MEAN_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -476,25 +476,25 @@ $(function(){
   		pagination:false,
 	    columns: [{
 	        field: 'cnt_min_data',
-	        title: 'MIN',
+	        title: 'MIN_COUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return !value?0:value.toFixed(2);
 			},
 	    }, {
 	        field: 'cnt_max_data',
-	        title: 'MAX',
+	        title: 'MAX_COUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return !value?0:value.toFixed(2);
 			}
 	    }, {
 	        field: 'cnt_median_data',
-	        title: 'MEDIAN',
+	        title: 'MEDIAN_COUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return !value?0:value.toFixed(2);
 			}
 	    }, {
 	        field: 'cnt_mean_data',
-	        title: 'MEAN',
+	        title: 'MEAN_COUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return !value?0:value.toFixed(2);
 			}

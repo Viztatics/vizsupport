@@ -15,7 +15,7 @@
 {% block content %}
 	{{ lib.panel_begin("High Risk Country "+transCode) }}
 		<div class="panel panel-default">
-		  <div class="panel-heading">Query Area</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Query Area</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
 		        <div class="form-group form-inline">
@@ -26,7 +26,7 @@
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="threshNum">Define a threshold</label></div>
 		            <div class="col-md-4 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="100000" value="100000">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="1000" value="1000">
 		            </div>
 		        </div>
 		        <div class="form-group form-inline">
@@ -39,14 +39,14 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Statistics on Data</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Statistics on Data</div>
 		  <div class="panel-body">
 		  	<div class="form-group form-inline">
 	            <div class="col-md-2 input-group"><label for="isOutlier">Include Outlier</label></div>
 	            <div class="col-md-4 input-group">
 	            	<select class="form-control" id="isOutlier">
 					  <option value="1" selected="selected">Yes</option>
-					  <option value="0">no</option>
+					  <option value="0">No</option>
 					</select>
 	            </div>		            
 		    </div>
@@ -63,7 +63,7 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Scatter Identification</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Scatter Identification</div>
 		  <div class="panel-body">
 		    <div class="row">
 		        <div id="scatterChart" style="height:600px"></div>
@@ -72,7 +72,7 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Geography Heat Map</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Geography Heat Map</div>
 		  <div class="panel-body">
 		    <div class="row">
 		        <div id="heatChart" style="height:600px"></div>

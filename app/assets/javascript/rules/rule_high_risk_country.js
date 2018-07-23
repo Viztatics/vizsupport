@@ -364,7 +364,7 @@ $(function(){
   		pagination:false,
 	    columns: [{
 	        field: 'min_data',
-	        title: 'MIN',
+	        title: 'MIN_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -373,7 +373,7 @@ $(function(){
 			},
 	    }, {
 	        field: 'max_data',
-	        title: 'MAX',
+	        title: 'MAX_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -382,7 +382,7 @@ $(function(){
 			}
 	    }, {
 	        field: 'median_data',
-	        title: 'MEDIAN',
+	        title: 'MEDIAN_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
@@ -391,7 +391,7 @@ $(function(){
 			}
 	    }, {
 	        field: 'mean_data',
-	        title: 'MEAN',
+	        title: 'MEAN_AMOUNT',
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value|0).toLocaleString('en-US', {
 				  style: 'currency',
