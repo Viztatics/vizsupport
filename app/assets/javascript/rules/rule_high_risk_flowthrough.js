@@ -127,11 +127,14 @@ $(function(){
 	            }
 	        },	        
             markLine : {
+            	lineStyle:{
+            		color:'red',
+            	},
                 data: [
                 	[
 				        {
 				            name: 'lower',
-				            coord: [1000, 1111]
+				            coord: [100, 111]
 				        },
 				        {
 				            coord: [1000000, 900000]
@@ -140,7 +143,7 @@ $(function(){
 	                [
 				        {
 				            name: 'upper',
-				            coord: [1000, 1100]
+				            coord: [100, 110]
 				        },
 				        {
 				            coord: [1000000, 1100000]
