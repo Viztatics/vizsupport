@@ -232,6 +232,7 @@ class RuleView(BaseView):
     	plot_data = plot_data[['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date','outlier','Trans_Code_Type']]
 
     	plot_data = plot_data[plot_data['Trans_Code_Type']==transDesc(transCode)]
+    	plot_data = plot_data[(plot_data['Trans_Amt']>=100)]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
@@ -455,6 +456,7 @@ class RuleView(BaseView):
 
     	plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
     	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','Month of Trans Date','outlier']]
+    	plot_data = plot_data[(plot_data['TRANS_AMT']>=100)]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
@@ -689,6 +691,8 @@ class RuleView(BaseView):
 
     	plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
 
+    	plot_data = plot_data[(plot_data['TRANS_AMT']>=100)]
+
     	#plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
@@ -809,6 +813,8 @@ class RuleView(BaseView):
     	#plot_data['TRANS_CNT'] = plot_data['Credit+TRANS_CNT'] + plot_data['Debit+TRANS_CNT']
 
     	plot_data = plot_data[['Debit+TRANS_AMT','Credit+TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
+
+    	plot_data = plot_data[(plot_data['Debit+TRANS_AMT']>=100)&(plot_data['Credit+TRANS_AMT']>=100)]
 
     	#plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
 

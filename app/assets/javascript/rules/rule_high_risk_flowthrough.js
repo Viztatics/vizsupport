@@ -88,7 +88,7 @@ $(function(){
 
                 }
             },
-            min:1000
+            min:100
 	    },
 	    yAxis: {
 	    	name:'Dollar Out',
@@ -105,7 +105,7 @@ $(function(){
 
                 }
             },
-            min:1000
+            min:100
 	    },
 	    series: [{
 	        name: 'Normal',

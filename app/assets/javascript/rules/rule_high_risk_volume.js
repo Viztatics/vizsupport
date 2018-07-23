@@ -101,7 +101,7 @@ $(function(){
 
                 }
             },
-            min:1000
+            min:100
 	    },
 	    series: [{
 	        name: 'Normal',
@@ -152,7 +152,7 @@ $(function(){
 
 	var amtlineoption = {
 	    title : {
-	        text: 'Amount Percentile Distribution',
+	        text: 'Amount Percentile Distribution(Transanction Analysis)',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
@@ -181,6 +181,8 @@ $(function(){
 	            name:'',
 	            type:'line',
 	            smooth: true,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]
@@ -188,13 +190,14 @@ $(function(){
 
 	var amtlinebaroption = {
 		title : {
-	        text: 'Amount Pareto Analysis',
+	        text: 'Amount Pareto Analysis(Customer Analysis)',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
 	    },
 	    legend: {
-	        data:['Trans Amount','Cumulative Percentage']
+	        data:['Trans Amount','Cumulative Percentage'],
+	        left:'right',
 	    },
 	    grid:{
 	    	y2:'12%',
@@ -236,6 +239,8 @@ $(function(){
 	            name:'Cumulative Percentage',
 	            type:'line',
 	            yAxisIndex: 1,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]
@@ -243,7 +248,7 @@ $(function(){
 
 	var cntlineoption = {
 	    title : {
-	        text: 'Count Percentile Distribution',
+	        text: 'Count Percentile Distribution(Transanction Analysis)',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
@@ -265,6 +270,8 @@ $(function(){
 	            name:'',
 	            type:'line',
 	            smooth: true,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]
@@ -272,13 +279,14 @@ $(function(){
 
 	var cntlinebaroption = {
 		title : {
-	        text: 'Count Pareto Analysis',
+	        text: 'Count Pareto Analysis(Customer Analysis)',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
 	    },
 	    legend: {
-	        data:['Trans Count','Cumulative Percentage']
+	        data:['Trans Count','Cumulative Percentage'],
+	        left:'right',
 	    },
 	    grid:{
 	    	y2:'12%',
@@ -314,6 +322,8 @@ $(function(){
 	            name:'Cumulative Percentage',
 	            type:'line',
 	            yAxisIndex: 1,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]

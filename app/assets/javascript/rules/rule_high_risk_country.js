@@ -104,7 +104,7 @@ $(function(){
 
                 }
             },
-            min:1000
+            min:100
 	    },
 	    series: [{
 	        name: 'Normal',
@@ -154,7 +154,7 @@ $(function(){
 
 	var lineoption = {
 	    title : {
-	        text: 'Percentile Distribution',
+	        text: 'Percentile Distribution(Transanction Analysis)',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
@@ -183,6 +183,8 @@ $(function(){
 	            name:'',
 	            type:'line',
 	            smooth: true,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]
@@ -190,13 +192,14 @@ $(function(){
 
 	var linebaroption = {
 		title : {
-	        text: 'Pareto Analysis',
+	        text: 'Pareto Analysis(Customer Analysis)',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
 	    },
 	    legend: {
-	        data:['Trans Amount','Cumulative Percentage']
+	        data:['Trans Amount','Cumulative Percentage'],
+	        left:'right',
 	    },
 	    grid:{
 	    	y2:'12%',
@@ -238,6 +241,8 @@ $(function(){
 	            name:'Cumulative Percentage',
 	            type:'line',
 	            yAxisIndex: 1,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]
