@@ -33,6 +33,13 @@ import shutil
 """
     Application wide 404 error handler
 """
+def transTitle(transCode):
+
+	if transCode=='Wire' or transCode=='ACH' :
+		return transCode + ' Transfer'
+	elif transCode=='Remote' :
+		return transCode + ' Deposit'
+	return transCode
 
 def transDesc(transCode):
 
@@ -93,7 +100,7 @@ class RuleView(BaseView):
     		for child in p.iterdir():
     			keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-    		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname,transCode=transCode)
+    		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname,transCode=transTitle(transCode))
 
     @expose('/highRiskCountry/statisticsdata/<transCode>',methods=['POST'])
     def getHighRiskCountryStatisticsData(self,transCode):
@@ -328,7 +335,7 @@ class RuleView(BaseView):
     		for child in p.iterdir():
     			keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-    		return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname,transCode=transCode)
+    		return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname,transCode=transTitle(transCode))
 
     @expose('/highRiskVolume/statisticsdata/<transCode>',methods=['POST'])
     @has_access
@@ -555,7 +562,7 @@ class RuleView(BaseView):
     		for child in p.iterdir():
     			keyname = PurePath(child).name
         	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-    		return self.render_template('rules/rule_high_risk_profiling.html',keyname=keyname,transCode=transCode)
+    		return self.render_template('rules/rule_high_risk_profiling.html',keyname=keyname,transCode=transTitle(transCode))
 
     @expose('/profiling/statisticsdata/<transCode>',methods=['POST'])
     @has_access
@@ -907,5 +914,5 @@ appbuilder.add_link("Check Activity Profiling", href='/rules/profiling/Check', c
 appbuilder.add_link("Remote Deposit Activity Profiling", href='/rules/profiling/Remote', category='Rules')
 appbuilder.add_link("Wire Transfer Activity Profiling", href='/rules/profiling/Wire', category='Rules')
 appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/ACH', category='Rules')
-appbuilder.add_link("FLow-Through Activity Pattern", href='/rules/flowthrough', category='Rules')
+appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
 
