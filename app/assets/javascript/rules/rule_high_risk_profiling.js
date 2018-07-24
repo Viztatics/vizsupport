@@ -400,7 +400,7 @@ $(function(){
 		  		var alertdata = [];
 		  		var xAxisdata = [];
 		  		$.each(data,function(index, el) {
-		  			if(el['alert']==true){
+		  			if(el['alert']==true&&index>6){
 		  				alertdata.push([el['YearMonth'].toString(),el['TRANS_AMT']]);
 		  			}else{
 		  				normaldata.push([el['YearMonth'].toString(),el['TRANS_AMT']]);

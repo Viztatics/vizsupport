@@ -756,10 +756,12 @@ class RuleView(BaseView):
 
     	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
 
-    	table_data = table_data[(table_data['ACCOUNT_KEY']==accountid)] 	
+    	table_data = table_data[(table_data['ACCOUNT_KEY']==accountid)]
+
+    	table_data = table_data.sort_values(by=['YearMonth'])
 
     	table_data['alert'] = (table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['TRANS_AMT']>=(table_data['Mean of 6 Month']+int(minSD)*table_data['SD of 6 Month']))
-    	
+
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/profiling/upload',methods=['POST','DELETE'])
