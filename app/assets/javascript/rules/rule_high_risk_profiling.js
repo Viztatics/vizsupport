@@ -361,11 +361,13 @@ $(function(){
 	        {
 	            name:'Alert',
 	            type:'bar',
+	            stack: '1',
 	            data:[],
 	        },
 	        {
 	            name:'Non Alert',
 	            type:'bar',
+	            stack: '1',
 	            data:[],
 	        }
 	    ]
