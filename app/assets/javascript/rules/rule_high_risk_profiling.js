@@ -331,33 +331,40 @@ $(function(){
 
 	var	baroption = {
 	    title : {
-	        text: 'Profiling HBC',
+	        text: '',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
 	    },
 	    legend: {
-	        data:['Non Alert','Alert']
+	        data:['Alert','Non Alert']
 	    },
 	    xAxis : [
-	        {
+	        {	        	
 	            type : 'category',
 	            data : []
 	        }
 	    ],
 	    yAxis : [
 	        {
-	            type : 'value'
+	        	name : 'Trans Amt',
+	            type : 'value',
+	            axisLabel : {
+	                formatter: function(params){
+	                	return "$"+params/1000+"K"
+
+	                }
+	            },
 	        }
 	    ],
 	    series : [
 	        {
-	            name:'Non Alert',
+	            name:'Alert',
 	            type:'bar',
 	            data:[],
 	        },
 	        {
-	            name:'Alert',
+	            name:'Non Alert',
 	            type:'bar',
 	            data:[],
 	        }
@@ -389,23 +396,21 @@ $(function(){
 		  			,'amtThreshNum':$('#amtThreshNum').val(),'cntThreshNum':$('#cntThreshNum').val(),'minSD':$('#minSD').val()}),
 		  	success:function(data){
 
-		  		console.log(data);
 		  		var normaldata = [];
 		  		var alertdata = [];
 		  		var xAxisdata = [];
 		  		$.each(data,function(index, el) {
 		  			if(el['alert']==true){
-		  				alertdata.push(el['TRANS_AMT']);
-		  				normaldata.push(0);
+		  				alertdata.push([el['YearMonth'].toString(),el['TRANS_AMT']]);
 		  			}else{
-		  				alertdata.push(0);
-		  				normaldata.push(el['TRANS_AMT']);
+		  				normaldata.push([el['YearMonth'].toString(),el['TRANS_AMT']]);
 		  			}
-		  			xAxisdata.push(el['YearMonth']);		  			
+		  			xAxisdata.push(el['YearMonth']);	
+		  			baroption.title.text = el['ACCOUNT_KEY']	  			
 		  		});
-		  		baroption.xAxis[0].data = xAxisdata;
-			  	baroption.series[0].data = normaldata;
-			  	baroption.series[1].data = alertdata;
+		  		baroption.xAxis[0].data = xAxisdata;		  		
+			  	baroption.series[0].data = alertdata;
+			  	baroption.series[1].data = normaldata;
 			  	profilingChart.setOption(baroption);
 
 		  	}
