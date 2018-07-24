@@ -730,6 +730,38 @@ class RuleView(BaseView):
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
+    @expose('/profiling/ruledata/<transCode>',methods=['POST'])
+    @has_access
+    def getProfilingRuleData(self,transCode):
+
+    	profilingFolder = self.ACTIVITY_PROFILING_FOLDER_PREFIX+transCode
+
+    	dst_path = RULE_UPLOAD_FOLDER+profilingFolder+"/"+str(current_user.id)
+
+    	dst_file = request.get_json()["filename"]
+
+    	#crDb = request.get_json()["crDb"]
+
+    	accountid = request.get_json()["ACCOUNT_KEY"]
+
+    	amtThreshold = request.get_json()["amtThreshNum"]
+
+    	cntThreshold = request.get_json()["cntThreshNum"]
+
+    	minSD = request.get_json()["minSD"]
+
+    	def_volume_data = dst_path+"/"+dst_file
+
+    	table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','SD of 6 Month','Mean of 6 Month','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+
+    	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
+
+    	table_data = table_data[(table_data['ACCOUNT_KEY']==accountid)] 	
+
+    	table_data['alert'] = (table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['TRANS_AMT']>=(table_data['Mean of 6 Month']+int(minSD)*table_data['SD of 6 Month']))
+    	
+    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
     @expose('/profiling/upload',methods=['POST','DELETE'])
     @has_access
     def getProfilingFileData(self):

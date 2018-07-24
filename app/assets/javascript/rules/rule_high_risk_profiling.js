@@ -331,19 +331,18 @@ $(function(){
 
 	var	baroption = {
 	    title : {
-	        text: '某地区蒸发量和降水量',
-	        subtext: '纯属虚构'
+	        text: 'Profiling HBC',
 	    },
 	    tooltip : {
 	        trigger: 'axis'
 	    },
 	    legend: {
-	        data:['蒸发量','降水量']
+	        data:['Non Alert','Alert']
 	    },
 	    xAxis : [
 	        {
 	            type : 'category',
-	            data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+	            data : []
 	        }
 	    ],
 	    yAxis : [
@@ -353,36 +352,14 @@ $(function(){
 	    ],
 	    series : [
 	        {
-	            name:'蒸发量',
+	            name:'Non Alert',
 	            type:'bar',
-	            data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
-	            markPoint : {
-	                data : [
-	                    {type : 'max', name: '最大值'},
-	                    {type : 'min', name: '最小值'}
-	                ]
-	            },
-	            markLine : {
-	                data : [
-	                    {type : 'average', name: '平均值'}
-	                ]
-	            }
+	            data:[],
 	        },
 	        {
-	            name:'降水量',
+	            name:'Alert',
 	            type:'bar',
-	            data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
-	            markPoint : {
-	                data : [
-	                    {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183, symbolSize:18},
-	                    {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
-	                ]
-	            },
-	            markLine : {
-	                data : [
-	                    {type : 'average', name : '平均值'}
-	                ]
-	            }
+	            data:[],
 	        }
 	    ]
 	};
@@ -404,7 +381,35 @@ $(function(){
 
 	$('#scatterModal').on('shown.bs.modal', function (e) {
 		var profilingChart = echarts.init(document.getElementById('profilingChart'));
-		console.log($('#clickAccount').val());
+		$.ajax({
+		  	url: $SCRIPT_ROOT+'/rules/profiling/ruledata/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),'ACCOUNT_KEY':$('#clickAccount').val()
+		  			,'amtThreshNum':$('#amtThreshNum').val(),'cntThreshNum':$('#cntThreshNum').val(),'minSD':$('#minSD').val()}),
+		  	success:function(data){
+
+		  		console.log(data);
+		  		var normaldata = [];
+		  		var alertdata = [];
+		  		var xAxisdata = [];
+		  		$.each(data,function(index, el) {
+		  			if(el['alert']==true){
+		  				alertdata.push(el['TRANS_AMT']);
+		  				normaldata.push(0);
+		  			}else{
+		  				alertdata.push(0);
+		  				normaldata.push(el['TRANS_AMT']);
+		  			}
+		  			xAxisdata.push(el['YearMonth']);		  			
+		  		});
+		  		baroption.xAxis[0].data = xAxisdata;
+			  	baroption.series[0].data = normaldata;
+			  	baroption.series[1].data = alertdata;
+			  	profilingChart.setOption(baroption);
+
+		  	}
+		});
 	    profilingChart.setOption(baroption);
 	})
 
@@ -681,8 +686,8 @@ $(function(){
 	  	url: $SCRIPT_ROOT+'/rules/profiling/tabledata/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
-	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),crDb:$('#crDb').val()
-	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
+	  		,'amtThreshNum':$('#amtThreshNum').val(),'cntThreshNum':$('#cntThreshNum').val()
 	  	}),
 	  	success:function(data){
 
