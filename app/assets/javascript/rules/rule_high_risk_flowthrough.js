@@ -2,7 +2,8 @@ $(function(){
 
 	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/flowthrough/upload',
-	    maxFileCount: 1,                		   
+	    maxFileCount: 1, 
+	    maxFileSize:5*1024*1024,                		   
 	    allowedTypes: 'csv',  				       
 	    showFileSize: false,
 	    showDone: false,                           
