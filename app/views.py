@@ -811,6 +811,12 @@ class RuleView(BaseView):
 
     	dst_file = request.get_json()["filename"]
 
+    	amtThreshNum = request.get_json()["amtThreshNum"]
+
+    	lowerRatio = request.get_json()["lowerRatio"]
+
+    	upperRatio = request.get_json()["upperRatio"]
+
     	#crDb = request.get_json()["crDb"]
 
     	def_volume_data = dst_path+"/"+dst_file
@@ -822,6 +828,8 @@ class RuleView(BaseView):
     	plot_data = plot_data[['Debit+TRANS_AMT','Credit+TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
 
     	plot_data = plot_data[(plot_data['Debit+TRANS_AMT']>=100)&(plot_data['Credit+TRANS_AMT']>=100)]
+
+    	plot_data['outlier'] = (plot_data['Debit+TRANS_AMT']+plot_data['Credit+TRANS_AMT']>=int(amtThreshNum))&((plot_data['Credit+TRANS_AMT']/plot_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((plot_data['Credit+TRANS_AMT']/plot_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))
 
     	#plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
 
@@ -841,13 +849,15 @@ class RuleView(BaseView):
 
     	amtThreshold = request.get_json()["amtThreshNum"]
 
+    	lowerRatio = request.get_json()["lowerRatio"]
+
+    	upperRatio = request.get_json()["upperRatio"]
+
     	def_volume_data = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+    	table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','TRANS_AMT','outlier'])
 
-    	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
-
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))] 	
+    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))] 	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 

@@ -53,7 +53,7 @@ $(function(){
 	    },
 	    legend: {
 	        right: 10,
-	        data: ['Normal', 'Outlier']
+	        data: ['Non-Alert', 'Alert']
 	    },
 	    tooltip : {
 	        padding: 10,
@@ -108,7 +108,7 @@ $(function(){
             min:100
 	    },
 	    series: [{
-	        name: 'Normal',
+	        name: 'Non-Alert',
 	        data: [
             ],
 	        type: 'scatter',
@@ -128,7 +128,7 @@ $(function(){
 	        },	        
             markLine : {
             	lineStyle:{
-            		color:'red',
+            		color:'green',
             	},
                 data: [
                 	[
@@ -152,7 +152,7 @@ $(function(){
 				]
             },
 	    },{
-	        name: 'Outlier',
+	        name: 'Alert',
 	        data: [
             ],
 	        type: 'scatter',
@@ -225,14 +225,21 @@ $(function(){
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({
-	  		'filename':$('#reportPath').data('keyname')
+	  		'filename':$('#reportPath').data('keyname'),
+	  		'amtThreshNum':$('#amtThreshNum').val(),
+	  		'lowerRatio':$('#lowerRatio').val(),
+	  		'upperRatio':$('#upperRatio').val(),
 	  	}),
 	  	success:function(data){
 	  		var normaldata = [];
 	  		var outlierdata = [];
-	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
+	  		data.data.map(x => x[4]==true?outlierdata.push(x):normaldata.push(x));
 		  	scatteroption.series[0].data = normaldata;
 		  	scatteroption.series[1].data = outlierdata;
+		  	scatteroption.series[0].markLine.data[0][0].coord = [100/$('#lowerRatio').val()*100,100]
+		  	scatteroption.series[0].markLine.data[0][1].coord = [1000000,1000000*$('#lowerRatio').val()/100]
+		  	scatteroption.series[0].markLine.data[1][0].coord = [100,100*$('#upperRatio').val()/100]
+		  	scatteroption.series[0].markLine.data[1][1].coord = [1000000/$('#upperRatio').val()*100,1000000]
 		  	scatterChart.setOption(scatteroption);
 	  	}
 	  });
@@ -241,7 +248,10 @@ $(function(){
 	  	url: $SCRIPT_ROOT+'/rules/flowthrough/tabledata',
 	  	type: 'POST',
 	  	contentType:'application/json',
-	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),amtThreshNum:$('#amtThreshNum').val()
+	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),
+	  		'amtThreshNum':$('#amtThreshNum').val(),
+	  		'lowerRatio':$('#lowerRatio').val(),
+	  		'upperRatio':$('#upperRatio').val(),
 	  	}),
 	  	success:function(data){
 
