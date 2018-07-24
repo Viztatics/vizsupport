@@ -397,12 +397,14 @@ $(function(){
 	
 	scatterChart.on('click', function(data){
 		console.log(data);
+		$('#clickAccount').val(data.data[2]);
 		$('#scatterModal').modal('show'); 
 		
 	});
 
 	$('#scatterModal').on('shown.bs.modal', function (e) {
 		var profilingChart = echarts.init(document.getElementById('profilingChart'));
+		console.log($('#clickAccount').val());
 	    profilingChart.setOption(baroption);
 	})
 
