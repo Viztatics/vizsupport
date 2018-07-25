@@ -128,6 +128,7 @@ $(function(){
 	            }
 	        },	        
             markLine : {
+            	silent:true,
             	lineStyle:{
             		color:'green',
             	},

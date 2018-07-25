@@ -124,6 +124,7 @@ $(function(){
 	            }
 	        },	        
             markLine : {
+            	silent:true,
                 data : [
                     {name: 'ythreshold',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
                     {name: 'xthreshold',xAxis: 5, itemStyle:{normal:{color:'#1e90ff'}}},

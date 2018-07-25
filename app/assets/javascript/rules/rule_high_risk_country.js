@@ -126,6 +126,7 @@ $(function(){
 	            }
 	        },	        
             markLine : {
+            	silent:true,
                 data : [
                     {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
                 ]
