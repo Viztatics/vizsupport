@@ -416,6 +416,11 @@ $(function(){
 		  		pagination:true,
 		  		exportDataType: 'all',
 			    columns: [{
+		          field: 'state',
+		          checkbox: true,
+		          align: 'center',
+		          valign: 'middle'
+		        }, {
 			        field: 'ACCOUNT_KEY',
 			        title: 'ACCOUNT'
 			    }, {
@@ -438,6 +443,12 @@ $(function(){
 					},
 			    }],
 			});
+	$('#alertTable').on('check.bs.table', function (e, row, $el) {
+    	alert('check index: ' + $el.closest('tr').data('index'));
+    });
+    $('#alertTable').on('uncheck.bs.table', function (e, row, $el) {
+    	alert('uncheck index: ' + $el.closest('tr').data('index'));
+    });
 
 	var mapData = [
 			{'code':'AF' , 'name':'Afghanistan', 'value':32358260, 'color':'#eea638'},
