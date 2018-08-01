@@ -2,6 +2,7 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 {% block head_css %}
     {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
     <style type="text/css">
@@ -93,6 +94,7 @@
 		    </div>
 		  </div>
 		</div>
+		<div id="mask"></div>
 
 
 	{{ lib.panel_end() }}

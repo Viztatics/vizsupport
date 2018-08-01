@@ -1,5 +1,13 @@
 $(function(){
 
+	$(document).ajaxStop(function () {
+        $('#mask').removeClass('lmask');	
+    });
+
+    $(document).ajaxStart(function () {
+        $('#mask').addClass('lmask');	
+    });
+
 	var pathname = window.location.pathname;
 	var patharr = pathname.split("/");
 	var transcode = patharr[patharr.length - 1];
@@ -772,10 +780,9 @@ $(function(){
 	  	contentType:'application/json',
 	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
 	  	success:function(data){
-	  		$('#alertTable').bootstrapTable('load',data);		  	
+	  		$('#alertTable').bootstrapTable('load',data);	  			  	
 	  	}
 	  });
-
 
 	});
 
