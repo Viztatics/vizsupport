@@ -443,12 +443,25 @@ $(function(){
 					},
 			    }],
 			});
-	$('#alertTable').on('check.bs.table', function (e, row, $el) {
-    	alert('check index: ' + $el.closest('tr').data('index'));
-    });
-    $('#alertTable').on('uncheck.bs.table', function (e, row, $el) {
-    	alert('uncheck index: ' + $el.closest('tr').data('index'));
-    });
+
+    $('#alertTable').closest('.fixed-table-container').css('height', '450px');    
+
+    $('#alertTable').on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', () => {
+    	
+	    $('#crtAlertBtn').prop('disabled', !$('#alertTable').bootstrapTable('getSelections').length);
+	});
+
+	$('#crtAlertBtn').click(() => {
+		ids = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
+    		console.log(item);
+    		return item.ID;
+    	});
+	    $('#alertTable').bootstrapTable('remove', {
+	      field: 'ID',
+	      values: ids
+	    });
+	    $('#crtAlertBtn').prop('disabled', true);
+	});
 
 	var mapData = [
 			{'code':'AF' , 'name':'Afghanistan', 'value':32358260, 'color':'#eea638'},

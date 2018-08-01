@@ -263,6 +263,8 @@ class RuleView(BaseView):
 
     	table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
 
+    	table_data['ID'] = table_data.index
+
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/highRiskCountry/upload/<transCode>',methods=['POST','DELETE'])
