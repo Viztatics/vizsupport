@@ -36,7 +36,8 @@ class VizRules(AuditMixin,Model):
 class VizAlerts(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
     rule = Column(String(50), unique = True, nullable=False)
-    file = Column(String(100), unique = True, nullable=False)
+    account_key = Column(String(100), unique = True, nullable=False)
+    Amount = Column(Integer,nullable=False)
 
     def __repr__(self):
         return self.name
