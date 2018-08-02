@@ -938,7 +938,20 @@ class RuleView(BaseView):
 
         return  json.dumps({})
 
+class AlertView(BaseView):
 
+    route_base = '/alerts'
+
+    """
+    Alert Management
+    """        
+
+    @expose('/managment')
+    @has_access
+    def alertMgt(self):
+
+
+    	return self.render_template('alerts/alertMgt.html')
 
 
 @appbuilder.app.errorhandler(404)
@@ -961,4 +974,5 @@ appbuilder.add_link("Remote Deposit Activity Profiling", href='/rules/profiling/
 appbuilder.add_link("Wire Transfer Activity Profiling", href='/rules/profiling/Wire', category='Rules')
 appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/ACH', category='Rules')
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
+appbuilder.add_view(AlertView, "Alert Management", href='/alerts/managment',category='Alerts')
 

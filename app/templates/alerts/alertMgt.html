@@ -1,0 +1,37 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
+{% endblock %}
+{% block content %}
+
+{{ lib.panel_begin('Alert Management') }}
+
+<div class="panel panel-default">
+  <div class="panel-heading" style="background-color: #dff0d8;">Alert Distribution</div>
+  <div class="panel-body">
+    <div class="row">
+        <div class="col-md-6" id="statusChart" style="height:400px">
+        </div>
+        <div class="col-md-6" id="ruleChart" style="height:400px">
+        </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+        <div id="barChart" style="height:400px"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block tail_js %}
+	{{super()}}
+    <script type="text/javascript">
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-validation/dist/jquery.validate.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/javascript/alerts/alertMgt.js')}}"></script>    
+{% endblock %}

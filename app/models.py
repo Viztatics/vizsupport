@@ -32,4 +32,12 @@ class VizRules(AuditMixin,Model):
 
     def __repr__(self):
         return self.name
+
+class VizAlerts(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    rule = Column(String(50), unique = True, nullable=False)
+    file = Column(String(100), unique = True, nullable=False)
+
+    def __repr__(self):
+        return self.name
         
