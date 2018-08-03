@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
 from .fileUtils import *
-from .models import Company
+from .models import Company, VizAlerts, StatusEnum, TypeEnum
 
 import numpy as np
 import pandas as pd
@@ -266,6 +266,22 @@ class RuleView(BaseView):
     	table_data['ID'] = table_data.index
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskCountry/alertdata',methods=['POST'])
+    @has_access
+    def createHighRiskCountryAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		print(item)
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.rule_high_risk_country,rule_status=StatusEnum.rule_open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
+
 
     @expose('/highRiskCountry/upload/<transCode>',methods=['POST','DELETE'])
     @has_access
@@ -941,6 +957,7 @@ class RuleView(BaseView):
 class AlertView(BaseView):
 
     route_base = '/alerts'
+    datamodel = SQLAInterface(VizAlerts)
 
     """
     Alert Management
@@ -950,6 +967,9 @@ class AlertView(BaseView):
     @has_access
     def alertMgt(self):
 
+    	print(current_user.roles)
+    	status_result = self.datamodel.query_simple_group(group_by='rule_status',filters={'changed_by_fk':current_user.id})
+    	print(status_result)
 
     	return self.render_template('alerts/alertMgt.html')
 
