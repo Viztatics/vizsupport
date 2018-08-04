@@ -944,7 +944,23 @@ class RuleView(BaseView):
 
     	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))] 	
 
+    	table_data['ID'] = table_data.index	
+
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/flowthrough/alertdata',methods=['POST'])
+    @has_access
+    def createHighRiskCountryAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.flow_through,rule_status=StatusEnum.open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
 
     @expose('/flowthrough/upload',methods=['POST','DELETE'])
     @has_access
