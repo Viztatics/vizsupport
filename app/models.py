@@ -48,6 +48,7 @@ class VizAlerts(AuditMixin,Model):
     country_abbr = Column(String(100))
     country_name = Column(String(100))
     amount = Column(Integer,nullable=False)
+    cnt = Column(Integer,nullable=True)
     rule_type = Column(Enum(TypeEnum))
     rule_status = Column(Enum(StatusEnum))
 

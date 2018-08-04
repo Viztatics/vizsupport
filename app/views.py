@@ -760,7 +760,9 @@ class RuleView(BaseView):
 
     	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
 
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 	
+    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 
+
+    	table_data['ID'] = table_data.index	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
@@ -797,6 +799,21 @@ class RuleView(BaseView):
     	table_data['alert'] = (table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['TRANS_AMT']>=(table_data['Mean of 6 Month']+int(minSD)*table_data['SD of 6 Month']))
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+
+    @expose('/profiling/alertdata',methods=['POST'])
+    @has_access
+    def createHighRiskCountryAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.profiling,rule_status=StatusEnum.open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
 
     @expose('/profiling/upload',methods=['POST','DELETE'])
     @has_access
