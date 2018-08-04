@@ -12,9 +12,9 @@
   <div class="panel-heading" style="background-color: #dff0d8;">Alert Distribution</div>
   <div class="panel-body">
     <div class="row">
-        <div class="col-md-6" id="statusChart" style="height:400px">
+        <div class="col-md-6" id="statusChart" data-status="{{status_result}}" style="height:400px">
         </div>
-        <div class="col-md-6" id="ruleChart" style="height:400px">
+        <div class="col-md-6" id="typeChart" data-type="{{type_result}}" style="height:400px">
         </div>
     </div>
   </div>
@@ -24,6 +24,7 @@
     </div>
   </div>
 </div>
+<div id="mask"></div>
 
 {% endblock %}
 {% block tail_js %}

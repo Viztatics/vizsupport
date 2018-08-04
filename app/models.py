@@ -15,15 +15,15 @@ AuditMixin will add automatic timestamp of created and modified by who
 """
 
 class StatusEnum(enum.Enum):
-    rule_open = 1
-    rule_close_true = 2
-    rule_close_false = 3
+    open = 1
+    close_true = 2
+    close_false = 3
 
 class TypeEnum(enum.Enum):
-    rule_high_risk_country = 1
-    rule_high_volume_value = 2
-    rule_profiling = 3
-    rule_flow_through = 4
+    high_risk_country = 1
+    high_volume_value = 2
+    profiling = 3
+    flow_through = 4
 
 class Company(Model):
     id = Column(Integer, primary_key=True)
@@ -41,9 +41,6 @@ class VizRules(AuditMixin,Model):
     rule = Column(String(50), unique = True, nullable=False)
     file = Column(String(100), unique = True, nullable=False)
 
-    def __repr__(self):
-        return self.name
-
 class VizAlerts(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
     account_key = Column(String(100), nullable=False)
@@ -55,5 +52,5 @@ class VizAlerts(AuditMixin,Model):
     rule_status = Column(Enum(StatusEnum))
 
     def __repr__(self):
-        return self.name
+        return self.account_key + " "+ self.country_name
         

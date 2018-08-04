@@ -1,7 +1,8 @@
-from flask import render_template, request, Response
+from flask import render_template, request, Response, jsonify
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
+from sqlalchemy import func
 from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
@@ -275,8 +276,7 @@ class RuleView(BaseView):
 
     	for item in items:
 
-    		print(item)
-    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.rule_high_risk_country,rule_status=StatusEnum.rule_open)
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.high_risk_country,rule_status=StatusEnum.open)
     		self.appbuilder.get_session.add(alertdata)
 
     	self.appbuilder.get_session.commit()
@@ -957,7 +957,7 @@ class RuleView(BaseView):
 class AlertView(BaseView):
 
     route_base = '/alerts'
-    datamodel = SQLAInterface(VizAlerts)
+    #datamodel = SQLAInterface(VizAlerts)
 
     """
     Alert Management
@@ -968,10 +968,11 @@ class AlertView(BaseView):
     def alertMgt(self):
 
     	print(current_user.roles)
-    	status_result = self.datamodel.query_simple_group(group_by='rule_status',filters={'changed_by_fk':current_user.id})
-    	print(status_result)
-
-    	return self.render_template('alerts/alertMgt.html')
+    	status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter_by(created_by_fk=current_user.id)
+    	type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).group_by(VizAlerts.rule_type).filter_by(created_by_fk=current_user.id)
+    	status_result = [r for r in status_result]
+    	type_result = [r for r in type_result]
+    	return self.render_template('alerts/alertMgt.html',status_result=status_result,type_result=type_result)
 
 
 @appbuilder.app.errorhandler(404)
