@@ -23,10 +23,8 @@ $(function(){
 	    },
 	    legend: {
 	        orient: 'vertical',
-	        right: 10,
-	        top: 20,
-	        bottom: 20,
-	        data: ['Open','True','False']
+	        x : 'right',
+	        data: ['Open','Close_True','Close_False']
 	    },
 	    series : [
 	        {
@@ -57,10 +55,8 @@ $(function(){
 	    },
 	    legend: {
 	        orient: 'vertical',
-	        right: 10,
-	        top: 20,
-	        bottom: 20,
-	        data: ['Open','True','False']
+        	x : 'right',
+	        data: ['High_Risk_Country','High_Volume_Value','Profiling','Flow_Through']
 	    },
 	    series : [
 	        {
@@ -87,22 +83,46 @@ $(function(){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/highRiskCountry/paretodata/'+transcode,
+		  	url: $SCRIPT_ROOT+'/alerts/management/statuschart',
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
+		  	data: JSON.stringify({}),
 		  	success:function(data){
 
 				if(data){
-					linebaroption.xAxis[0].data=[];
-					linebaroption.series[0].data=[];
-					linebaroption.series[1].data=[];
-					data.forEach(function(singledata){
-						linebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-						linebaroption.series[0].data.push(singledata['Trans_Amt'].toFixed(2));
-				  		linebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-					    paretoChart.setOption(linebaroption);
-				  	})
+					statusOption.series[0].data=[];
+					console.log(data);
+					for (var i = 0; i < data.length; i++)
+					{
+					    statusOption.series[0].data.push({name:data[i][1],value:data[i][0]})
+					}
+					console.log(statusOption);
+					statusChart.setOption(statusOption);
+				}				
+			}
+		});
+
+	};
+
+	var getTypeChart=function(){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/typechart',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+
+				if(data){
+					typeOption.series[0].data=[];
+					console.log(data);
+					for (var i = 0; i < data.length; i++)
+					{
+					    typeOption.series[0].data.push({name:data[i][1],value:data[i][0]})
+					}
+					console.log(typeOption);
+					typeChart.setOption(typeOption);
 				}				
 			}
 		});
@@ -111,8 +131,8 @@ $(function(){
 
 	var init=function(){
 
-		console.log($('#statusChart').data('status'));
-		console.log($('#typeChart').data('type'));
+		getStatusChart();
+		getTypeChart();
 
 	};
 

@@ -15,15 +15,15 @@ AuditMixin will add automatic timestamp of created and modified by who
 """
 
 class StatusEnum(enum.Enum):
-    open = 1
-    close_true = 2
-    close_false = 3
+    Open = 1
+    Close_True = 2
+    Close_False = 3
 
 class TypeEnum(enum.Enum):
-    high_risk_country = 1
-    high_volume_value = 2
-    profiling = 3
-    flow_through = 4
+    High_Risk_Country = 1
+    High_Volume_Value = 2
+    Profiling = 3
+    Flow_Through = 4
 
 class Company(Model):
     id = Column(Integer, primary_key=True)
