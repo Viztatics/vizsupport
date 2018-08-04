@@ -507,9 +507,25 @@ class RuleView(BaseView):
 
     	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
 
-    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]    	
+    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]    
+
+    	table_data['ID'] = table_data.index	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskVolume/alertdata',methods=['POST'])
+    @has_access
+    def createHighRiskCountryAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],rule_type=TypeEnum.high_volume_value,rule_status=StatusEnum.open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
 
     @expose('/highRiskVolume/upload',methods=['POST','DELETE'])
     @has_access
