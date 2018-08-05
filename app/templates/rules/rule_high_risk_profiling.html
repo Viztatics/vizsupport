@@ -2,6 +2,7 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 {% block head_css %}
     {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
     <style type="text/css">
@@ -105,7 +106,12 @@
 		  <div class="panel-heading" style="background-color: #dff0d8;">Alert Table</div>
 		  <div class="panel-body">
 		    <div class="row">
-		        <table id="alertTable" data-show-export="true"></table>
+		    	<div id="toolbar" style="position: relative;top: 45px;margin-top: -45px;">
+				  <button id="crtAlertBtn" class="btn btn-danger" disabled>
+				    <i class="glyphicon glyphicon-transfer"></i>Create Alerts
+				  </button>
+				</div>
+		        <table id="alertTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
 		    </div>
 		  </div>
 		</div>
@@ -127,6 +133,8 @@
 		    </div>
 		  </div>
 		</div>
+
+		<div id="mask"></div>
 
 	{{ lib.panel_end() }}
 {% endblock %}

@@ -1,5 +1,14 @@
 $(function(){
 
+	$(document).ajaxStop(function () {
+        $('#mask').removeClass('lmask');	
+    });
+
+    $(document).ajaxStart(function () {
+        $('#mask').addClass('lmask');	
+    });
+
+
 	var pathname = window.location.pathname;
 	var patharr = pathname.split("/");
 	var transcode = patharr[patharr.length - 1];
@@ -602,6 +611,11 @@ $(function(){
   		pagination:true,
   		exportDataType: 'all',
 	    columns: [{
+          field: 'state',
+          checkbox: true,
+          align: 'center',
+          valign: 'middle'
+        }, {
 	        field: 'ACCOUNT_KEY',
 	        title: 'ACCOUNT'
 	    }, {
@@ -620,6 +634,38 @@ $(function(){
 	        field: 'TRANS_CNT',
 	        title: 'Trans Count'
 	    }],
+	});
+
+	$('#alertTable').closest('.fixed-table-container').css('height', '450px');    
+
+    $('#alertTable').on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', () => {
+    	
+	    $('#crtAlertBtn').prop('disabled', !$('#alertTable').bootstrapTable('getSelections').length);
+	});
+
+	$('#crtAlertBtn').click(() => {
+		ids = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
+    		return item.ID;
+    	});
+    	items = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
+    		return item;
+    	});
+    	console.log(ids);
+	    $('#alertTable').bootstrapTable('remove', {
+	      field: 'ID',
+	      values: ids
+	    });
+	    $('#crtAlertBtn').prop('disabled', true);
+
+	    $.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/alertdata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'items':items}),
+		  	success:function(data){	  	
+		  	}
+		  });
 	});
 
 	getprofilingStatics(1);

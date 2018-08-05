@@ -1,12 +1,13 @@
-from flask import render_template, request, Response
+from flask import render_template, request, Response, jsonify
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
+from sqlalchemy import func
 from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
 from .fileUtils import *
-from .models import Company
+from .models import Company, VizAlerts, StatusEnum, TypeEnum
 
 import numpy as np
 import pandas as pd
@@ -267,6 +268,21 @@ class RuleView(BaseView):
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
+    @expose('/highRiskCountry/alertdata',methods=['POST'])
+    @has_access
+    def createHighRiskCountryAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
+
+
     @expose('/highRiskCountry/upload/<transCode>',methods=['POST','DELETE'])
     @has_access
     def getHighRiskCountryFileData(self,transCode):
@@ -491,9 +507,25 @@ class RuleView(BaseView):
 
     	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
 
-    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]    	
+    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]    
+
+    	table_data['ID'] = table_data.index	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/highRiskVolume/alertdata',methods=['POST'])
+    @has_access
+    def createHighRiskVolumeAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
 
     @expose('/highRiskVolume/upload',methods=['POST','DELETE'])
     @has_access
@@ -728,7 +760,9 @@ class RuleView(BaseView):
 
     	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
 
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 	
+    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 
+
+    	table_data['ID'] = table_data.index	
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
@@ -765,6 +799,21 @@ class RuleView(BaseView):
     	table_data['alert'] = (table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['TRANS_AMT']>=(table_data['Mean of 6 Month']+int(minSD)*table_data['SD of 6 Month']))
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+
+    @expose('/profiling/alertdata',methods=['POST'])
+    @has_access
+    def createProfilingAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
 
     @expose('/profiling/upload',methods=['POST','DELETE'])
     @has_access
@@ -895,7 +944,23 @@ class RuleView(BaseView):
 
     	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))] 	
 
+    	table_data['ID'] = table_data.index	
+
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/flowthrough/alertdata',methods=['POST'])
+    @has_access
+    def createFlowThroughAlertData(self):
+
+    	items = request.get_json()["items"]
+
+    	for item in items:
+
+    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open)
+    		self.appbuilder.get_session.add(alertdata)
+
+    	self.appbuilder.get_session.commit()
+    	return  json.dumps({})
 
     @expose('/flowthrough/upload',methods=['POST','DELETE'])
     @has_access
@@ -941,17 +1006,34 @@ class RuleView(BaseView):
 class AlertView(BaseView):
 
     route_base = '/alerts'
+    #datamodel = SQLAInterface(VizAlerts)
 
     """
     Alert Management
     """        
 
-    @expose('/managment')
+    @expose('/management/index')
     @has_access
     def alertMgt(self):
 
-
+    	print(current_user.roles)
     	return self.render_template('alerts/alertMgt.html')
+
+    @expose('/management/statuschart',methods=['POST'])
+    @has_access
+    def getStatusChartData(self):
+
+    	status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter_by(created_by_fk=current_user.id)
+    	status_result = [r for r in status_result]
+    	return Response(pd.io.json.dumps(status_result), mimetype='application/json')
+
+    @expose('/management/typechart',methods=['POST'])
+    @has_access
+    def getTypeChartData(self):
+
+    	type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).group_by(VizAlerts.rule_type).filter_by(created_by_fk=current_user.id)
+    	type_result = [r for r in type_result]
+    	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
 
 @appbuilder.app.errorhandler(404)
@@ -974,5 +1056,5 @@ appbuilder.add_link("Remote Deposit Activity Profiling", href='/rules/profiling/
 appbuilder.add_link("Wire Transfer Activity Profiling", href='/rules/profiling/Wire', category='Rules')
 appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/ACH', category='Rules')
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
-appbuilder.add_view(AlertView, "Alert Management", href='/alerts/managment',category='Alerts')
+appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Alerts')
 

@@ -461,14 +461,26 @@ $(function(){
 
 	$('#crtAlertBtn').click(() => {
 		ids = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
-    		console.log(item);
     		return item.ID;
+    	});
+    	items = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
+    		return item;
     	});
 	    $('#alertTable').bootstrapTable('remove', {
 	      field: 'ID',
 	      values: ids
 	    });
 	    $('#crtAlertBtn').prop('disabled', true);
+
+	    $.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/alertdata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'items':items}),
+		  	success:function(data){	  	
+		  	}
+		  });
 	});
 
 	var mapData = [
