@@ -76,10 +76,55 @@ $(function(){
 	    ]
 	};
 
+	let barOption = {
+	    tooltip : {
+	        trigger: 'axis',
+	        axisPointer : {            
+	            type : 'line'        
+	        }
+	    },
+	    legend: {
+	        data:['Open','Close_True','Close_False']
+	    },
+	    xAxis : [
+	        {
+	        	name : 'analyst',
+	            type : 'category',
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	        	name : 'alerts',
+	            type : 'value'
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'Open',
+	            type:'bar',
+	            stack: 'status',
+	            data:[]
+	        },
+	        {
+	            name:'Close_True',
+	            type:'bar',
+	            stack: 'status',
+	            data:[]
+	        },
+	        {
+	            name:'Close_False',
+	            type:'bar',
+	            stack: 'status',
+	            data:[]
+	        }
+	    ]
+	};
+
 	statusChart.setOption(statusOption);
 	typeChart.setOption(typeOption);
 
-	var getStatusChart=function(){
+	let getStatusChart=function(){
 
 		$.ajax({
 			cache: false,
@@ -91,12 +136,10 @@ $(function(){
 
 				if(data){
 					statusOption.series[0].data=[];
-					console.log(data);
-					for (var i = 0; i < data.length; i++)
+					for (let i = 0; i < data.length; i++)
 					{
 					    statusOption.series[0].data.push({name:data[i][1],value:data[i][0]})
 					}
-					console.log(statusOption);
 					statusChart.setOption(statusOption);
 				}				
 			}
@@ -104,7 +147,7 @@ $(function(){
 
 	};
 
-	var getTypeChart=function(){
+	let getTypeChart=function(){
 
 		$.ajax({
 			cache: false,
@@ -116,12 +159,10 @@ $(function(){
 
 				if(data){
 					typeOption.series[0].data=[];
-					console.log(data);
-					for (var i = 0; i < data.length; i++)
+					for (let i = 0; i < data.length; i++)
 					{
 					    typeOption.series[0].data.push({name:data[i][1],value:data[i][0]})
 					}
-					console.log(typeOption);
 					typeChart.setOption(typeOption);
 				}				
 			}
@@ -129,10 +170,39 @@ $(function(){
 
 	};
 
-	var init=function(){
+	let getBarChart=function(){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/barchart',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+
+				console.log(data);	
+				if(data){
+					barOption.xAxis[0].data=[];
+					barOption.series[0].data=[];
+					for (let i = 0; i < data.length; i++)
+					{
+						if($.inArray(data[i][1], barOption.xAxis[0].data) === -1) barOption.xAxis[0].data.push(data[i][1]);
+						if(barOption.series[i%3].name == data[i][2]){
+							barOption.series[i%3].data.push({name:data[i][1],value:data[i][0]})
+						}					    
+					}
+					barChart.setOption(barOption);
+				}			
+			}
+		});
+
+	};
+
+	let init=function(){
 
 		getStatusChart();
 		getTypeChart();
+		getBarChart();
 
 	};
 

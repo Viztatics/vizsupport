@@ -1,5 +1,6 @@
 from flask import render_template, request, Response, jsonify
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
 from sqlalchemy import func
@@ -1023,7 +1024,7 @@ class AlertView(BaseView):
     @has_access
     def getStatusChartData(self):
 
-    	status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter_by(created_by_fk=current_user.id)
+    	status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter_by(changed_by_fk=current_user.id)
     	status_result = [r for r in status_result]
     	return Response(pd.io.json.dumps(status_result), mimetype='application/json')
 
@@ -1031,7 +1032,15 @@ class AlertView(BaseView):
     @has_access
     def getTypeChartData(self):
 
-    	type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).group_by(VizAlerts.rule_type).filter_by(created_by_fk=current_user.id)
+    	type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).group_by(VizAlerts.rule_type).filter_by(changed_by_fk=current_user.id)
+    	type_result = [r for r in type_result]
+    	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
+
+    @expose('/management/barchart',methods=['POST'])
+    @has_access
+    def getBarChartData(self):
+
+    	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.changed_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizAlerts.changed_by_fk==current_user.id).order_by(User.id)
     	type_result = [r for r in type_result]
     	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
