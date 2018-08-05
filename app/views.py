@@ -1017,8 +1017,12 @@ class AlertView(BaseView):
     @has_access
     def alertMgt(self):
 
-    	print(current_user.roles)
-    	return self.render_template('alerts/alertMgt.html')
+    	is_analysis_manager = False
+    	for role in current_user.roles:
+    		if role.name=='AnalysisManager':
+    			is_analysis_manager = True
+
+    	return self.render_template('alerts/alertMgt.html',is_analysis_manager=is_analysis_manager)
 
     @expose('/management/statuschart',methods=['POST'])
     @has_access

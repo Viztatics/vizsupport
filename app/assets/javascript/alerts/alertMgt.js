@@ -77,6 +77,10 @@ $(function(){
 	};
 
 	let barOption = {
+		title : {
+	        text: 'Alerts Analysts Distribution',
+	        x:'center'
+	    },
 	    tooltip : {
 	        trigger: 'axis',
 	        axisPointer : {            
@@ -84,6 +88,8 @@ $(function(){
 	        }
 	    },
 	    legend: {
+	    	orient: 'vertical',
+        	x : 'right',
 	        data:['Open','Close_True','Close_False']
 	    },
 	    xAxis : [
@@ -202,7 +208,11 @@ $(function(){
 
 		getStatusChart();
 		getTypeChart();
-		getBarChart();
+		if($('#alertMgt').data('ismanager')=='True'){		
+			getBarChart();
+		}else{
+			$('#managerBar').css('display', 'none');
+		}		
 
 	};
 
