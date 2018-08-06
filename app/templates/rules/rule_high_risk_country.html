@@ -82,7 +82,7 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading">Alert Table</div>
+		  <div class="panel-heading">Output Results</div>
 		  <div class="panel-body">
 		    <div class="row">
 		    	<div id="toolbar" style="position: relative;top: 45px;margin-top: -45px;">
@@ -94,6 +94,24 @@
 		    </div>
 		  </div>
 		</div>
+
+		<div class="modal fade" id="alertModal" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Notice</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p><span id="alertNum" style="color:red"></span> Output Results sent to Alerts!</p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
 		<div id="mask"></div>
 
 

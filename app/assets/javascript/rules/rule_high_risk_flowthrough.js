@@ -240,6 +240,8 @@ $(function(){
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'items':items}),
 		  	success:function(data){	  	
+		  		$('#alertNum').text(items.length);
+		  		$('#alertModal').modal('show'); 
 		  	}
 		  });
 	});
