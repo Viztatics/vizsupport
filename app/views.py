@@ -1065,7 +1065,7 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.username).outerjoin(AlertAssign, VizAlerts.id == AlertAssign.alert_id).outerjoin(User, AlertAssign.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid')).outerjoin(AlertAssign, VizAlerts.id == AlertAssign.alert_id).outerjoin(User, AlertAssign.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
         
         data_result = [r._asdict() for r in alert_result]
 
@@ -1086,6 +1086,21 @@ class AlertView(BaseView):
         result.close()
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+    @expose('/management/assignanalyst',methods=['POST'])
+    @has_access
+    def assignAnalyst(self):
+
+        alert_id = request.form["pk"]
+        analyst = request.form["value"]
+
+        alertAssign = AlertAssign(alert_id=alert_id, assigned_to_fk=analyst)
+
+        self.appbuilder.get_session.add(alertAssign)
+
+        self.appbuilder.get_session.commit()
+
+        return Response(pd.io.json.dumps({}), mimetype='application/json')
 
 
 @appbuilder.app.errorhandler(404)

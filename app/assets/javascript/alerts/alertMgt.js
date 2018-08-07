@@ -242,11 +242,12 @@ $(function(){
 	        field: 'rule_status',
 	        title: 'Status',
 	    },{
-	        field: 'username',
+	        field: 'uid',
 	        title: 'Assigned User',
 	        editable: {
                 type: 'select',
                 source:$SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
+                url:$SCRIPT_ROOT+'/alerts/management/assignanalyst',
             }
 	    }],
 	});

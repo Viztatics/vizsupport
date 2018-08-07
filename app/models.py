@@ -6,6 +6,7 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from flask_appbuilder.security.sqla.models import User
 import enum
+import datetime
 """
 
 You can use the extra Flask-AppBuilder fields and Mixin's
@@ -62,7 +63,7 @@ class AlertAssign(AuditMixin,Model):
     alert = relationship("VizAlerts")
     #assigned_to_fk = Column(Integer, ForeignKey('ab_user.id'), nullable=True)
     #assgin = relationship("User")
-    assigned_on = Column(DateTime)
+    assigned_on = Column(DateTime,default=datetime.datetime.now,nullable=True)
     comment = Column(String(500))
 
     @declared_attr
