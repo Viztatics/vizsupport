@@ -1065,7 +1065,7 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name).outerjoin(AlertAssign, VizAlerts.id == AlertAssign.alert_id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.username).outerjoin(AlertAssign, VizAlerts.id == AlertAssign.alert_id).outerjoin(User, AlertAssign.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
         
         data_result = [r._asdict() for r in alert_result]
 

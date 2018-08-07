@@ -239,6 +239,9 @@ $(function(){
 	    },{
 	        field: 'rule_status',
 	        title: 'Status',
+	    },{
+	        field: 'username',
+	        title: 'Assigned User',
 	    }],
 	});
 
