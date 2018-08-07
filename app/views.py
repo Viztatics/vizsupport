@@ -3,12 +3,12 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
-from sqlalchemy import func,inspect
+from sqlalchemy import func,inspect,text
 from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
 from .fileUtils import *
-from .models import Company, VizAlerts, StatusEnum, TypeEnum, AlertAssign
+from .models import *
 
 import numpy as np
 import pandas as pd
@@ -1056,7 +1056,7 @@ class AlertView(BaseView):
     	type_result = [r for r in type_result]
     	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
-    @expose('/management/gettabledata',methods=['POST'])
+    @expose('/management/gettabledata',methods=['GET'])
     @has_access
     def getAlertTableData(self):
 
@@ -1068,6 +1068,22 @@ class AlertView(BaseView):
             alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.username).outerjoin(AlertAssign, VizAlerts.id == AlertAssign.alert_id).outerjoin(User, AlertAssign.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
         
         data_result = [r._asdict() for r in alert_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+    @expose('/management/getanalystsbycompany',methods=['GET'])
+    @has_access
+    def getAnalystsByCompany(self):
+
+        data_result = []
+
+        is_analysis_manager = isManager()
+
+        sql = text('select a.id,a.username from ab_user a left join ab_user_role b on a.id=b.user_id where b.role_id=4 and a.company_id='+str(current_user.company_id))
+        result = db.engine.execute(sql)
+        for row in result:
+            data_result.append({'value':row['id'],'text':row['username']})
+        result.close()
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 

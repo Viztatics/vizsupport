@@ -205,6 +205,8 @@ $(function(){
 	};
 
 	$('#alertTable').bootstrapTable({
+		idField: 'id',
+		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
   		pagination:true,
 	    columns: [{
 	        field: 'id',
@@ -242,9 +244,14 @@ $(function(){
 	    },{
 	        field: 'username',
 	        title: 'Assigned User',
+	        editable: {
+                type: 'select',
+                source:$SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
+            }
 	    }],
 	});
 
+/**
 	let getAlertTable = function(){
 
 		$.ajax({
@@ -259,14 +266,13 @@ $(function(){
 		  	}
 		  });
 
-	}
+	}*/
 
 	let init=function(){
 
 		getStatusChart();
 		getTypeChart();
-		getAlertTable();
-
+		//getAlertTable();
 		if($('#alertMgt').data('ismanager')=='True'){		
 			getBarChart();
 		}else{
