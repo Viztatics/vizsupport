@@ -3,6 +3,7 @@
 {% block head_css %}
     {{ super() }}
     <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
 {% endblock %}
 {% block content %}
 
@@ -13,18 +14,27 @@
   <div class="panel-heading" style="background-color: #dff0d8;">Alert Distribution</div>
   <div class="panel-body">
     <div class="row">
-        <div class="col-md-6" id="statusChart" style="height:600px">
+        <div class="col-md-6" id="statusChart" style="height:400px">
         </div>
-        <div class="col-md-6" id="typeChart" style="height:600px">
+        <div class="col-md-6" id="typeChart" style="height:400px">
         </div>
     </div>
   </div>
   <div id="managerBar" class="panel-body">
     <div class="row">
-        <div id="barChart" style="height:600px"></div>
+        <div id="barChart" style="height:400px"></div>
     </div>
   </div>
 </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading" style="background-color: #dff0d8;">Alert Table</div>
+  <div class="panel-body">
+    <div class="row">
+        <table id="alertTable" data-page-list="[10, 25, 50, 100, ALL]"></table>
+    </div>
+  </div>
+</div>  
 <div id="mask"></div>
 
 {% endblock %}
@@ -35,5 +45,6 @@
     </script>
     <script src="{{url_for('static',filename='assets/node_modules/jquery-validation/dist/jquery.validate.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/alerts/alertMgt.js')}}"></script>    
 {% endblock %}

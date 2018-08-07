@@ -3,12 +3,12 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
-from sqlalchemy import func
+from sqlalchemy import func,inspect
 from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
 from .fileUtils import *
-from .models import Company, VizAlerts, StatusEnum, TypeEnum
+from .models import Company, VizAlerts, StatusEnum, TypeEnum, AlertAssign
 
 import numpy as np
 import pandas as pd
@@ -35,17 +35,28 @@ import shutil
 """
     Application wide 404 error handler
 """
+def isManager():
+
+    is_analysis_manager = False
+    for role in current_user.roles:
+        if role.name=='AnalysisManager':
+            is_analysis_manager = True
+    return is_analysis_manager
+
 def transTitle(transCode):
 
-	if transCode=='Wire' or transCode=='ACH' :
-		return transCode + ' Transfer'
-	elif transCode=='Remote' :
-		return transCode + ' Deposit'
-	return transCode
+    if transCode=='Wire' or transCode=='ACH' :
+        return transCode + ' Transfer'
+    elif transCode=='Remote' :
+        return transCode + ' Deposit'
+    return transCode
 
 def transDesc(transCode):
 
-	return 'WIRE TRANSFER' if transCode=='Wire' else transCode.upper()
+    return 'WIRE TRANSFER' if transCode=='Wire' else transCode.upper()
+
+def row2dict(row):
+    return {c.key: getattr(row, c.key) for c in inspect(row).all_orm_descriptors}
 
 class CompanyModelView(ModelView):
     datamodel = SQLAInterface(Company)
@@ -1017,10 +1028,7 @@ class AlertView(BaseView):
     @has_access
     def alertMgt(self):
 
-    	is_analysis_manager = False
-    	for role in current_user.roles:
-    		if role.name=='AnalysisManager':
-    			is_analysis_manager = True
+    	is_analysis_manager = isManager()
 
     	return self.render_template('alerts/alertMgt.html',is_analysis_manager=is_analysis_manager)
 
@@ -1047,6 +1055,21 @@ class AlertView(BaseView):
     	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.changed_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizAlerts.changed_by_fk==current_user.id).order_by(User.id)
     	type_result = [r for r in type_result]
     	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
+
+    @expose('/management/gettabledata',methods=['POST'])
+    @has_access
+    def getAlertTableData(self):
+
+        data_result = []
+
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name).outerjoin(AlertAssign, VizAlerts.id == AlertAssign.alert_id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
+        
+        data_result = [r._asdict() for r in alert_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
 
 @appbuilder.app.errorhandler(404)

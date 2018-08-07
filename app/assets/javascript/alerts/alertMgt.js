@@ -204,10 +204,66 @@ $(function(){
 
 	};
 
+	$('#alertTable').bootstrapTable({
+  		pagination:true,
+	    columns: [{
+	        field: 'id',
+	        title: 'Alert ID',
+	    }, {
+	        field: 'rule_type',
+	        title: 'Rule',
+	    }, {
+	        field: 'account_key',
+	        title: 'Account Key',
+	    },{
+	        field: 'trans_month',
+	        title: 'Month of Trans Date',
+	    }, {
+	        field: 'country_abbr',
+	        title: 'Opposite Country',
+	    },{
+	        field: 'country_name',
+	        title: 'Country Name',
+	    },{
+	        field: 'amount',
+	        title: 'Trans Amount',
+	        formatter: function formatter(value, row, index, field) {
+	        	return (value).toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				});
+			},
+	    },{
+	        field: 'cnt',
+	        title: 'Trans Cnt',
+	    },{
+	        field: 'rule_status',
+	        title: 'Status',
+	    }],
+	});
+
+	let getAlertTable = function(){
+
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+		  		console.log(data);
+		  		$('#alertTable').bootstrapTable('load',data);	  			  	
+		  	}
+		  });
+
+	}
+
 	let init=function(){
 
 		getStatusChart();
 		getTypeChart();
+		getAlertTable();
+
 		if($('#alertMgt').data('ismanager')=='True'){		
 			getBarChart();
 		}else{

@@ -1,7 +1,8 @@
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum 
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime 
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declared_attr
 
 from flask_appbuilder.security.sqla.models import User
 import enum
@@ -53,5 +54,25 @@ class VizAlerts(AuditMixin,Model):
     rule_status = Column(Enum(StatusEnum))
 
     def __repr__(self):
-        return self.account_key + " "+ self.country_name
+        return self.account_key + " "+ self.trans_month
+
+class AlertAssign(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    alert_id = Column(Integer, ForeignKey('viz_alerts.id'), nullable=True)
+    alert = relationship("VizAlerts")
+    #assigned_to_fk = Column(Integer, ForeignKey('ab_user.id'), nullable=True)
+    #assgin = relationship("User")
+    assigned_on = Column(DateTime)
+    comment = Column(String(500))
+
+    @declared_attr
+    def assigned_to_fk(cls):
+        return Column(Integer, ForeignKey('ab_user.id'), nullable=False)
+
+    @declared_attr
+    def assgined_by(cls):
+        return relationship("VizUser", primaryjoin='%s.assigned_to_fk == VizUser.id' % cls.__name__, enable_typechecks=False)
+
+    def __repr__(self):
+        return self.account_key + "was assgined to "+ self.assigned_to_fk + " on " + self.assigned_on + " by " + self.created_by_fk
         
