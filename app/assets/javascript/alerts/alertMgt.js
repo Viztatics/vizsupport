@@ -270,10 +270,17 @@ $(function(){
 	});
 
 	$('#commentTextArea').bind('input propertychange', function() {
-	      $("#processCtl").bootstrapToggle('disable')
+	      $("#processCtl").bootstrapToggle('disable');
 	      if(this.value.length){
-	        $("#processCtl").bootstrapToggle('enable')
+	        $("#processCtl").bootstrapToggle('enable');
 	      }
+	});
+
+	$('#alertProcessModal').on('shown.bs.modal', function (e) {
+
+		$('#commentTextArea').val('');
+		$("#processCtl").bootstrapToggle('disable');
+
 	});
 
 	let init=function(){

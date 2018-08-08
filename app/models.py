@@ -66,9 +66,7 @@ class AlertProcess(AuditMixin,Model):
     alert_id = Column(Integer, ForeignKey('viz_alerts.id'), nullable=True)
     alert = relationship("VizAlerts")
     assigned_on = Column(DateTime,default=datetime.datetime.now,nullable=True)
-    comment = Column(String(500))
     syslog = Column(String(500))
-    attachment = Column(String(100))
 
     @declared_attr
     def assigned_to_fk(cls):
@@ -80,4 +78,13 @@ class AlertProcess(AuditMixin,Model):
 
     def __repr__(self):
         return self.syslog
-        
+
+class AlertProcessComments(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    process_id = Column(Integer, ForeignKey('alert_process.id'), nullable=True)
+    process = relationship("AlertProcess")
+    comment = Column(String(500))
+    attachment = Column(String(100))
+
+    def __repr__(self):
+        return self.process+" add comment: " +  self.comment       
