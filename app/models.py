@@ -27,6 +27,10 @@ class TypeEnum(enum.Enum):
     Profiling = 3
     Flow_Through = 4
 
+class ProcessEnum(enum.Enum):
+    Assign_to_Analyst = 1
+    Analyst_process = 2
+
 class Company(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
@@ -57,14 +61,14 @@ class VizAlerts(AuditMixin,Model):
     def __repr__(self):
         return self.account_key + " "+ self.trans_month
 
-class AlertAssign(AuditMixin,Model):
+class AlertProcess(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
     alert_id = Column(Integer, ForeignKey('viz_alerts.id'), nullable=True)
     alert = relationship("VizAlerts")
-    #assigned_to_fk = Column(Integer, ForeignKey('ab_user.id'), nullable=True)
-    #assgin = relationship("User")
     assigned_on = Column(DateTime,default=datetime.datetime.now,nullable=True)
     comment = Column(String(500))
+    syslog = Column(String(500))
+    attachment = Column(String(100))
 
     @declared_attr
     def assigned_to_fk(cls):
@@ -75,5 +79,5 @@ class AlertAssign(AuditMixin,Model):
         return relationship("VizUser", primaryjoin='%s.assigned_to_fk == VizUser.id' % cls.__name__, enable_typechecks=False)
 
     def __repr__(self):
-        return self.account_key + "was assgined to "+ self.assigned_to_fk + " on " + self.assigned_on + " by " + self.created_by_fk
+        return self.syslog
         
