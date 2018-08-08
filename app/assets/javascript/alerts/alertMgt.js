@@ -204,6 +204,17 @@ $(function(){
 
 	};
 
+	let operateFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="note" title="Add note">Add Note</a>';
+	};
+
+	window.operateEvents = {
+	  'click .note': function (e, value, row, index) {
+	    //alert(`You click add note action, row: ${JSON.stringify(row)}`);
+	    $('#alertProcessModal').modal('show');  
+	  }
+	};
+
 	$('#alertTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
@@ -249,25 +260,21 @@ $(function(){
                 source:$SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
                 url:$SCRIPT_ROOT+'/alerts/management/assignanalyst',
             }
-	    }],
+	    }, {
+          field: 'operate',
+          title: 'Item Operate',
+          align: 'center',
+          events: operateEvents,
+          formatter: operateFormatter
+        }],
 	});
 
-/**
-	let getAlertTable = function(){
-
-		$.ajax({
-		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({}),
-		  	success:function(data){
-		  		console.log(data);
-		  		$('#alertTable').bootstrapTable('load',data);	  			  	
-		  	}
-		  });
-
-	}*/
+	$('#commentTextArea').bind('input propertychange', function() {
+	      $("#processCtl").bootstrapToggle('disable')
+	      if(this.value.length){
+	        $("#processCtl").bootstrapToggle('enable')
+	      }
+	});
 
 	let init=function(){
 

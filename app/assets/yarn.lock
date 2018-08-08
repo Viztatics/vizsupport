@@ -289,6 +289,10 @@ bootstrap-table@^1.12.1:
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/bootstrap-table/-/bootstrap-table-1.12.1.tgz#c9c3973067842a937c05d8639ecccb02abd6ba65"
 
+bootstrap-toggle@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/bootstrap-toggle/-/bootstrap-toggle-2.2.2.tgz#2b88534fc1b998674f877f98ba0d8b5b743e96fe"
+
 brace-expansion@^1.1.7:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"

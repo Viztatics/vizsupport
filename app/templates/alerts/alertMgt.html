@@ -4,6 +4,7 @@
     {{ super() }}
     <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css')}}"></link>
 {% endblock %}
 {% block content %}
@@ -35,7 +36,32 @@
         <table id="alertTable" data-page-list="[10, 25, 50, 100, ALL]"></table>
     </div>
   </div>
-</div>  
+</div>
+
+<div class="modal fade" id="alertProcessModal" tabindex="-1" role="dialog" data-pid=''>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add Note</h4>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="commentTextArea">Comment</label>
+            <textarea class="form-control" rows="4" id="commentTextArea" placeholder="please add your comments"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="processCtl">Process</label>
+            <input class="form-control" type="checkbox" id="processCtl" disabled data-toggle="toggle" data-on="True" data-off="False">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div id="mask"></div>
 
 {% endblock %}
@@ -49,5 +75,6 @@
     <script src="{{url_for('static',filename='assets/node_modules/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/js/bootstrap-toggle.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/alerts/alertMgt.js')}}"></script>    
 {% endblock %}
