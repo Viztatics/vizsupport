@@ -210,7 +210,39 @@ $(function(){
 
 	window.operateEvents = {
 	  'click .note': function (e, value, row, index) {
-	    //alert(`You click add note action, row: ${JSON.stringify(row)}`);
+
+	  	console.log(row);
+
+	  	$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/getcurrentnote',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'pid':row.pid,'uid':row.uid}),
+		  	success:function(data){
+
+				console.log(data);
+				if(data.comment){
+					$('#commentTextArea').val(data.comment);
+				}else{
+					$('#commentTextArea').val('');
+				}
+				
+				if(data.rule_status!=='Close_True'){
+					$('#toggle-demo').bootstrapToggle('off');					
+				}else{
+					$('#toggle-demo').bootstrapToggle('on');
+				}
+				if(!data.comment){
+					$("#processCtl").bootstrapToggle('disable');
+				}else{
+					$("#processCtl").bootstrapToggle('enable');
+				}
+				
+						
+			}
+		});
+
 	    $('#alertProcessModal').modal('show');  
 	  }
 	};
@@ -261,7 +293,7 @@ $(function(){
                 url:$SCRIPT_ROOT+'/alerts/management/assignanalyst',
             }
 	    }, {
-          field: 'operate',
+          field: 'pid',
           title: 'Item Operate',
           align: 'center',
           events: operateEvents,
@@ -277,9 +309,6 @@ $(function(){
 	});
 
 	$('#alertProcessModal').on('shown.bs.modal', function (e) {
-
-		$('#commentTextArea').val('');
-		$("#processCtl").bootstrapToggle('disable');
 
 	});
 

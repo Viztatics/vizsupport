@@ -4,6 +4,7 @@ from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
 from sqlalchemy import func,inspect,text
+from sqlalchemy.sql.expression import case
 from werkzeug import secure_filename
 from app import appbuilder, db
 from config import *
@@ -1065,7 +1066,7 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid')).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).outerjoin(User, AlertProcess.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).outerjoin(User, AlertProcess.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
         
         data_result = [r._asdict() for r in alert_result]
 
@@ -1101,6 +1102,26 @@ class AlertView(BaseView):
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
+
+    @expose('/management/getcurrentnote',methods=['POST'])
+    @has_access
+    def getCurrentNote(self):
+
+        data_result = []
+
+        pid = request.get_json()["pid"]
+        uid = request.get_json()["uid"]
+
+        if not pid and not uid:
+            data_result = {'comment':'','rule_status':StatusEnum.Open.name}
+        else:
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_status.name,AlertProcessComments.comment,AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id==AlertProcess.alert_id).outerjoin(AlertProcessComments, AlertProcess.id==AlertProcessComments.process_id).filter(AlertProcess.id==pid)
+            print(alert_result)
+            data_result = [r._asdict() for r in alert_result][0]
+
+        print(data_result)
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
 
 @appbuilder.app.errorhandler(404)
