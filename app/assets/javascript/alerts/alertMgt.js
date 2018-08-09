@@ -222,21 +222,24 @@ $(function(){
 		  	success:function(data){
 
 				console.log(data);
-				if(data.comment){
-					$('#commentTextArea').val(data.comment);
-				}else{
-					$('#commentTextArea').val('');
-				}
-				
 				if(data.rule_status!=='Close_True'){
 					$('#toggle-demo').bootstrapToggle('off');					
 				}else{
-					$('#toggle-demo').bootstrapToggle('on');
+					$('#toggle-demo').bootstrapToggle('on');					
 				}
-				if(!data.comment){
-					$("#processCtl").bootstrapToggle('disable');
-				}else{
+
+				if(data.comment){
+					$('#commentTextArea').val(data.comment);
 					$("#processCtl").bootstrapToggle('enable');
+				}else{
+					$('#commentTextArea').val('');
+					$("#processCtl").bootstrapToggle('disable');
+				}
+
+				if(data.rule_status!=='Open'){
+					$('#commentTextArea').attr('disabled','disabled');
+					$('#processCtl').bootstrapToggle('disable');
+					$('#noteSaveBtn').attr('disabled','disabled');
 				}
 				
 						
@@ -316,8 +319,17 @@ $(function(){
 	      }
 	});
 
-	$('#alertProcessModal').on('shown.bs.modal', function (e) {
+	$("#alertNoteForm").validate({
+		ignore:"input[type=file]",
+	    rules: {
+	      commentTextArea:{
+	      	required: true,
+	      }
+	    },
+	});
 
+	$( "form" ).submit(function( event ) {
+	  event.preventDefault();
 	});
 
 	let init=function(){

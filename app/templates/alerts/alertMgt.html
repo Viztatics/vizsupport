@@ -6,6 +6,12 @@
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css')}}"></link>
+    <style type="text/css">
+      label.error{
+        color:red;
+        margin-left: 10px;
+      }
+    </style>
 {% endblock %}
 {% block content %}
 
@@ -45,19 +51,22 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Add Note</h4>
       </div>
-      <div class="modal-body">
-          <div class="form-group">
-            <label for="commentTextArea">Comment</label>
-            <textarea class="form-control" rows="4" id="commentTextArea" placeholder="please add your comments"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="processCtl">Process</label>
-            <input class="form-control" type="checkbox" id="processCtl" disabled data-toggle="toggle" data-on="True" data-off="False">
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
+      <form id="alertNoteForm">
+        <div class="modal-body">
+            <div class="form-group">
+              <label for="commentTextArea">Comment</label>
+              <textarea class="form-control" rows="4" id="commentTextArea" name="commentTextArea" placeholder="please add your comments"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="processCtl">Process</label>
+              <input class="form-control" type="checkbox" id="processCtl" name="processCtl" disabled data-toggle="toggle" data-on="True" data-off="False">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="noteSaveBtn">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </form>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -76,5 +85,6 @@
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/js/bootstrap-toggle.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-validation/dist/jquery.validate.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/alerts/alertMgt.js')}}"></script>    
 {% endblock %}
