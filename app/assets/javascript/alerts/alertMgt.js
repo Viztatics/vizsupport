@@ -247,7 +247,7 @@ $(function(){
 	  }
 	};
 
-	$('#alertTable').bootstrapTable({
+	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
   		pagination:true,
@@ -301,6 +301,14 @@ $(function(){
         }],
 	});
 
+	$('#alertTable').on('load-success.bs.table', function (data) {
+
+		if($('#alertMgt').data('ismanager')=='False'){
+			$alerttable.bootstrapTable('hideColumn', 'uid');
+		}
+
+	});
+
 	$('#commentTextArea').bind('input propertychange', function() {
 	      $("#processCtl").bootstrapToggle('disable');
 	      if(this.value.length){
@@ -314,14 +322,15 @@ $(function(){
 
 	let init=function(){
 
-		getStatusChart();
-		getTypeChart();
-		//getAlertTable();
 		if($('#alertMgt').data('ismanager')=='True'){		
 			getBarChart();
 		}else{
 			$('#managerBar').css('display', 'none');
-		}		
+		}
+		getStatusChart();
+		getTypeChart();
+		//getAlertTable();
+				
 
 	};
 

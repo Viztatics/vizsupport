@@ -1037,17 +1037,27 @@ class AlertView(BaseView):
     @has_access
     def getStatusChartData(self):
 
-    	status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter_by(changed_by_fk=current_user.id)
-    	status_result = [r for r in status_result]
-    	return Response(pd.io.json.dumps(status_result), mimetype='application/json')
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id)
+        else:
+            status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).group_by(VizAlerts.rule_status).filter(AlertProcess.assigned_to_fk==current_user.id)
+        status_result = [r for r in status_result]
+        return Response(pd.io.json.dumps(status_result), mimetype='application/json')
 
     @expose('/management/typechart',methods=['POST'])
     @has_access
     def getTypeChartData(self):
 
-    	type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).group_by(VizAlerts.rule_type).filter_by(changed_by_fk=current_user.id)
-    	type_result = [r for r in type_result]
-    	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.rule_type).filter(VizUser.company_id==current_user.company_id)
+        else:
+            type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).group_by(VizAlerts.rule_type).filter(AlertProcess.assigned_to_fk==current_user.id)
+        type_result = [r for r in type_result]
+        return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
     @expose('/management/barchart',methods=['POST'])
     @has_access
@@ -1067,6 +1077,8 @@ class AlertView(BaseView):
 
         if is_analysis_manager is True:
             alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).outerjoin(User, AlertProcess.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.id)
+        else:
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),AlertProcess.id.label('pid')).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).join(User, AlertProcess.assigned_to_fk == User.id).filter(AlertProcess.assigned_to_fk==current_user.id).order_by(AlertProcess.assigned_on.desc(),VizAlerts.id)
         
         data_result = [r._asdict() for r in alert_result]
 
