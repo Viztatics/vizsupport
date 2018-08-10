@@ -346,7 +346,9 @@ $(function(){
 	  	data: JSON.stringify({'alert_id':$('#alertProcessModal').data('alertid'),'process_id':$('#alertProcessModal').data('processid'),
 	  			'comment':$('#commentTextArea').val(),'status':$('#processCtl').prop('checked')}),
 	  	success:function(data){
-	  		console.log(data);		  	
+	  		$('#alertProcessModal').modal('hide');
+	  		$alerttable.bootstrapTable('refresh');
+	  		init();		  	
 	  	}
 	  });
 
