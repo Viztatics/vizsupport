@@ -285,15 +285,18 @@ class RuleView(BaseView):
     @has_access
     def createHighRiskCountryAlertData(self):
 
-    	items = request.get_json()["items"]
+        items = request.get_json()["items"]
 
-    	for item in items:
+        for item in items:
 
-    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open)
-    		self.appbuilder.get_session.add(alertdata)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open)
+            self.appbuilder.get_session.add(alertdata)
+            self.appbuilder.get_session.flush()
+            alertproc = AlertProcess(alert_id=alertdata.id)
+            self.appbuilder.get_session.add(alertproc)
 
-    	self.appbuilder.get_session.commit()
-    	return  json.dumps({})
+        self.appbuilder.get_session.commit()
+        return  json.dumps({})
 
 
     @expose('/highRiskCountry/upload/<transCode>',methods=['POST','DELETE'])
@@ -530,15 +533,18 @@ class RuleView(BaseView):
     @has_access
     def createHighRiskVolumeAlertData(self):
 
-    	items = request.get_json()["items"]
+        items = request.get_json()["items"]
 
-    	for item in items:
+        for item in items:
 
-    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open)
-    		self.appbuilder.get_session.add(alertdata)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open)
+            self.appbuilder.get_session.add(alertdata)
+            self.appbuilder.get_session.flush()
+            alertproc = AlertProcess(alert_id=alertdata.id)
+            self.appbuilder.get_session.add(alertproc)
 
-    	self.appbuilder.get_session.commit()
-    	return  json.dumps({})
+        self.appbuilder.get_session.commit()
+        return  json.dumps({})
 
     @expose('/highRiskVolume/upload',methods=['POST','DELETE'])
     @has_access
@@ -818,15 +824,18 @@ class RuleView(BaseView):
     @has_access
     def createProfilingAlertData(self):
 
-    	items = request.get_json()["items"]
+        items = request.get_json()["items"]
 
-    	for item in items:
+        for item in items:
 
-    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open)
-    		self.appbuilder.get_session.add(alertdata)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open)
+            self.appbuilder.get_session.add(alertdata)
+            self.appbuilder.get_session.flush()
+            alertproc = AlertProcess(alert_id=alertdata.id)
+            self.appbuilder.get_session.add(alertproc)
 
-    	self.appbuilder.get_session.commit()
-    	return  json.dumps({})
+        self.appbuilder.get_session.commit()
+        return  json.dumps({})
 
     @expose('/profiling/upload',methods=['POST','DELETE'])
     @has_access
@@ -965,15 +974,18 @@ class RuleView(BaseView):
     @has_access
     def createFlowThroughAlertData(self):
 
-    	items = request.get_json()["items"]
+        items = request.get_json()["items"]
 
-    	for item in items:
+        for item in items:
 
-    		alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open)
-    		self.appbuilder.get_session.add(alertdata)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open)
+            self.appbuilder.get_session.add(alertdata)
+            self.appbuilder.get_session.flush()
+            alertproc = AlertProcess(alert_id=alertdata.id)
+            self.appbuilder.get_session.add(alertproc)
 
-    	self.appbuilder.get_session.commit()
-    	return  json.dumps({})
+        self.appbuilder.get_session.commit()
+        return  json.dumps({})
 
     @expose('/flowthrough/upload',methods=['POST','DELETE'])
     @has_access
@@ -1063,7 +1075,7 @@ class AlertView(BaseView):
     @has_access
     def getBarChartData(self):
 
-    	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.changed_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizAlerts.changed_by_fk==current_user.id).order_by(User.id)
+    	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.changed_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(User.id)
     	type_result = [r for r in type_result]
     	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
@@ -1107,7 +1119,7 @@ class AlertView(BaseView):
         alert_id = request.form["pk"]
         analyst = request.form["value"]
 
-        alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst)
+        alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now())
 
         self.appbuilder.get_session.add(alertProcess)
 

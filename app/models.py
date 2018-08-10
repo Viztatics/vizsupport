@@ -65,12 +65,12 @@ class AlertProcess(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
     alert_id = Column(Integer, ForeignKey('viz_alerts.id'), nullable=True)
     alert = relationship("VizAlerts")
-    assigned_on = Column(DateTime,default=datetime.datetime.now,nullable=True)
+    assigned_on = Column(DateTime)
     syslog = Column(String(500))
 
     @declared_attr
     def assigned_to_fk(cls):
-        return Column(Integer, ForeignKey('ab_user.id'), nullable=False)
+        return Column(Integer, ForeignKey('ab_user.id'), nullable=True)
 
     @declared_attr
     def assgined_by(cls):
