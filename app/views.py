@@ -1135,6 +1135,26 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
+    @expose('/management/addnote',methods=['POST'])
+    @has_access
+    def addNote(self):
+
+        alert_id = request.get_json()["alert_id"]
+        process_id = request.get_json()["process_id"]
+        comment = request.get_json()["comment"]
+        status = request.get_json()["status"]
+        alert_status = StatusEnum.Close_False
+        if status is True:
+            alert_status = StatusEnum.Close_True
+
+        if process_id:
+            proComment = AlertProcessComments(process_id=process_id, comment=comment)
+            self.appbuilder.get_session.add(proComment)
+            self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status})
+            self.appbuilder.get_session.commit()
+
+        return Response(pd.io.json.dumps({}), mimetype='application/json')
+
 
 @appbuilder.app.errorhandler(404)
 def page_not_found(e):

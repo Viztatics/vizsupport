@@ -186,7 +186,6 @@ $(function(){
 		  	data: JSON.stringify({}),
 		  	success:function(data){
 
-				console.log(data);	
 				if(data){
 					barOption.xAxis[0].data=[];
 					barOption.series[0].data=[];
@@ -211,8 +210,6 @@ $(function(){
 	window.operateEvents = {
 	  'click .note': function (e, value, row, index) {
 
-	  	console.log(row);
-
 	  	$.ajax({
 			cache: false,
 		  	url: $SCRIPT_ROOT+'/alerts/management/getcurrentnote',
@@ -221,11 +218,21 @@ $(function(){
 		  	data: JSON.stringify({'pid':row.pid,'uid':row.uid}),
 		  	success:function(data){
 
-				console.log(data);
+		  		console.log(data);
+
+		  		//restore to init
+		  		$('#commentTextArea').prop('disabled',false);
+				$('#processCtl').bootstrapToggle('enable');
+				$('#processCtl').bootstrapToggle('off');
+				$('#noteSaveBtn').prop('disabled',false);
+
+		  		$('#alertProcessModal').data('alertid', row.id);
+		  		$('#alertProcessModal').data('processid', row.pid);
+
 				if(data.rule_status!=='Close_True'){
-					$('#toggle-demo').bootstrapToggle('off');					
+					$('#processCtl').bootstrapToggle('off');					
 				}else{
-					$('#toggle-demo').bootstrapToggle('on');					
+					$('#processCtl').bootstrapToggle('on');					
 				}
 
 				if(data.comment){
@@ -237,9 +244,9 @@ $(function(){
 				}
 
 				if(data.rule_status!=='Open'){
-					$('#commentTextArea').attr('disabled','disabled');
+					$('#commentTextArea').prop('disabled','disabled');
 					$('#processCtl').bootstrapToggle('disable');
-					$('#noteSaveBtn').attr('disabled','disabled');
+					$('#noteSaveBtn').prop('disabled','disabled');
 				}
 				
 						
@@ -330,6 +337,19 @@ $(function(){
 
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/alerts/management/addnote',
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({'alert_id':$('#alertProcessModal').data('alertid'),'process_id':$('#alertProcessModal').data('processid'),
+	  			'comment':$('#commentTextArea').val(),'status':$('#processCtl').prop('checked')}),
+	  	success:function(data){
+	  		console.log(data);		  	
+	  	}
+	  });
+
 	});
 
 	let init=function(){
