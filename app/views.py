@@ -1121,10 +1121,13 @@ class AlertView(BaseView):
         alert_id = request.form["pk"]
         analyst = request.form["value"]
 
-        alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now())
+        user_result = db.session.query(User.username).filter(User.id==analyst).one()
+        assginedUser = [r for r in user_result]
+
+        alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now(), process_type=ProcessEnum.Manager_Assign, syslog=Manager_Assign.format(current_user.username,assginedUser[0],datetime.now()))
 
         self.appbuilder.get_session.add(alertProcess)
-
+        viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now()})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')

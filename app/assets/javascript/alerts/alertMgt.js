@@ -322,7 +322,7 @@ $(function(){
 
 	$('#alertTable').on('load-success.bs.table', function (data) {
 
-		$alerttable.bootstrapTable('hideColumn', 'username');
+		//$alerttable.bootstrapTable('hideColumn', 'username');
 		if($('#alertMgt').data('ismanager')=='False'){
 			$alerttable.bootstrapTable('hideColumn', 'uid');
 		}
