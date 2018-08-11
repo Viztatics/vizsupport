@@ -10,6 +10,7 @@ from app import appbuilder, db
 from config import *
 from .fileUtils import *
 from .models import *
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -289,10 +290,10 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id)
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
@@ -537,10 +538,10 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id)
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
@@ -828,10 +829,10 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id)
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
@@ -978,10 +979,10 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id)
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
@@ -1054,7 +1055,7 @@ class AlertView(BaseView):
         if is_analysis_manager is True:
             status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id)
         else:
-            status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).group_by(VizAlerts.rule_status).filter(AlertProcess.assigned_to_fk==current_user.id)
+            status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter(VizAlerts.operated_by_fk==current_user.id)
         status_result = [r for r in status_result]
         return Response(pd.io.json.dumps(status_result), mimetype='application/json')
 
@@ -1067,15 +1068,16 @@ class AlertView(BaseView):
         if is_analysis_manager is True:
             type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.rule_type).filter(VizUser.company_id==current_user.company_id)
         else:
-            type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).group_by(VizAlerts.rule_type).filter(AlertProcess.assigned_to_fk==current_user.id)
+            type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).group_by(VizAlerts.rule_type).filter(VizAlerts.operated_by_fk==current_user.id)
         type_result = [r for r in type_result]
         return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
+    #only for manager
     @expose('/management/barchart',methods=['POST'])
     @has_access
     def getBarChartData(self):
 
-    	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.changed_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(User.id)
+    	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(User.id)
     	type_result = [r for r in type_result]
     	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 

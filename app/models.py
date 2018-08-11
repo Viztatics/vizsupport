@@ -28,8 +28,9 @@ class TypeEnum(enum.Enum):
     Flow_Through = 4
 
 class ProcessEnum(enum.Enum):
-    Assign_to_Analyst = 1
-    Analyst_process = 2
+    Alert_Created = 1
+    Manager_Assign = 2
+    Analyst_process = 3
 
 class Company(Model):
     id = Column(Integer, primary_key=True)
@@ -57,6 +58,16 @@ class VizAlerts(AuditMixin,Model):
     cnt = Column(Integer,nullable=True)
     rule_type = Column(Enum(TypeEnum))
     rule_status = Column(Enum(StatusEnum))
+    operated_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
+    finished_on = Column(DateTime, nullable=True)
+
+    @declared_attr
+    def operated_by_fk(cls):
+        return Column(Integer, ForeignKey('ab_user.id'), nullable=True)
+
+    @declared_attr
+    def operated_by(cls):
+        return relationship("VizUser", primaryjoin='%s.operated_by_fk == VizUser.id' % cls.__name__, enable_typechecks=False)
 
     def __repr__(self):
         return self.account_key + " "+ self.trans_month
@@ -65,7 +76,8 @@ class AlertProcess(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
     alert_id = Column(Integer, ForeignKey('viz_alerts.id'), nullable=True)
     alert = relationship("VizAlerts")
-    assigned_on = Column(DateTime)
+    process_type = Column(Enum(ProcessEnum))
+    assigned_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
     syslog = Column(String(500))
 
     @declared_attr
