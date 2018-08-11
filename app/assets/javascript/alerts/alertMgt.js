@@ -311,11 +311,8 @@ $(function(){
 			        }
 			    }
             }
-	    }, {
-	        field: 'username',
-	        title: 'User Name',
 	    },{
-          field: 'pid',
+          field: 'username',
           title: 'Item Operate',
           align: 'center',
           events: operateEvents,
