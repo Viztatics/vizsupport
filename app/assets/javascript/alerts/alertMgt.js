@@ -301,8 +301,18 @@ $(function(){
                 type: 'select',
                 source:$SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
                 url:$SCRIPT_ROOT+'/alerts/management/assignanalyst',
+                noeditFormatter:function(value, row, index) {
+			        if (row.rule_status=='Open') {
+			          return false;  // return false if you want the field editable.
+			        } else {
+			          return row.username;
+			        }
+			    }
             }
 	    }, {
+	        field: 'username',
+	        title: 'User Name',
+	    },{
           field: 'pid',
           title: 'Item Operate',
           align: 'center',
@@ -313,6 +323,7 @@ $(function(){
 
 	$('#alertTable').on('load-success.bs.table', function (data) {
 
+		$alerttable.bootstrapTable('hideColumn', 'username');
 		if($('#alertMgt').data('ismanager')=='False'){
 			$alerttable.bootstrapTable('hideColumn', 'uid');
 		}

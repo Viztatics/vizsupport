@@ -1088,9 +1088,9 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).outerjoin(User, AlertProcess.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.rule_status,AlertProcess.assigned_to_fk,VizAlerts.id)
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).outerjoin(User, AlertProcess.assigned_to_fk == User.id).filter(VizAlerts.created_by_fk==current_user.id).order_by(VizAlerts.rule_status,AlertProcess.assigned_to_fk,VizAlerts.id)
         else:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),AlertProcess.id.label('pid')).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).join(User, AlertProcess.assigned_to_fk == User.id).filter(AlertProcess.assigned_to_fk==current_user.id).order_by(VizAlerts.rule_status,VizAlerts.changed_on.desc(),AlertProcess.assigned_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,AlertProcess.id.label('pid')).join(AlertProcess, VizAlerts.id == AlertProcess.alert_id).join(User, AlertProcess.assigned_to_fk == User.id).filter(AlertProcess.assigned_to_fk==current_user.id).order_by(VizAlerts.rule_status,VizAlerts.changed_on.desc(),AlertProcess.assigned_on.desc())
         
         data_result = [r._asdict() for r in alert_result]
 
