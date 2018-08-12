@@ -1140,7 +1140,7 @@ class AlertView(BaseView):
 
         alert_id = request.get_json()["alertid"]
 
-        procss_sub = db.session.query(AlertProcess.id,AlertProcess.alert_id).filter(AlertProcess.alert_id==alert_id,AlertProcess.process_type==ProcessEnum.Analyst_process).subquery()
+        procss_sub = db.session.query(AlertProcess.id,AlertProcess.alert_id).filter(AlertProcess.alert_id==alert_id,AlertProcess.process_type==ProcessEnum.Analyst_Process).subquery()
 
         alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_status.name,AlertProcessComments.comment,procss_sub.c.id.label('pid')).outerjoin(procss_sub, VizAlerts.id==procss_sub.c.alert_id).outerjoin(AlertProcessComments, procss_sub.c.id==AlertProcessComments.process_id).filter(VizAlerts.id==alert_id)
 
@@ -1161,7 +1161,7 @@ class AlertView(BaseView):
             alert_status = StatusEnum.Close_True
 
         if not process_id:
-           alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
+           alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_Process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
            self.appbuilder.get_session.add(alertProcess)
            self.appbuilder.get_session.flush()
            process_id = alertProcess.id
