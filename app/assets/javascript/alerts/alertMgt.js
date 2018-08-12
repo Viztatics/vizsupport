@@ -191,13 +191,18 @@ $(function(){
 					barOption.series[0].data=[];
 					for (let i = 0; i < data.length; i++)
 					{
-						if($.inArray(data[i][1], barOption.xAxis[0].data) === -1) barOption.xAxis[0].data.push(data[i][1]);
-						for(let j=0;j<3;j++){
-							if(barOption.series[j].name == data[i][2]){
-								barOption.series[j].data.push({name:data[i][1],value:data[i][0]})
-							}
-						}											    
+						if($.inArray(data[i][1], barOption.xAxis[0].data) === -1) barOption.xAxis[0].data.push(data[i][1]);																    
 					}
+					for(let j=0;j<3;j++){
+						for(let k=0;k<barOption.xAxis[0].data.length;k++){
+							barOption.series[j].data[k]=0;
+							for (let i = 0; i < data.length; i++){
+								if(barOption.series[j].name == data[i][2]&&barOption.xAxis[0].data[k]==data[i][1]){
+									barOption.series[j].data[k]=data[i][0];
+								}
+							}														
+						}						
+					}	
 					barChart.setOption(barOption);
 				}			
 			}

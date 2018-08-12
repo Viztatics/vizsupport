@@ -30,7 +30,7 @@ class TypeEnum(enum.Enum):
 class ProcessEnum(enum.Enum):
     Alert_Created = 1
     Manager_Assign = 2
-    Analyst_process = 3
+    Analyst_Process = 3
 
 class Company(Model):
     id = Column(Integer, primary_key=True)

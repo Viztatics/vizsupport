@@ -1146,8 +1146,6 @@ class AlertView(BaseView):
 
         data_result = [r._asdict() for r in alert_result][0]
 
-        print(data_result)
-
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
     @expose('/management/addnote',methods=['POST'])
@@ -1158,18 +1156,15 @@ class AlertView(BaseView):
         process_id = request.get_json()["process_id"]
         comment = request.get_json()["comment"]
         status = request.get_json()["status"]
-        print(process_id)
         alert_status = StatusEnum.Close_False
         if status is True:
             alert_status = StatusEnum.Close_True
 
         if not process_id:
-           print("===================================================================in except")
            alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
            self.appbuilder.get_session.add(alertProcess)
            self.appbuilder.get_session.flush()
            process_id = alertProcess.id
-           print("process_id"+str(process_id))
 
         proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
