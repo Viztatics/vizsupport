@@ -1138,15 +1138,13 @@ class AlertView(BaseView):
 
         data_result = []
 
-        pid = request.get_json()["pid"]
-        uid = request.get_json()["uid"]
+        alert_id = request.get_json()["alertid"]
 
-        if not pid and not uid:
-            data_result = {'comment':'','rule_status':StatusEnum.Open.name}
-        else:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_status.name,AlertProcessComments.comment,AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id==AlertProcess.alert_id).outerjoin(AlertProcessComments, AlertProcess.id==AlertProcessComments.process_id).filter(AlertProcess.id==pid)
-            print(alert_result)
-            data_result = [r._asdict() for r in alert_result][0]
+        procss_sub = db.session.query(AlertProcess.id,AlertProcess.alert_id).filter(AlertProcess.alert_id==alert_id,AlertProcess.process_type==ProcessEnum.Analyst_process).subquery()
+
+        alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_status.name,AlertProcessComments.comment,procss_sub.c.id.label('pid')).outerjoin(procss_sub, VizAlerts.id==procss_sub.c.alert_id).outerjoin(AlertProcessComments, procss_sub.c.id==AlertProcessComments.process_id).filter(VizAlerts.id==alert_id)
+
+        data_result = [r._asdict() for r in alert_result][0]
 
         print(data_result)
 
@@ -1160,15 +1158,23 @@ class AlertView(BaseView):
         process_id = request.get_json()["process_id"]
         comment = request.get_json()["comment"]
         status = request.get_json()["status"]
+        print(process_id)
         alert_status = StatusEnum.Close_False
         if status is True:
             alert_status = StatusEnum.Close_True
 
-        if process_id:
-            proComment = AlertProcessComments(process_id=process_id, comment=comment)
-            self.appbuilder.get_session.add(proComment)
-            self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status})
-            self.appbuilder.get_session.commit()
+        if not process_id:
+           print("===================================================================in except")
+           alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
+           self.appbuilder.get_session.add(alertProcess)
+           self.appbuilder.get_session.flush()
+           process_id = alertProcess.id
+           print("process_id"+str(process_id))
+
+        proComment = AlertProcessComments(process_id=process_id, comment=comment)
+        self.appbuilder.get_session.add(proComment)
+        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now()})
+        self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
 

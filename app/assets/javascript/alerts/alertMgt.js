@@ -217,7 +217,7 @@ $(function(){
 		  	url: $SCRIPT_ROOT+'/alerts/management/getcurrentnote',
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'pid':row.pid,'uid':row.uid}),
+		  	data: JSON.stringify({'alertid':row.id}),
 		  	success:function(data){
 
 		  		console.log(data);
@@ -228,8 +228,8 @@ $(function(){
 				$('#processCtl').bootstrapToggle('off');
 				$('#noteSaveBtn').prop('disabled',false);
 
-		  		$('#alertProcessModal').data('alertid', row.id);
-		  		$('#alertProcessModal').data('processid', row.pid);
+		  		$('#alertProcessModal').data('alertid', data.id);
+		  		$('#alertProcessModal').data('processid', data.pid);
 
 				if(data.rule_status!=='Close_True'){
 					$('#processCtl').bootstrapToggle('off');					
@@ -303,6 +303,9 @@ $(function(){
                 type: 'select',
                 source:$SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
                 url:$SCRIPT_ROOT+'/alerts/management/assignanalyst',
+                success: function(echo) {
+					getBarChart();
+				},
                 noeditFormatter:function(value, row, index) {
 			        if (row.rule_status=='Open') {
 			          return false;  // return false if you want the field editable.
