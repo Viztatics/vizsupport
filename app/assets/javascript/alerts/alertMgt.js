@@ -268,27 +268,35 @@ $(function(){
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
   		pagination:true,
+  		search:true,
 	    columns: [{
 	        field: 'id',
 	        title: 'Item ID',
+	        sortable:true,
 	    }, {
 	        field: 'account_key',
 	        title: 'Account Key',
+	        sortable:true,
 	    }, {
 	        field: 'trigger_rule',
 	        title: 'Alert Rules',
+	        sortable:true,
 	    }, {
 	        field: 'rule_type',
 	        title: 'Rule Type',
+	        sortable:true,
 	    }, {
 	        field: 'country_abbr',
 	        title: 'Opposite Country',
+	        sortable:true,
 	    },{
 	        field: 'country_name',
 	        title: 'Country Name',
+	        sortable:true,
 	    },{
 	        field: 'amount',
 	        title: 'Trans Amount',
+	        sortable:true,
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value).toLocaleString('en-US', {
 				  style: 'currency',
@@ -298,21 +306,27 @@ $(function(){
 	    },{
 	        field: 'cnt',
 	        title: 'Trans Cnt',
+	        sortable:true,
 	    },{
 	        field: 'rule_status',
 	        title: 'Status',
+	        sortable:true,
 	    },{
 	        field: 'trans_month',
 	        title: 'Month of Trans Date',
+	        sortable:true,
 	    },{
 	        field: 'created_on',
 	        title: 'Item Date',
+	        sortable:true,
 	    },{
 	        field: 'finished_on',
 	        title: 'Closed Date',
+	        sortable:true,
 	    },{
 	        field: 'current_step',
 	        title: 'Current Step',
+	        sortable:true,
 	    },{
 	        field: 'uid',
 	        title: 'Assigned User',

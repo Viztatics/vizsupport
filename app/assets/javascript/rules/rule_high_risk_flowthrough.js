@@ -189,6 +189,7 @@ $(function(){
 
 	$('#alertTable').bootstrapTable({
   		pagination:true,
+  		search:true,
   		exportDataType: 'all',
 	    columns: [{
           field: 'state',
@@ -197,13 +198,16 @@ $(function(){
           valign: 'middle'
         }, {
 	        field: 'ACCOUNT_KEY',
-	        title: 'ACCOUNT'
+	        title: 'ACCOUNT',
+	        sortable:true,
 	    }, {
 	        field: 'YearMonth',
-	        title: 'Month of Trans Date'
+	        title: 'Month of Trans Date',
+	        sortable:true,
 	    }, {
 	        field: 'TRANS_AMT',
 	        title: 'Trans Amount',
+	        sortable:true,
 	        formatter: function formatter(value, row, index, field) {
 	        	return (value).toLocaleString('en-US', {
 				  style: 'currency',

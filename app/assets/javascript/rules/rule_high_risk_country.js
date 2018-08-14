@@ -423,6 +423,7 @@ $(function(){
 	$('#alertTable').bootstrapTable({
 		  		pagination:true,
 		  		exportDataType: 'all',
+		  		search:true,  			
 			    columns: [{
 		          field: 'state',
 		          checkbox: true,
@@ -430,19 +431,24 @@ $(function(){
 		          valign: 'middle'
 		        }, {
 			        field: 'ACCOUNT_KEY',
-			        title: 'ACCOUNT'
+			        title: 'ACCOUNT',
+			        sortable:true,
 			    }, {
 			        field: 'Month of Trans Date',
-			        title: 'Month of Trans Date'
+			        title: 'Month of Trans Date',
+			        sortable:true,
 			    }, {
 			        field: 'OPP_CNTRY',
-			        title: 'Opposite Country'
+			        title: 'Opposite Country',
+			        sortable:true,
 			    },{
 			        field: 'Country Name',
-			        title: 'Country Name'
+			        title: 'Country Name',
+			        sortable:true,
 			    },{
 			        field: 'Trans_Amt',
 			        title: 'Trans Amount',
+			        sortable:true,
 			        formatter: function formatter(value, row, index, field) {
 			        	return (value).toLocaleString('en-US', {
 						  style: 'currency',
