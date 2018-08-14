@@ -637,6 +637,10 @@ $(function(){
 	    }, {
 	        field: 'TRANS_CNT',
 	        title: 'Trans Count'
+	    },{
+	        field: 'COUNT',
+	        title: 'Prior Alerts',
+	        sortable:true,
 	    }],
 	});
 

@@ -519,29 +519,37 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskVolumeTableData(self,transCode):
 
-    	highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+        highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
 
-    	dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+        dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
 
-    	dst_file = request.get_json()["filename"]
+        dst_file = request.get_json()["filename"]
 
-    	crDb = request.get_json()["crDb"]
+        crDb = request.get_json()["crDb"]
 
-    	amtThreshold = request.get_json()["amtThreshNum"]
+        amtThreshold = request.get_json()["amtThreshNum"]
 
-    	cntThreshold = request.get_json()["cntThreshNum"]
+        cntThreshold = request.get_json()["cntThreshNum"]
 
-    	def_volume_data = dst_path+"/"+dst_file
+        def_volume_data = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_volume_data)
+        table_data = pd.read_csv(def_volume_data)
 
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
 
-    	table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]    
+        table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]
 
-    	table_data['ID'] = table_data.index	
+        db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
-    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+        db_frame = pd.DataFrame(db_result.all(),columns=[column['name'] for column in db_result.column_descriptions])
+
+        db_frame = db_frame.rename(str.upper, axis='columns')
+
+        table_data = pd.merge(table_data,db_frame,how='left',on='ACCOUNT_KEY')    
+
+        table_data['ID'] = table_data.index	
+
+        return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/highRiskVolume/alertdata/<transCode>',methods=['POST'])
     @has_access
@@ -786,29 +794,37 @@ class RuleView(BaseView):
     @has_access
     def getProfilingTableData(self,transCode):
 
-    	profilingFolder = self.ACTIVITY_PROFILING_FOLDER_PREFIX+transCode
+        profilingFolder = self.ACTIVITY_PROFILING_FOLDER_PREFIX+transCode
 
-    	dst_path = RULE_UPLOAD_FOLDER+profilingFolder+"/"+str(current_user.id)
+        dst_path = RULE_UPLOAD_FOLDER+profilingFolder+"/"+str(current_user.id)
 
-    	dst_file = request.get_json()["filename"]
+        dst_file = request.get_json()["filename"]
 
     	#crDb = request.get_json()["crDb"]
 
-    	amtThreshold = request.get_json()["amtThreshNum"]
+        amtThreshold = request.get_json()["amtThreshNum"]
 
-    	cntThreshold = request.get_json()["cntThreshNum"]
+        cntThreshold = request.get_json()["cntThreshNum"]
 
-    	def_volume_data = dst_path+"/"+dst_file
+        def_volume_data = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+        table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
 
-    	table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
+        table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
 
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 
 
-    	table_data['ID'] = table_data.index	
+        db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
-    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+        db_frame = pd.DataFrame(db_result.all(),columns=[column['name'] for column in db_result.column_descriptions])
+
+        db_frame = db_frame.rename(str.upper, axis='columns')
+
+        table_data = pd.merge(table_data,db_frame,how='left',on='ACCOUNT_KEY')
+
+        table_data['ID'] = table_data.index	
+
+        return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/profiling/ruledata/<transCode>',methods=['POST'])
     @has_access
@@ -982,29 +998,37 @@ class RuleView(BaseView):
     @has_access
     def getFlowthroughTableData(self):
 
-    	flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+        flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
 
-    	dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+        dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
 
-    	dst_file = request.get_json()["filename"]
+        dst_file = request.get_json()["filename"]
 
     	#crDb = request.get_json()["crDb"]
 
-    	amtThreshold = request.get_json()["amtThreshNum"]
+        amtThreshold = request.get_json()["amtThreshNum"]
 
-    	lowerRatio = request.get_json()["lowerRatio"]
+        lowerRatio = request.get_json()["lowerRatio"]
 
-    	upperRatio = request.get_json()["upperRatio"]
+        upperRatio = request.get_json()["upperRatio"]
 
-    	def_volume_data = dst_path+"/"+dst_file
+        def_volume_data = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','TRANS_AMT','outlier'])
+        table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','TRANS_AMT','outlier'])
 
-    	table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))] 	
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))] 	
 
-    	table_data['ID'] = table_data.index	
+        db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
-    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+        db_frame = pd.DataFrame(db_result.all(),columns=[column['name'] for column in db_result.column_descriptions])
+
+        db_frame = db_frame.rename(str.upper, axis='columns')
+
+        table_data = pd.merge(table_data,db_frame,how='left',on='ACCOUNT_KEY')
+
+        table_data['ID'] = table_data.index	
+
+        return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/flowthrough/alertdata',methods=['POST'])
     @has_access

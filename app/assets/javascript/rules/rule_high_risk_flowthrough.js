@@ -214,6 +214,10 @@ $(function(){
 				  currency: 'USD',
 				});
 			}
+	    },{
+	        field: 'COUNT',
+	        title: 'Prior Alerts',
+	        sortable:true,
 	    }],
 	});
 

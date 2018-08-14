@@ -457,7 +457,7 @@ $(function(){
 					},
 			    },{
 			        field: 'COUNT',
-			        title: 'prior alerts',
+			        title: 'Prior Alerts',
 			        sortable:true,
 			    }],
 			});
