@@ -455,6 +455,10 @@ $(function(){
 						  currency: 'USD',
 						});
 					},
+			    },{
+			        field: 'COUNT',
+			        title: 'prior alerts',
+			        sortable:true,
 			    }],
 			});
 

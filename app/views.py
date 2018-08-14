@@ -262,25 +262,33 @@ class RuleView(BaseView):
     @has_access
     def getHighRiskCountryTableData(self,transCode):
 
-    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
 
-    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
 
-    	dst_file = request.get_json()["filename"]
+        dst_file = request.get_json()["filename"]
 
-    	threshold = request.get_json()["threshNum"]
+        threshold = request.get_json()["threshNum"]
 
-    	def_data_no_county = dst_path+"/"+dst_file
+        def_data_no_county = dst_path+"/"+dst_file
 
-    	table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt','Trans_Code_Type'])
+        table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt','Trans_Code_Type'])
 
-    	#table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
+        #table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
-    	table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
+        table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
 
-    	table_data['ID'] = table_data.index
+        db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
-    	return Response(table_data.to_json(orient='records'), mimetype='application/json')
+        db_frame = pd.DataFrame(db_result.all(),columns=[column['name'] for column in db_result.column_descriptions])
+
+        db_frame = db_frame.rename(str.upper, axis='columns')
+
+        table_data = pd.merge(table_data,db_frame,how='left',on='ACCOUNT_KEY')
+
+        table_data['ID'] = table_data.index
+
+        return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
     @expose('/highRiskCountry/alertdata/<transCode>',methods=['POST'])
     @has_access
