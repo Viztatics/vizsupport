@@ -17,20 +17,35 @@ AuditMixin will add automatic timestamp of created and modified by who
 """
 
 class StatusEnum(enum.Enum):
-    Open = 1
-    Close_True = 2
-    Close_False = 3
+    Open = "Open"
+    Close_True = "Close_True"
+    Close_False = "Close_False"
 
 class TypeEnum(enum.Enum):
-    High_Risk_Country = 1
-    High_Volume_Value = 2
-    Profiling = 3
-    Flow_Through = 4
+    High_Risk_Country = "High_Risk_Country"
+    High_Volume_Value = "High_Volume_Value"
+    Profiling = "Profiling"
+    Flow_Through = "Flow_Through"
 
 class ProcessEnum(enum.Enum):
-    Alert_Created = 1
-    Manager_Assign = 2
-    Analyst_Process = 3
+    Alert_Created = "Alert_Created"
+    Manager_Assign = "Manager_Assign"
+    Analyst_Process = "Analyst_Process"
+
+class RuleEnum(enum.Enum):
+    High_Risk_Country_Wire_Activity = "High_Risk_Country_Wire_Activity"
+    High_Risk_Country_ACH_Activity = "High_Risk_Country_ACH_Activity"
+    Cash_Activity_Limit = "Cash_Activity_Limit"
+    Check_Activity_Limit = "Check_Activity_Limit"
+    Remote_Deposit_Activity_Limit = "Remote_Deposit_Activity_Limit"
+    Wire_Transfer_Activity_Limit = "Wire_Transfer_Activity_Limit"
+    ACH_Transfer_Activity_Limit = "ACH_Transfer_Activity_Limit"
+    Cash_Activity_Profiling = "Cash_Activity_Profiling"
+    Check_Activity_Profiling = "Check_Activity_Profiling"
+    Remote_Deposit_Activity_Profiling = "Remote_Deposit_Activity_Profiling"
+    Wire_Transfer_Activity_Profiling = "Wire_Transfer_Activity_Profiling"
+    ACH_Transfer_Activity_Profiling = "ACH_Transfer_Activity_Profiling"
+    FLow_Through_Activity_Pattern = "FLow_Through_Activity_Pattern"
 
 class Company(Model):
     id = Column(Integer, primary_key=True)
@@ -58,6 +73,9 @@ class VizAlerts(AuditMixin,Model):
     cnt = Column(Integer,nullable=True)
     rule_type = Column(Enum(TypeEnum))
     rule_status = Column(Enum(StatusEnum))
+    trigger_rule = Column(Enum(RuleEnum))
+    current_step = Column(Enum(ProcessEnum))
+    score = Column(Integer, default=0)
     operated_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
     finished_on = Column(DateTime, nullable=True)
 

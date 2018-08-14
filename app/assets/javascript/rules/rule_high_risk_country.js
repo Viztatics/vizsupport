@@ -474,7 +474,7 @@ $(function(){
 
 	    $.ajax({
 		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/alertdata',
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/alertdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'items':items}),

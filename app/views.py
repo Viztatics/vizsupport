@@ -282,18 +282,27 @@ class RuleView(BaseView):
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskCountry/alertdata',methods=['POST'])
+    @expose('/highRiskCountry/alertdata/<transCode>',methods=['POST'])
     @has_access
-    def createHighRiskCountryAlertData(self):
+    def createHighRiskCountryAlertData(self,transCode):
 
         items = request.get_json()["items"]
 
+        if transCode == 'Wire' :
+            rule_name = RuleEnum.High_Risk_Country_Wire_Activity
+        else:
+            rule_name = RuleEnum.High_Risk_Country_ACH_Activity
+
+        print(rule_name)
+
+        print(rule_name.name)
+
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(ProcessEnum.Alert_Created.name,current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
@@ -530,18 +539,20 @@ class RuleView(BaseView):
 
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
-    @expose('/highRiskVolume/alertdata',methods=['POST'])
+    @expose('/highRiskVolume/alertdata/<transCode>',methods=['POST'])
     @has_access
-    def createHighRiskVolumeAlertData(self):
+    def createHighRiskVolumeAlertData(self,transCode):
 
         items = request.get_json()["items"]
 
+        rule_name = lambda: RuleEnum.High_Risk_Country_Wire_Activity if transCode == 'Wire' else RuleEnum.High_Risk_Country_ACH_Activity
+
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created, rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.High_Volume_Value.name,StatusEnum.Open.name))
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(ProcessEnum.Alert_Created.name,current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Volume_Value.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
