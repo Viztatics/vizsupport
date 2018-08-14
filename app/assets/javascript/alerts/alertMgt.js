@@ -46,7 +46,7 @@ $(function(){
 
 	let typeOption = {
 	    title : {
-	        text: 'Alerts Rules',
+	        text: 'Alerts Rule Types',
 	        x:'center'
 	    },
 	    tooltip : {
@@ -270,16 +270,16 @@ $(function(){
   		pagination:true,
 	    columns: [{
 	        field: 'id',
-	        title: 'Alert ID',
-	    }, {
-	        field: 'rule_type',
-	        title: 'Rule',
+	        title: 'Item ID',
 	    }, {
 	        field: 'account_key',
 	        title: 'Account Key',
-	    },{
-	        field: 'trans_month',
-	        title: 'Month of Trans Date',
+	    }, {
+	        field: 'trigger_rule',
+	        title: 'Alert Rules',
+	    }, {
+	        field: 'rule_type',
+	        title: 'Rule Type',
 	    }, {
 	        field: 'country_abbr',
 	        title: 'Opposite Country',
@@ -301,6 +301,18 @@ $(function(){
 	    },{
 	        field: 'rule_status',
 	        title: 'Status',
+	    },{
+	        field: 'trans_month',
+	        title: 'Month of Trans Date',
+	    },{
+	        field: 'created_on',
+	        title: 'Item Date',
+	    },{
+	        field: 'finished_on',
+	        title: 'Closed Date',
+	    },{
+	        field: 'current_step',
+	        title: 'Current Step',
 	    },{
 	        field: 'uid',
 	        title: 'Assigned User',
