@@ -659,7 +659,7 @@ $(function(){
 
 	    $.ajax({
 		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/profiling/alertdata',
+		  	url: $SCRIPT_ROOT+'/rules/profiling/alertdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'items':items}),

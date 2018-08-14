@@ -293,10 +293,6 @@ class RuleView(BaseView):
         else:
             rule_name = RuleEnum.High_Risk_Country_ACH_Activity
 
-        print(rule_name)
-
-        print(rule_name.name)
-
         for item in items:
 
             alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
@@ -545,14 +541,23 @@ class RuleView(BaseView):
 
         items = request.get_json()["items"]
 
-        rule_name = lambda: RuleEnum.High_Risk_Country_Wire_Activity if transCode == 'Wire' else RuleEnum.High_Risk_Country_ACH_Activity
+        if transCode == 'Cash' :
+            rule_name = RuleEnum.Cash_Activity_Limit
+        elif transCode == 'Check' :
+            rule_name = RuleEnum.Check_Activity_Limit
+        elif transCode == 'Remote' :
+            rule_name = RuleEnum.Remote_Deposit_Activity_Limit
+        elif transCode == 'Wire' :
+            rule_name = RuleEnum.Wire_Transfer_Activity_Limit
+        else :
+            rule_name = RuleEnum.ACH_Transfer_Activity_Limit
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created, rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(ProcessEnum.Alert_Created.name,current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Volume_Value.name,StatusEnum.Open.name))
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(ProcessEnum.Alert_Created.name,current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
@@ -832,26 +837,37 @@ class RuleView(BaseView):
     	return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
 
-    @expose('/profiling/alertdata',methods=['POST'])
+    @expose('/profiling/alertdata/<transCode>',methods=['POST'])
     @has_access
-    def createProfilingAlertData(self):
+    def createProfilingAlertData(self,transCode):
+
+        if transCode == 'Cash' :
+            rule_name = RuleEnum.Cash_Activity_Profiling
+        elif transCode == 'Check' :
+            rule_name = RuleEnum.Check_Activity_Profiling
+        elif transCode == 'Remote' :
+            rule_name = RuleEnum.Remote_Deposit_Activity_Profiling
+        elif transCode == 'Wire' :
+            rule_name = RuleEnum.Wire_Transfer_Activity_Profiling
+        else :
+            rule_name = RuleEnum.ACH_Transfer_Activity_Profiling
 
         items = request.get_json()["items"]
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.Profiling.name,StatusEnum.Open.name))
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(ProcessEnum.Alert_Created.name,current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()
         return  json.dumps({})
 
-    @expose('/profiling/upload',methods=['POST','DELETE'])
+    @expose('/profiling/upload/<transCode>',methods=['POST','DELETE'])
     @has_access
-    def getProfilingFileData(self):
+    def getProfilingFileData(self,transCode):
 
         profilingFolder = self.ACTIVITY_PROFILING_FOLDER_PREFIX+transCode
 
@@ -986,14 +1002,16 @@ class RuleView(BaseView):
     @has_access
     def createFlowThroughAlertData(self):
 
+        rule_name = RuleEnum.FLow_Through_Activity_Pattern
+
         items = request.get_json()["items"]
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
-            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),TypeEnum.Flow_Through.name,StatusEnum.Open.name))
+            alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(ProcessEnum.Alert_Created.name,current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
             self.appbuilder.get_session.add(alertproc)
 
         self.appbuilder.get_session.commit()

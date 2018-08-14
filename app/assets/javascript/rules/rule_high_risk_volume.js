@@ -572,7 +572,7 @@ $(function(){
 
 	    $.ajax({
 		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/alertdata',
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/alertdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({'items':items}),
