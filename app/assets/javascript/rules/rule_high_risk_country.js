@@ -421,7 +421,39 @@ $(function(){
 	getHighRiskCountryPareto(1);
 
 	let operateFormatter=function(value, row, index) {
-	  return '<a href="javascript:void(0)" class="note">'+value+'</a>';
+	  	if(value){
+			return '<a href="javascript:void(0)" class="note" >'+value+'</a>';
+		}else{
+			return 0;
+		}
+	};
+
+	window.operateEvents = {
+	  'click .note': function (e, value, row, index) {
+	  	$this = $(this);
+
+	  	$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/prioralert',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'account_key':row.ACCOUNT_KEY}),
+		  	success:function(data){
+
+		  		tiptext = '';
+		  		data.forEach(function(el) {
+		  			tiptext+=el.rule_type.name+":"+el.count+"</br>"
+		  		});
+
+		  		layer.tips(tiptext, $this, {
+				  tips: [3, '#3595CC'],
+				  time: 3000
+				});
+		  	}
+		  });
+
+		    
+	  }
 	};
 
 	$('#alertTable').bootstrapTable({
@@ -463,7 +495,7 @@ $(function(){
 			        field: 'COUNT',
 			        title: 'Prior Alerts',
 			        sortable:true,
-			        //events: operateEvents,
+			        events: operateEvents,
           			formatter: operateFormatter
 			    }],
 			});

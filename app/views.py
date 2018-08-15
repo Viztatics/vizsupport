@@ -1234,6 +1234,18 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
 
+    @expose('/management/prioralert',methods=['POST'])
+    @has_access
+    def getFlowThroughPriorAlertData(self):
+
+        account_key = request.get_json()["account_key"]
+
+        data_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.rule_type).filter(VizUser.company_id==current_user.company_id,VizAlerts.account_key==account_key)
+
+        data_result = [r._asdict() for r in data_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
 
 @appbuilder.app.errorhandler(404)
 def page_not_found(e):
