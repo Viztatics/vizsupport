@@ -1151,9 +1151,9 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, '%Y-%m-%d %H:%M').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
         else:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, '%Y-%m-%d %H:%M').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
         
         data_result = [r._asdict() for r in alert_result]
 
@@ -1185,7 +1185,7 @@ class AlertView(BaseView):
         user_result = db.session.query(User.username).filter(User.id==analyst).one()
         assginedUser = [r for r in user_result]
 
-        alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now(), process_type=ProcessEnum.Manager_Assign, syslog=Manager_Assign.format(current_user.username,assginedUser[0],datetime.now()))
+        alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now(), process_type=ProcessEnum.Manager_Assign, syslog=Manager_Assign.format(ProcessEnum.Manager_Assign.name,current_user.username,assginedUser[0],datetime.now()))
 
         self.appbuilder.get_session.add(alertProcess)
         viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now()})
@@ -1222,7 +1222,7 @@ class AlertView(BaseView):
             alert_status = StatusEnum.Close_True
 
         if not process_id:
-           alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_Process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
+           alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_Process, syslog=Analyst_Process.format(ProcessEnum.Analyst_Process.name,current_user.username,datetime.now(),alert_status.name,comment))
            self.appbuilder.get_session.add(alertProcess)
            self.appbuilder.get_session.flush()
            process_id = alertProcess.id
