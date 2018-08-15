@@ -607,6 +607,10 @@ $(function(){
 	    }],
 	});
 
+	let operateFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="note">'+value+'</a>';
+	};
+
 	$('#alertTable').bootstrapTable({
   		pagination:true,
   		search:true,

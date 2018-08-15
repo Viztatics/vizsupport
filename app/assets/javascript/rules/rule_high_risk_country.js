@@ -420,6 +420,10 @@ $(function(){
 	getHighRiskCountryPercentile(1);
 	getHighRiskCountryPareto(1);
 
+	let operateFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="note">'+value+'</a>';
+	};
+
 	$('#alertTable').bootstrapTable({
 		  		pagination:true,
 		  		exportDataType: 'all',
@@ -459,6 +463,8 @@ $(function(){
 			        field: 'COUNT',
 			        title: 'Prior Alerts',
 			        sortable:true,
+			        //events: operateEvents,
+          			formatter: operateFormatter
 			    }],
 			});
 
