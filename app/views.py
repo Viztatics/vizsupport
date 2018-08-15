@@ -1188,7 +1188,7 @@ class AlertView(BaseView):
         alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now(), process_type=ProcessEnum.Manager_Assign, syslog=Manager_Assign.format(ProcessEnum.Manager_Assign.name,current_user.username,assginedUser[0],datetime.now()))
 
         self.appbuilder.get_session.add(alertProcess)
-        viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now()})
+        viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now(),'current_step':ProcessEnum.Manager_Assign})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
@@ -1229,7 +1229,7 @@ class AlertView(BaseView):
 
         proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
-        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now()})
+        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':ProcessEnum.Analyst_Process})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
