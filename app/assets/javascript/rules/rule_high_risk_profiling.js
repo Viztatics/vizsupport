@@ -645,6 +645,7 @@ $(function(){
 	        field: 'COUNT',
 	        title: 'Prior Alerts',
 	        sortable:true,
+	        formatter: operateFormatter
 	    }],
 	});
 
