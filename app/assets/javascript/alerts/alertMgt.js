@@ -264,6 +264,16 @@ $(function(){
 	  }
 	};
 
+	let idFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="aid" title="click to show detail">'+value+'</a>';
+	};
+
+	window.idEvents = {
+	  'click .aid': function (e, value, row, index) {
+	    $('#alertDetailModal').modal('show');  
+	  }
+	};
+
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
@@ -273,6 +283,8 @@ $(function(){
 	        field: 'id',
 	        title: 'Item ID',
 	        sortable:true,
+	        events: idEvents,
+          	formatter: idFormatter
 	    }, {
 	        field: 'account_key',
 	        title: 'Account Key',
