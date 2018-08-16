@@ -1244,7 +1244,7 @@ class AlertView(BaseView):
 
         data_result = [r._asdict() for r in data_result]
 
-        console.log(data_result)
+        print(data_result)
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
