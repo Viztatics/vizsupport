@@ -270,6 +270,29 @@ $(function(){
 
 	window.idEvents = {
 	  'click .aid': function (e, value, row, index) {
+	  	$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/alertDetail/'+value,
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+
+		  		console.log(data);
+		  		//$("#altId").text(data[0].id);	
+		  		$("#altAcckey").text(data[0].account_key||'');
+		  		$("#altTransMonth").text(data[0].trans_month||'');
+		  		$("#altOwner").text(data[0].ouid||'');
+		  		$("#altRuleType").text(data[0].rule_type||'');
+		  		$("#altRuleStatus").text(data[0].rule_status||'');
+		  		$("#altTriRule").text(data[0].trigger_rule||'');
+		  		$("#altCurrentStep").text(data[0].current_step||'');
+		  		$("#altOperator").text(data[0].cuid||'');
+		  		$("#altOperatedDate").text(data[0].operated_on||'');
+		  		$("#altCreatedDate").text(data[0].created_on||'');
+				$("#altFinishedDate").text(data[0].finished_on||'');		
+			}
+		});
 	    $('#alertDetailModal').modal('show');  
 	  }
 	};

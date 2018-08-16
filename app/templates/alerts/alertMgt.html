@@ -76,17 +76,45 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Alert Detail</h4>
+        <h4 class="modal-title">Alert <span id="altId" class="label label-info"></span> Detail</h4>
       </div>
       <div class="modal-body">
-          <div class="form-group">
-            <label for="commentTextArea">Comment</label>
-            <textarea class="form-control" rows="4" id="commentTextArea" name="commentTextArea" placeholder="please add your comments"></textarea>
+        <div class="row">
+          <label class="col-md-2 control-label">Account Key</label><div id="altAcckey" class="col-md-2"></div>
+          <label class="col-md-2 control-label">Trans Month</label><div id="altTransMonth" class="col-md-2"></div>
+          <label class="col-md-2 control-label">Alert Owner</label><div id="altOwner" class="col-md-2"></div>
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Created Time</label><div id="altCreatedDate" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Finished Time</label><div id="altFinishedDate" class="col-md-3"></div>
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Operator</label><div id="altOperator" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Operate Time</label><div id="altOperatedDate" class="col-md-3"></div>
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Rule Type</label><div id="altRuleType" class="col-md-3"></div>          
+          <label class="col-md-3 control-label">Rule Status</label><div id="altRuleStatus" class="col-md-3"></div>
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Triggered Rule</label><div id="altTriRule" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Current Step</label><div id="altCurrentStep" class="col-md-3"></div>
+        </div>        
+        
+        <div>
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="aProcess" role="tab" data-toggle="tab">Process History</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="aProcess">
+
+            </div>
           </div>
-          <div class="form-group">
-            <label for="processCtl">Process</label>
-            <input class="form-control" type="checkbox" id="processCtl" name="processCtl" disabled data-toggle="toggle" data-on="True" data-off="False">
-          </div>
+
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
