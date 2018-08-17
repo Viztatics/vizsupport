@@ -291,14 +291,15 @@ $(function(){
 		  		$("#altOperatedDate").text(data[0].operated_on||'');
 		  		$("#altCreatedDate").text(data[0].created_on||'');
 				$("#altFinishedDate").text(data[0].finished_on||'');
-
+				
+				$('#aProcess').empty();
 				$ele = $('.procls').clone();
-				$('.procls').empty();
+				$ele[0].style.display = 'block';
 				data.forEach(function(row){					
 					console.log(row);
 					$clonele = $ele.clone().html(function(index,html){
 						return html.replace('#process_type#',row.process_type).replace('#assigner#',row.assigner)
-						.replace('#assigned_on#',row.assigned_on).replace('#syslog#',row.syslog);
+						.replace('#assigned_on#',row.assigned_on).replace('#syslog#',row.syslog).replace(/#pid#/gi,row.pid);
 					});
 					$('#aProcess').append($clonele);
 				})

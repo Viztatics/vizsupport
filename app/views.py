@@ -1257,11 +1257,9 @@ class AlertView(BaseView):
         operator = aliased(User)
         assigner = aliased(User)
 
-        alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,creator.username.label('cuid'),operator.username.label('ouid'),VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.operated_on, 'YYYY-MM-DD HH24:MI:SS').label("operated_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,AlertProcess.process_type.name,AlertProcess.syslog,func.to_char(AlertProcess.assigned_on, 'YYYY-MM-DD HH24:MI:SS').label("assigned_on"),assigner.username.label("assigner")).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).join(creator, VizAlerts.operated_by_fk == creator.id).join(operator, VizAlerts.operated_by_fk == operator.id).join(assigner, AlertProcess.assigned_to_fk == assigner.id).filter(VizAlerts.id==aid).order_by(AlertProcess.created_on.desc())
+        alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,creator.username.label('cuid'),operator.username.label('ouid'),VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.operated_on, 'YYYY-MM-DD HH24:MI:SS').label("operated_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,AlertProcess.process_type.name,AlertProcess.syslog,func.to_char(AlertProcess.assigned_on, 'YYYY-MM-DD HH24:MI:SS').label("assigned_on"),assigner.username.label("assigner"),AlertProcess.id.label('pid')).outerjoin(AlertProcess, VizAlerts.id == AlertProcess.alert_id).join(creator, VizAlerts.operated_by_fk == creator.id).join(operator, VizAlerts.operated_by_fk == operator.id).join(assigner, AlertProcess.created_by_fk == assigner.id).filter(VizAlerts.id==aid).order_by(AlertProcess.created_on.desc())
 
         data_result = [r._asdict() for r in alert_result]
-
-        print(data_result)
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
