@@ -290,7 +290,20 @@ $(function(){
 		  		$("#altOperator").text(data[0].cuid||'');
 		  		$("#altOperatedDate").text(data[0].operated_on||'');
 		  		$("#altCreatedDate").text(data[0].created_on||'');
-				$("#altFinishedDate").text(data[0].finished_on||'');		
+				$("#altFinishedDate").text(data[0].finished_on||'');
+
+				$ele = $('.procls').clone();
+				$('.procls').empty();
+				data.forEach(function(row){					
+					console.log(row);
+					$clonele = $ele.clone().html(function(index,html){
+						return html.replace('#process_type#',row.process_type).replace('#assigner#',row.assigner)
+						.replace('#assigned_on#',row.assigned_on).replace('#syslog#',row.syslog);
+					});
+					$('#aProcess').append($clonele);
+				})
+
+				
 			}
 		});
 	    $('#alertDetailModal').modal('show');  
