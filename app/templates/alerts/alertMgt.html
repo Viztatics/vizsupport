@@ -84,6 +84,14 @@
           <label class="col-md-3 control-label">Trans Month</label><div id="altTransMonth" class="col-md-3"></div>          
         </div>
         <div class="row">
+          <label class="col-md-3 control-label">Trans Amount</label><div id="altTransAmount" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Trans Cnt</label><div id="altTransCnt" class="col-md-3"></div>          
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Opposite Country</label><div id="altOppoCtry" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Country Name</label><div id="altCtryName" class="col-md-3"></div>          
+        </div>
+        <div class="row">
           <label class="col-md-3 control-label">Triggered Rule</label><div id="altTriRule" class="col-md-3"></div>
           <label class="col-md-3 control-label">Alert Owner</label><div id="altOwner" class="col-md-3"></div>          
         </div> 
@@ -120,15 +128,21 @@
             <div class="row">
               <div class="col-md-12">Process Log : #syslog#</div>
             </div>              
-            <a style="margin-top:5px" class="btn btn-primary" role="button" data-toggle="collapse" href="#collapseComments_#pid#" aria-expanded="false" aria-controls="collapseComments">
+            <a style="margin-top:5px" class="btn btn-primary" role="button" data-toggle="collapse" href="#collapseComments_#pid#" aria-expanded="false" aria-controls="#collapseComments_#pid#">
               comments
             </a>                
-            <div class="collapse" id="collapseComments_#pid#">
-              <div class="well">
-                testljdkjfskljdfkldsjflksjdfiweuriojklsdj
-              </div>
+            <div class="collapse" id="collapseComments_#pid#">              
             </div>
             <hr>
+          </div>
+
+          <div class="well" style="display: none">
+            <div class="row">
+              <div class="col-md-4 col-md-offset-8" style="text-align: right">#creator# | #created_on#</div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">#comment#</div>
+            </div> 
           </div>
 
         </div>

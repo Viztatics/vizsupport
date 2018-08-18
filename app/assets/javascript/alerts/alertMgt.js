@@ -280,28 +280,72 @@ $(function(){
 
 		  		console.log(data);
 		  		//$("#altId").text(data[0].id);	
-		  		$("#altAcckey").text(data[0].account_key||'');
-		  		$("#altTransMonth").text(data[0].trans_month||'');
-		  		$("#altOwner").text(data[0].ouid||'');
-		  		$("#altRuleType").text(data[0].rule_type||'');
-		  		$("#altRuleStatus").text(data[0].rule_status||'');
-		  		$("#altTriRule").text(data[0].trigger_rule||'');
-		  		$("#altCurrentStep").text(data[0].current_step||'');
-		  		$("#altOperator").text(data[0].cuid||'');
-		  		$("#altOperatedDate").text(data[0].operated_on||'');
-		  		$("#altCreatedDate").text(data[0].created_on||'');
-				$("#altFinishedDate").text(data[0].finished_on||'');
+		  		$("#altAcckey").text(data[0].account_key||'-');
+		  		$("#altTransMonth").text(data[0].trans_month||'-');
+		  		$("#altTransAmount").text(data[0].amount.toLocaleString('en-US', {
+				  style: 'currency',
+				  currency: 'USD',
+				})||'-');
+		  		$("#altTransCnt").text(data[0].cnt||'-');
+		  		$("#altOppoCtry").text(data[0].country_abbr||'-');
+		  		$("#altCtryName").text(data[0].country_name||'-');
+		  		$("#altOwner").text(data[0].cuid||'-');
+		  		$("#altRuleType").text(data[0].rule_type||'-');
+		  		$("#altRuleStatus").text(data[0].rule_status||'-');
+		  		$("#altTriRule").text(data[0].trigger_rule||'-');
+		  		$("#altCurrentStep").text(data[0].current_step||'-');
+		  		$("#altOperator").text(data[0].ouid||'-');
+		  		$("#altOperatedDate").text(data[0].operated_on||'-');
+		  		$("#altCreatedDate").text(data[0].created_on||'-');
+				$("#altFinishedDate").text(data[0].finished_on||'-');
 				
 				$('#aProcess').empty();
 				$ele = $('.procls').clone();
 				$ele[0].style.display = 'block';
 				data.forEach(function(row){					
-					console.log(row);
+					//console.log(row);
 					$clonele = $ele.clone().html(function(index,html){
 						return html.replace('#process_type#',row.process_type).replace('#assigner#',row.assigner)
 						.replace('#assigned_on#',row.assigned_on).replace('#syslog#',row.syslog).replace(/#pid#/gi,row.pid);
 					});
 					$('#aProcess').append($clonele);
+				})
+
+				$('.collapse').on('show.bs.collapse', function () {
+				  $this = $(this);
+				  var idstr =  $this.prop('id');
+				  var pid = idstr.split("_")[1];
+				  console.log(pid);
+				  debugger;
+
+				  $.ajax({
+					cache: false,
+				  	url: $SCRIPT_ROOT+'/alerts/management/procescomments/'+pid,
+				  	type: 'GET',
+				  	contentType:'application/json',
+				  	data: JSON.stringify({}),
+				  	success:function(data){
+				  	  $this.empty();
+					  $ele = $('.well[style="display: none"]').clone();
+					  $ele[0].style.display = 'block';
+					  if(data.length === 0){
+					  	$clonele = $ele.clone().empty().append('No comments!');
+					  	$this.append($clonele);
+					  }else{
+					  	data.forEach(function(row){					
+							//console.log(row);
+							$clonele = $ele.clone().html(function(index,html){
+								return html.replace('#comment#',row.comment).replace('#creator#',row.creator)
+								.replace('#created_on#',row.created_on);
+							});
+							$this.append($clonele);
+						  })
+					  }
+					  					  	
+				  	}
+				  })
+
+				  		  
 				})
 
 				
