@@ -359,6 +359,17 @@ $(function(){
 	  }
 	};
 
+	let assginFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="assignlink" title="click to assign">'+value+'</a>';
+	};
+
+	window.assignEvents = {
+	  'click .assignlink': function (e, value, row, index) {
+	  	
+	    
+	  }
+	};
+
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
@@ -425,8 +436,9 @@ $(function(){
 	        title: 'Current Step',
 	        sortable:true,
 	    },{
-	        field: 'uid',
+	        field: 'username',
 	        title: 'Assigned User',
+	        /**
 	        editable: {
                 type: 'select',
                 source:$SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
@@ -442,8 +454,12 @@ $(function(){
 			        }
 			    }
             }
+            **/
+            align: 'center',
+            events: assignEvents,
+            formatter: assginFormatter
 	    },{
-          field: 'username',
+          field: 'uid',
           title: 'Item Operate',
           align: 'center',
           events: operateEvents,
