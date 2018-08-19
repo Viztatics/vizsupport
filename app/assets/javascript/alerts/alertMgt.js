@@ -308,7 +308,11 @@ $(function(){
 						return html.replace('#process_type#',row.process_type).replace('#assigner#',row.assigner)
 						.replace('#assigned_on#',row.assigned_on).replace('#syslog#',row.syslog).replace(/#pid#/gi,row.pid);
 					});
-					$('#aProcess').append($clonele);
+					if(row.process_type==='Alert_Created'){
+						$clonele.find('a').remove();
+						$clonele.find('.collapse').remove();
+					}
+					$('#aProcess').append($clonele);					
 				})
 
 				$('.collapse').on('show.bs.collapse', function () {
