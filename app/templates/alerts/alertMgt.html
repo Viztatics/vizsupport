@@ -55,7 +55,7 @@
         <div class="modal-body">
             <div class="form-group">
               <label for="commentTextArea">Comment</label>
-              <textarea class="form-control" rows="4" id="commentTextArea" name="commentTextArea" placeholder="please add your comments"></textarea>
+              <textarea class="form-control" rows="4" id="commentTextArea" name="commentTextArea" placeholder="please add your comments for processing the alert"></textarea>
             </div>
             <div class="form-group">
               <label for="processCtl">Process</label>
@@ -64,6 +64,33 @@
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary" id="noteSaveBtn">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="assginModal" tabindex="-1" role="dialog" data-pid=''>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Assign Processor</h4>
+      </div>
+      <form id="assginUserForm">
+        <div class="modal-body">
+            <div class="form-group">
+              <label for="commentTextArea">Comment</label>
+              <textarea class="form-control" rows="4" id="assginCommentTextArea" name="assginCommentTextArea" placeholder="please add your comments for assigning a processor"></textarea>
+            </div>
+            <div class="form-group form-inline">
+              <div class="col-md-2 input-group"><label for="assignCtl">Assign to</label></div>
+              <div class="col-md-4 input-group"><select id="assignCtl" name="assignCtl" class="form-control"></select></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="assignSaveBtn">Submit</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </form>

@@ -319,8 +319,6 @@ $(function(){
 				  $this = $(this);
 				  var idstr =  $this.prop('id');
 				  var pid = idstr.split("_")[1];
-				  console.log(pid);
-				  debugger;
 
 				  $.ajax({
 					cache: false,
@@ -365,8 +363,27 @@ $(function(){
 
 	window.assignEvents = {
 	  'click .assignlink': function (e, value, row, index) {
-	  	
-	    
+
+	  	console.log(row);
+
+	  	$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
+		  	type: 'GET',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+		  	  data.forEach(function(row){
+		  	  	$('#assignCtl').empty();
+		  	  	$('#assignCtl').append('<option value="'+row.value+'">'+row.text+'</option>')
+		  	  })
+
+		  	  $('#assginModal').modal('show'); 	 
+		  	  
+			  					  	
+		  	}
+		  })
+
+	  	   
 	  }
 	};
 
