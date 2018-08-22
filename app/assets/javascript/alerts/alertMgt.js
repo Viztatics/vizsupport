@@ -372,16 +372,42 @@ $(function(){
 		  	type: 'GET',
 		  	data: JSON.stringify({}),
 		  	success:function(data){
-		  	  data.forEach(function(row){
+
+		  	  $('#hid_alertid').val(row.id);
+		  	  data.forEach(function(user){
 		  	  	$('#assignCtl').empty();
-		  	  	$('#assignCtl').append('<option value="'+row.value+'">'+row.text+'</option>')
+		  	  	$('#assignCtl').append('<option value="'+user.value+'">'+user.text+'</option>')
 		  	  })
+
+
+		  	  $.ajax({
+				cache: false,
+			  	url: $SCRIPT_ROOT+'/alerts/management/procescomments/'+row.id+"/Manager_Assign",
+			  	type: 'GET',
+			  	data: JSON.stringify({}),
+			  	success:function(comments){
+			  		console.log(comments);
+			  		if(comments&&comments.length>0){
+			  			$('#assginCommentTextArea').val(comments[0].comment);
+			  			$('#assignCtl').val(comments[0].assigned_to_fk);
+			  		}
+			  		if(row.current_step!='Alert_Created'){
+			  			$('#assginCommentTextArea').prop('disabled',true);
+			  			$('#assignCtl').prop('disabled', true);	  
+			  			$('#assignSaveBtn').prop('disabled', true);			
+	  		  		}else{
+	  		  			$('#assginCommentTextArea').prop('disabled',false);
+			  			$('#assignCtl').prop('disabled', false);
+			  			$('#assignSaveBtn').prop('disabled', false);	 
+	  		  		}
+			  	}
+			  });
 
 		  	  $('#assginModal').modal('show'); 	 
 		  	  
 			  					  	
 		  	}
-		  })
+		  }) 	
 
 	  	   
 	  }

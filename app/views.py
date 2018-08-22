@@ -1275,6 +1275,18 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
+    @expose('/management/procescomments/<aid>/<step>',methods=['GET'])
+    @has_access
+    def getProcesCommentsByStep(self,aid,step):
+
+        creator = aliased(User)
+
+        alert_result = db.session.query(AlertProcess.assigned_to_fk,AlertProcessComments.comment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).outerjoin(AlertProcessComments,AlertProcess.id==AlertProcessComments.process_id).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcess.alert_id==aid,AlertProcess.process_type.name==step).order_by(AlertProcessComments.created_on.desc())
+
+        data_result = [r._asdict() for r in alert_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
 
 @appbuilder.app.errorhandler(404)
 def page_not_found(e):
