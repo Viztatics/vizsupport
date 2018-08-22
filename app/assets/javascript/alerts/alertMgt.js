@@ -374,6 +374,7 @@ $(function(){
 		  	success:function(data){
 
 		  	  $('#hid_alertid').val(row.id);
+		  	  $('#assginCommentTextArea').val('');
 		  	  data.forEach(function(user){
 		  	  	$('#assignCtl').empty();
 		  	  	$('#assignCtl').append('<option value="'+user.value+'">'+user.text+'</option>')
@@ -526,6 +527,23 @@ $(function(){
 	      }
 	});
 
+	$( "#assginUserForm" ).submit(function( event ) {
+	  event.preventDefault();
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/alerts/management/assignanalyst',
+	  	type: 'POST',
+	  	data: $( "#assginUserForm" ).serialize(),
+	  	success:function(data){
+	  		$('#assginModal').modal('hide');
+	  		$alerttable.bootstrapTable('refresh');
+	  		getBarChart();	  	
+	  	}
+	  });
+
+	});
+
 	$("#alertNoteForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
@@ -535,7 +553,7 @@ $(function(){
 	    },
 	});
 
-	$( "form" ).submit(function( event ) {
+	$( "#alertNoteForm" ).submit(function( event ) {
 	  event.preventDefault();
 
 	  $.ajax({

@@ -1180,15 +1180,20 @@ class AlertView(BaseView):
     @has_access
     def assignAnalyst(self):
 
-        alert_id = request.form["pk"]
-        analyst = request.form["value"]
+        alert_id = request.form["hid_alertid"]
+        comment = request.form["assginCommentTextArea"]
+        analyst = request.form["assignCtl"]
 
         user_result = db.session.query(User.username).filter(User.id==analyst).one()
         assginedUser = [r for r in user_result]
 
         alertProcess = AlertProcess(alert_id=alert_id, assigned_to_fk=analyst, assigned_on=func.now(), process_type=ProcessEnum.Manager_Assign, syslog=Manager_Assign.format(current_user.username,assginedUser[0],datetime.now()))
-
         self.appbuilder.get_session.add(alertProcess)
+        self.appbuilder.get_session.flush()
+        process_id = alertProcess.id
+
+        proComment = AlertProcessComments(process_id=process_id, comment=comment)
+        self.appbuilder.get_session.add(proComment)
         viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now(),'current_step':ProcessEnum.Manager_Assign})
         self.appbuilder.get_session.commit()
 
@@ -1281,7 +1286,7 @@ class AlertView(BaseView):
 
         creator = aliased(User)
 
-        alert_result = db.session.query(AlertProcess.assigned_to_fk,AlertProcessComments.comment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).outerjoin(AlertProcessComments,AlertProcess.id==AlertProcessComments.process_id).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcess.alert_id==aid,AlertProcess.process_type.name==step).order_by(AlertProcessComments.created_on.desc())
+        alert_result = db.session.query(AlertProcess.assigned_to_fk,AlertProcessComments.comment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).outerjoin(AlertProcessComments,AlertProcess.id==AlertProcessComments.process_id).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcess.alert_id==aid,AlertProcess.process_type==step).order_by(AlertProcessComments.created_on.desc())
 
         data_result = [r._asdict() for r in alert_result]
 
