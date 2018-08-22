@@ -392,7 +392,7 @@ $(function(){
 			  			$('#assginCommentTextArea').val(comments[0].comment);
 			  			$('#assignCtl').val(comments[0].assigned_to_fk);
 			  		}
-			  		if(row.current_step=='Analyst_Process'){
+			  		if(row.current_step!='Manager_Assign'){
 			  			$('#assginCommentTextArea').prop('disabled',true);
 			  			$('#assignCtl').prop('disabled', true);	  
 			  			$('#assignSaveBtn').prop('disabled', true);			
