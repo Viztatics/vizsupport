@@ -304,7 +304,7 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], country_abbr=item['OPP_CNTRY'], country_name = item['Country Name'], amount=item['Trans_Amt'],rule_type=TypeEnum.High_Risk_Country,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
             alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
@@ -571,7 +571,7 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['Month of Trans Date'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'], rule_type=TypeEnum.High_Volume_Value,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
             alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
@@ -881,7 +881,7 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
             alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
@@ -1041,7 +1041,7 @@ class RuleView(BaseView):
 
         for item in items:
 
-            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Alert_Created,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
             alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
@@ -1194,7 +1194,7 @@ class AlertView(BaseView):
 
         proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
-        viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now(),'current_step':ProcessEnum.Manager_Assign})
+        viz_alert = self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'operated_by_fk':analyst,'operated_on':datetime.now(),'current_step':ProcessEnum.Analyst_Process})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
@@ -1235,7 +1235,7 @@ class AlertView(BaseView):
 
         proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
-        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':ProcessEnum.Analyst_Process})
+        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
