@@ -1235,7 +1235,7 @@ class AlertView(BaseView):
 
         proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
-        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
+        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id,VizAlerts.current_step!=None).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')

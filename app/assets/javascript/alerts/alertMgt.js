@@ -229,6 +229,7 @@ $(function(){
 
 		  		//restore to init
 		  		$('#commentTextArea').prop('disabled',false);
+		  		$('#commentTextArea').val('');
 				$('#processCtl').bootstrapToggle('enable');
 				$('#processCtl').bootstrapToggle('off');
 				$('#noteSaveBtn').prop('disabled',false);
@@ -242,23 +243,36 @@ $(function(){
 					$('#processCtl').bootstrapToggle('on');					
 				}
 
-				if(data.comment){
-					$('#commentTextArea').val(data.comment);
-					$("#processCtl").bootstrapToggle('enable');
-				}else{
-					$('#commentTextArea').val('');
-					$("#processCtl").bootstrapToggle('disable');
-				}
-
 				if(data.rule_status!=='Open'){
-					$('#commentTextArea').prop('disabled','disabled');
+					//$('#commentTextArea').prop('disabled','disabled');
 					$('#processCtl').bootstrapToggle('disable');
-					$('#noteSaveBtn').prop('disabled','disabled');
+					//$('#noteSaveBtn').prop('disabled','disabled');
 				}
 				
 						
 			}
 		});
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/procescomments/'+row.id+"/Analyst_Process",
+		  	type: 'GET',
+		  	data: JSON.stringify({}),
+		  	success:function(comments){
+	  		console.log(comments);
+	  			$('#aComments').empty();
+				$ele = $('.commentscls').clone();
+				$ele[0].style.display = 'block';
+				comments.forEach(function(row){					
+					//console.log(row);
+					$clonele = $ele.clone().html(function(index,html){
+						return html.replace('#commentor#',row.creator).replace('#comment_on#',row.created_on)
+						.replace('#comment#',row.comment);
+					});
+					$('#aComments').append($clonele);					
+				})
+		  	}
+		  });
 
 	    $('#alertProcessModal').modal('show');  
 	  }
@@ -328,7 +342,7 @@ $(function(){
 				  	data: JSON.stringify({}),
 				  	success:function(data){
 				  	  $this.empty();
-					  $ele = $('.well[style="display: none"]').clone();
+					  $ele = $('.well[style="margin-bottom:0;display: none"]').clone();
 					  $ele[0].style.display = 'block';
 					  if(data.length === 0){
 					  	$clonele = $ele.clone().empty().append('No comments!');
@@ -521,12 +535,12 @@ $(function(){
 
 	});
 
-	$('#commentTextArea').bind('input propertychange', function() {
-	      $("#processCtl").bootstrapToggle('disable');
-	      if(this.value.length){
-	        $("#processCtl").bootstrapToggle('enable');
-	      }
-	});
+	//$('#commentTextArea').bind('input propertychange', function() {
+	//      $("#processCtl").bootstrapToggle('disable');
+	//      if(this.value.length){
+	//        $("#processCtl").bootstrapToggle('enable');
+	//      }
+	//});
 
 	$( "#assginUserForm" ).submit(function( event ) {
 	  event.preventDefault();
