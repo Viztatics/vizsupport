@@ -375,8 +375,9 @@ $(function(){
 
 		  	  $('#hid_alertid').val(row.id);
 		  	  $('#assginCommentTextArea').val('');
-		  	  data.forEach(function(user){
-		  	  	$('#assignCtl').empty();
+		  	  $('#assignCtl').empty();
+		  	  //$('#assignCtl').append('<option value="'+0+' selected">Please Select</option>');
+		  	  data.forEach(function(user){		  	  	
 		  	  	$('#assignCtl').append('<option value="'+user.value+'">'+user.text+'</option>')
 		  	  })
 
