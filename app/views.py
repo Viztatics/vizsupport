@@ -4,7 +4,7 @@ from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
 from sqlalchemy import func,inspect,text
-from sqlalchemy.sql.expression import case
+from sqlalchemy.sql.expression import case,literal_column,bindparam
 from sqlalchemy.orm import aliased
 from werkzeug import secure_filename
 from app import appbuilder, db
@@ -1158,6 +1158,8 @@ class AlertView(BaseView):
         
         data_result = [r._asdict() for r in alert_result]
 
+        print(data_result)
+
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
     @expose('/management/getanalystsbycompany',methods=['GET'])
@@ -1235,7 +1237,7 @@ class AlertView(BaseView):
 
         proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
-        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id,VizAlerts.current_step!=None).update({'rule_status':alert_status,'operated_by_fk':current_user.id,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
+        self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id,VizAlerts.current_step!=None).update({'rule_status':alert_status,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
         self.appbuilder.get_session.commit()
 
         return Response(pd.io.json.dumps({}), mimetype='application/json')
@@ -1289,6 +1291,10 @@ class AlertView(BaseView):
         alert_result = db.session.query(AlertProcess.assigned_to_fk,AlertProcessComments.comment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).outerjoin(AlertProcessComments,AlertProcess.id==AlertProcessComments.process_id).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcess.alert_id==aid,AlertProcess.process_type==step).order_by(AlertProcessComments.created_on.desc())
 
         data_result = [r._asdict() for r in alert_result]
+
+        if step=='Manager_Assign' and not data_result :
+            alert_result = db.session.query(VizAlerts.operated_by_fk,User.username,bindparam('comment',value='')).join(User,VizAlerts.operated_by_fk==User.id).filter(VizAlerts.id==aid)
+            data_result = [r._asdict() for r in alert_result]
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 

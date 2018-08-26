@@ -389,8 +389,7 @@ $(function(){
 
 		  	  $('#hid_alertid').val(row.id);
 		  	  $('#assginCommentTextArea').val('');
-		  	  $('#assignCtl').empty();
-		  	  //$('#assignCtl').append('<option value="'+0+' selected">Please Select</option>');
+		  	  $('#assignCtl').empty();  	  
 		  	  data.forEach(function(user){		  	  	
 		  	  	$('#assignCtl').append('<option value="'+user.value+'">'+user.text+'</option>')
 		  	  })
@@ -405,7 +404,14 @@ $(function(){
 			  		console.log(comments);
 			  		if(comments&&comments.length>0){
 			  			$('#assginCommentTextArea').val(comments[0].comment);
-			  			$('#assignCtl').val(comments[0].assigned_to_fk);
+			  			if(row.current_step!='Manager_Assign'){
+			  				if(comments[0].assigned_to_fk){
+				  				$('#assignCtl').val(comments[0].assigned_to_fk);
+				  			}else{
+			  					$('#assignCtl').empty();
+			  					$('#assignCtl').append('<option value="'+comments[0].operated_by_fk+'">'+comments[0].username+'</option>');			  				
+				  			}
+			  			}		
 			  		}
 			  		if(row.current_step!='Manager_Assign'){
 			  			$('#assginCommentTextArea').prop('disabled',true);
@@ -496,7 +502,7 @@ $(function(){
 	        sortable:true,
 	    },{
 	        field: 'username',
-	        title: 'Assigned User',
+	        title: 'Operator',
 	        /**
 	        editable: {
                 type: 'select',
@@ -529,9 +535,9 @@ $(function(){
 	$('#alertTable').on('load-success.bs.table', function (data) {
 
 		//$alerttable.bootstrapTable('hideColumn', 'username');
-		if($('#alertMgt').data('ismanager')=='False'){
-			$alerttable.bootstrapTable('hideColumn', 'uid');
-		}
+		//if($('#alertMgt').data('ismanager')=='False'){
+		//	$alerttable.bootstrapTable('hideColumn', 'uid');
+		//}
 
 	});
 
