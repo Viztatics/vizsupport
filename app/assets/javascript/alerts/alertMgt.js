@@ -452,7 +452,7 @@ $(function(){
 	        sortable:true,
 	    }, {
 	        field: 'trigger_rule',
-	        title: 'Alert Rules',
+	        title: 'Alert Rule',
 	        sortable:true,
 	    }, {
 	        field: 'rule_type',

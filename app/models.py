@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from flask_appbuilder.security.sqla.models import User
+from flask import Markup, url_for
 import enum
 import datetime
 """
@@ -86,6 +87,10 @@ class VizAlerts(AuditMixin,Model):
     @declared_attr
     def operated_by(cls):
         return relationship("VizUser", primaryjoin='%s.operated_by_fk == VizUser.id' % cls.__name__, enable_typechecks=False)
+
+    def alert_id(self):
+        if self.id:
+            return Markup('<a href="' + url_for('AlertView.getAlertDetail',aid=str(self.id))+'">'+str(self.id))
 
     def __repr__(self):
         return self.account_key + " "+ self.trans_month
