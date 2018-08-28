@@ -447,6 +447,12 @@ $(function(){
 	        events: idEvents,
           	formatter: idFormatter
 	    }, {
+            field: 'uid',
+            title: 'Item Operate',
+            align: 'center',
+            events: operateEvents,
+            formatter: operateFormatter
+        }, {
 	        field: 'account_key',
 	        title: 'Account Key',
 	        sortable:true,
@@ -523,13 +529,7 @@ $(function(){
             align: 'center',
             events: assignEvents,
             formatter: assginFormatter
-	    },{
-          field: 'uid',
-          title: 'Item Operate',
-          align: 'center',
-          events: operateEvents,
-          formatter: operateFormatter
-        }],
+	    }],
 	});
 
 	$('#alertTable').on('load-success.bs.table', function (data) {
