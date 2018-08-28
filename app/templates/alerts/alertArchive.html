@@ -1,0 +1,170 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css')}}"></link>
+{% endblock %}
+{% block content %}
+
+{{ lib.panel_begin('Alert Archive') }}
+
+<div class="panel panel-default">
+  <div class="panel-heading" style="background-color: #dff0d8;">Alert Table</div>
+  <div class="panel-body">
+    <div class="row">
+        <table id="alertTable" data-page-list="[10, 25, 50, 100, ALL]"></table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="alertProcessModal" tabindex="-1" role="dialog" data-pid=''>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add Note</h4>
+      </div>
+      <form id="alertNoteForm">
+        <div class="modal-body">
+            <div class="form-group">
+              <label for="commentTextArea">Comment</label>
+              <textarea class="form-control" rows="4" id="commentTextArea" name="commentTextArea" placeholder="please add your comments for processing the alert"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="processCtl">Process</label>
+              <input class="form-control" type="checkbox" id="processCtl" name="processCtl" disabled data-toggle="toggle" data-on="True" data-off="False">
+            </div>
+            <div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="active"><a href="#aComments" aria-controls="aComments" role="tab" data-toggle="tab">Comments History</a></li>
+            </ul>
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="aComments">              
+              </div>
+            </div>         
+
+          </div>
+        </div>        
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="noteSaveBtn">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade bs-example-modal-lg" id="alertDetailModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Alert <span id="altId" class="label label-info"></span> Detail</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <label class="col-md-3 control-label">Account Key</label><div id="altAcckey" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Trans Month</label><div id="altTransMonth" class="col-md-3"></div>          
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Trans Amount</label><div id="altTransAmount" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Trans Cnt</label><div id="altTransCnt" class="col-md-3"></div>          
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Opposite Country</label><div id="altOppoCtry" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Country Name</label><div id="altCtryName" class="col-md-3"></div>          
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Triggered Rule</label><div id="altTriRule" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Alert Owner</label><div id="altOwner" class="col-md-3"></div>          
+        </div> 
+        <div class="row">
+          <label class="col-md-3 control-label">Current Step</label><div id="altCurrentStep" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Current Operator</label><div id="altOperator" class="col-md-3"></div>
+        </div>
+        <div class="row">
+          <label class="col-md-3 control-label">Created Time</label><div id="altCreatedDate" class="col-md-3"></div>
+          <label class="col-md-3 control-label">Finished Time</label><div id="altFinishedDate" class="col-md-3"></div>
+        </div>
+
+        <div class="row">
+          <label class="col-md-3 control-label">Rule Type</label><div id="altRuleType" class="col-md-3"></div>          
+          <label class="col-md-3 control-label">Rule Status</label><div id="altRuleStatus" class="col-md-3"></div>
+        </div>       
+        
+        <div>
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="aProcess" role="tab" data-toggle="tab">Process History</a></li>
+          </ul>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="aProcess">              
+            </div>
+          </div>         
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- hidden part for process and comments -->
+
+<div class="procls" style="display: none">
+  <div class="row">
+    <label class="col-md-3 control-label">#process_type#</label>
+    <div class="col-md-4 col-md-offset-5" style="text-align: right">#assigner# | #assigned_on#</div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">Process Log : #syslog#</div>
+  </div>              
+  <a style="margin-top:5px" class="btn btn-primary" role="button" data-toggle="collapse" href="#collapseComments_#pid#" aria-expanded="false" aria-controls="#collapseComments_#pid#">
+    comments
+  </a>                
+  <div class="collapse" id="collapseComments_#pid#">              
+  </div>
+  <hr>
+</div>
+
+<div class="well" style="margin-bottom:0;display: none">
+  <div class="row">
+    <div class="col-md-4 col-md-offset-8" style="text-align: right">#creator# | #created_on#</div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">#comment#</div>
+  </div> 
+</div>
+
+<div class="commentscls" style="display: none">
+  <div class="row">
+    <div class="col-md-3 control-label">#commentor#</div>
+    <div class="col-md-4 col-md-offset-5" style="text-align: right">#comment_on#</div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">#comment#</div>
+  </div>
+  <hr>
+</div>
+
+<div id="mask"></div>
+
+{% endblock %}
+{% block tail_js %}
+	{{super()}}
+    <script type="text/javascript">
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-validation/dist/jquery.validate.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/js/bootstrap-toggle.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/javascript/alerts/alertArchive.js')}}"></script>    
+{% endblock %}

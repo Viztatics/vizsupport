@@ -90,7 +90,7 @@ class VizAlerts(AuditMixin,Model):
 
     def alert_id(self):
         if self.id:
-            return Markup('<a href="' + url_for('AlertView.getAlertDetail',aid=str(self.id))+'">'+str(self.id))
+            return Markup('<a class="idlink" href="javascript:void(0)" data-aid="' + str(self.id)+'">'+str(self.id))
 
     def __repr__(self):
         return self.account_key + " "+ self.trans_month

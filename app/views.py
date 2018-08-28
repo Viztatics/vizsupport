@@ -1297,9 +1297,36 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
+
+    @expose('/archive')
+    @has_access
+    def alertArchiveMgt(self):
+
+        is_analysis_manager = isManager()
+
+        return self.render_template('alerts/alertArchive.html',is_analysis_manager=is_analysis_manager)
+
+    @expose('/archive/gettabledata',methods=['GET'])
+    @has_access
+    def getArchiveData(self):
+
+        data_result = []
+
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.current_step == None).order_by(VizAlerts.operated_on.desc())
+        else:
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.current_step == None).order_by(VizAlerts.operated_on.desc())
+        
+        data_result = [r._asdict() for r in alert_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
 class VizAlertsView(ModelView):
 
     datamodel = SQLAInterface(VizAlerts)
+    list_title = "Alert Archive"
     base_permissions = ['can_list']
 
     search_columns = ['id', 'account_key', 'trigger_rule', 'rule_type', 'country_abbr', 'country_name','amount','cnt','rule_status','trans_month','created_on','finished_on']
@@ -1331,5 +1358,5 @@ appbuilder.add_link("Wire Transfer Activity Profiling", href='/rules/profiling/W
 appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/ACH', category='Rules')
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
 appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Alerts')
-appbuilder.add_view(VizAlertsView,"Alert Archive",category='Alerts')
+appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Alerts')
 
