@@ -56,6 +56,7 @@ class Company(Model):
         return self.name
 
 class VizUser(User):
+    title = Column(String(50))
     company_id = Column(Integer, ForeignKey('company.id'), nullable=True)
     company = relationship("Company")
 

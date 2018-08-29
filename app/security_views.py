@@ -20,11 +20,11 @@ class VizUserDBModelView(UserDBModelView):
 
     user_show_fieldsets = [
         (lazy_gettext('User info'),
-         {'fields': ['username', 'active', 'roles', 'company', 'login_count']}),
+         {'fields': ['username', 'active', 'roles', 'company', 'title', 'login_count']}),
         (lazy_gettext('Personal Info'),
          {'fields': ['first_name', 'last_name', 'email'], 'expanded': True}),
     ]
 
-    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'company', 'password', 'conf_password']
-    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles','company']
-    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'company']
+    add_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'company', 'title', 'password', 'conf_password']
+    list_columns = ['first_name', 'last_name', 'username', 'email', 'active', 'roles','company', 'title']
+    edit_columns = ['first_name', 'last_name', 'username', 'active', 'email', 'roles', 'company', 'title']
