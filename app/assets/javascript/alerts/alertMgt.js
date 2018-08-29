@@ -419,8 +419,13 @@ $(function(){
 			  			$('#assignSaveBtn').prop('disabled', true);			
 	  		  		}else{
 	  		  			$('#assginCommentTextArea').prop('disabled',false);
-			  			$('#assignCtl').prop('disabled', false);
-			  			$('#assignSaveBtn').prop('disabled', false);	 
+	  		  			$('#assignCtl').prop('disabled', false);
+	  		  			if(data.length>0){	  		  				
+			  				$('#assignSaveBtn').prop('disabled', false);
+	  		  			}else{
+	  		  				$('#assignSaveBtn').prop('disabled', true);
+	  		  			}
+			  				 
 	  		  		}
 			  	}
 			  });
