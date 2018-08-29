@@ -211,7 +211,7 @@ $(function(){
 	};
 
 	let operateFormatter=function(value, row, index) {
-	  return '<a href="javascript:void(0)" class="note" title="Add note">Add Note</a>';
+	  return '<a href="javascript:void(0)" class="btn btn-primary btn-sm note" title="Add note">Add Note</a>';
 	};
 
 	window.operateEvents = {
