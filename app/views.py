@@ -20,7 +20,7 @@ import json
 from pathlib import Path,PurePath
 import shutil
 
-#import boto3
+import boto3
 
 """
     Create your Views::
@@ -81,7 +81,7 @@ class RuleView(BaseView):
     )
     """
     #s3 = boto3.resource('s3')
-    bucket_name='vizrules'
+    #bucket_name='vizrules'
 
     ALLOWED_RND_EXTENSIONS = set(['csv'])
 
@@ -1095,6 +1095,7 @@ class RuleView(BaseView):
 class AlertView(BaseView):
 
     route_base = '/alerts'
+    s3 = boto3.resource('s3')
     #datamodel = SQLAInterface(VizAlerts)
 
     """
@@ -1296,6 +1297,44 @@ class AlertView(BaseView):
             data_result = [r._asdict() for r in alert_result]
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+    @expose('/management/upload/<aid>',methods=['POST','DELETE'])
+    @has_access
+    def uploadFile2S3(self,aid):
+
+        if request.method == 'POST':
+            files = request.files['file']
+
+            if files:
+                filename = secure_filename(files.filename)
+
+                """
+                mime_type = files.content_type
+
+                if not self.allowed_file(files.filename):
+                    result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+
+                else:
+                    if not os.path.exists(dst_path):
+                        os.makedirs(dst_path)
+                    files.save(os.path.join((dst_path), filename))
+                """
+                self.s3.Object('vizrules', 'alerts/'+aid+"/"+filename).put(Body=files)
+
+
+        if request.method == 'DELETE':
+            keyname = request.get_json()["keyname"]
+            os.remove(dst_path+"/"+keyname)
+            """
+            bucket = self.s3.Bucket(self.bucket_name)
+            for key in bucket.objects.all():
+                 
+                 words = key.key.split('/')
+                 if len(words)==2 and words[0]=='highRiskCountry' and words[1]==keyname:
+                     key.delete()
+            """    
+
+        return  json.dumps({})
 
 
     @expose('/archive')
