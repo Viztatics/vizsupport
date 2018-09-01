@@ -277,11 +277,11 @@ $(function(){
 
 					        $.ajax({
 					            cache: false,
-					            url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid'),
+					            url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid')+'/0',
 					            type: "DELETE",
 					            dataType: "json",
 					            contentType:'application/json',
-					            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
+					            data: JSON.stringify({keyname:$('#commentAttachment').data('keyname')}),
 					            success: function(data) 
 					            {
 					            	$('#reportPath').data('keyname', "");
@@ -292,7 +292,8 @@ $(function(){
 					        }); 
 					    },
 					    onSuccess: function(files,data,xhr,pd){
-					    	//pd.statusbar.hide(); 
+					    	console.log(files);
+					    	$('#commentAttachment').data('keyname', files[0]);
 					    }
 					});
 

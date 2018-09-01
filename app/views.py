@@ -1288,7 +1288,7 @@ class AlertView(BaseView):
 
         creator = aliased(User)
 
-        alert_result = db.session.query(AlertProcess.assigned_to_fk,AlertProcessComments.comment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).outerjoin(AlertProcessComments,AlertProcess.id==AlertProcessComments.process_id).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcess.alert_id==aid,AlertProcess.process_type==step).order_by(AlertProcessComments.created_on.desc())
+        alert_result = db.session.query(AlertProcess.assigned_to_fk,AlertProcessComments.comment,AlertProcessComments.attachment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).outerjoin(AlertProcessComments,AlertProcess.id==AlertProcessComments.process_id).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcess.alert_id==aid,AlertProcess.process_type==step).order_by(AlertProcessComments.created_on.desc())
 
         data_result = [r._asdict() for r in alert_result]
 
@@ -1332,7 +1332,11 @@ class AlertView(BaseView):
 
         if request.method == 'DELETE':
             keyname = request.get_json()["keyname"]
-            os.remove(dst_path+"/"+keyname)
+            if cid=='0':
+                bucket = self.s3.Bucket(S3_BUCKET)
+                for obj in bucket.objects.filter(Prefix='alerts/'+aid+'/'+keyname):
+                    print( obj.key )
+                    obj.delete()
             """
             bucket = self.s3.Bucket(self.bucket_name)
             for key in bucket.objects.all():
