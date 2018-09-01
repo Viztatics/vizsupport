@@ -284,7 +284,7 @@ $(function(){
 					            data: JSON.stringify({keyname:$('#commentAttachment').data('keyname')}),
 					            success: function(data) 
 					            {
-					            	$('#reportPath').data('keyname', "");
+					            	$('#commentAttachment').data('keyname', "");
 					                if(!data){
 					                    pd.statusbar.hide();        
 					                 }
@@ -632,13 +632,17 @@ $(function(){
 	$( "#alertNoteForm" ).submit(function( event ) {
 	  event.preventDefault();
 
+	  if(!$("#alertNoteForm").valid()){
+	  	return false;
+	  }
+
 	  $.ajax({
 	  	cache: false,
 	  	url: $SCRIPT_ROOT+'/alerts/management/addnote',
 	  	type: 'POST',
 	  	contentType:'application/json',
 	  	data: JSON.stringify({'alert_id':$('#alertProcessModal').data('alertid'),'process_id':$('#alertProcessModal').data('processid'),
-	  			'comment':$('#commentTextArea').val(),'status':$('#processCtl').prop('checked')}),
+	  			'comment':$('#commentTextArea').val(),'status':$('#processCtl').prop('checked'),'attached':$('#commentAttachment').data('keyname')}),
 	  	success:function(data){
 	  		$('#alertProcessModal').modal('hide');
 	  		$alerttable.bootstrapTable('refresh');

@@ -1224,10 +1224,14 @@ class AlertView(BaseView):
         alert_id = request.get_json()["alert_id"]
         process_id = request.get_json()["process_id"]
         comment = request.get_json()["comment"]
+        attachment = request.get_json()["attached"]
         status = request.get_json()["status"]
         alert_status = StatusEnum.Close_False
+        full_attached_path = ''
         if status is True:
             alert_status = StatusEnum.Close_True
+        if attachment:
+            full_attached_path = 'alerts/'+str(alert_id)+"/"+attachment
 
         if not process_id:
            alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_Process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
@@ -1235,7 +1239,7 @@ class AlertView(BaseView):
            self.appbuilder.get_session.flush()
            process_id = alertProcess.id
 
-        proComment = AlertProcessComments(process_id=process_id, comment=comment)
+        proComment = AlertProcessComments(process_id=process_id, comment=comment, attachment=full_attached_path)
         self.appbuilder.get_session.add(proComment)
         self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id,VizAlerts.current_step!=None).update({'rule_status':alert_status,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
         self.appbuilder.get_session.commit()
