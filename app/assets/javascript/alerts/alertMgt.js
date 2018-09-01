@@ -229,6 +229,10 @@ $(function(){
 
 		  		console.log(data);
 
+		  		if($('.ajax-file-upload-container')){
+		  			$('.ajax-file-upload-container').remove();
+		  		}
+
 		  		//restore to init
 		  		$('#commentTextArea').prop('disabled',false);
 		  		$('#commentTextArea').val('');
@@ -249,6 +253,49 @@ $(function(){
 					//$('#commentTextArea').prop('disabled','disabled');
 					$('#processCtl').bootstrapToggle('disable');
 					//$('#noteSaveBtn').prop('disabled','disabled');
+				}else{
+
+					var upfile = $("#commentAttachment").uploadFile({
+						url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid')+'/0',
+					    maxFileCount: 1, 
+					    maxFileSize:5*1024*1024,                		   
+					    //allowedTypes: 'csv',  				       
+					    showFileSize: false,
+					    showDone: false,                           
+					    showDelete: true,                          
+					    showDownload:false,
+					    //statusBarWidth:590,
+					    onLoad: function(obj)
+					    {	
+					    	//if (typeof obj.createProgress !== "undefined") { 
+							    //obj.createProgress($('#reportPath').data('keyname'));
+							//}
+					    	//     	
+					    },
+					    deleteCallback: function(data,pd)
+					    {
+
+					        $.ajax({
+					            cache: false,
+					            url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid'),
+					            type: "DELETE",
+					            dataType: "json",
+					            contentType:'application/json',
+					            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
+					            success: function(data) 
+					            {
+					            	$('#reportPath').data('keyname', "");
+					                if(!data){
+					                    pd.statusbar.hide();        
+					                 }
+					              }
+					        }); 
+					    },
+					    onSuccess: function(files,data,xhr,pd){
+					    	//pd.statusbar.hide(); 
+					    }
+					});
+
 				}
 				
 						
@@ -275,48 +322,6 @@ $(function(){
 				})
 		  	}
 		  });
-
-		var upfile = $("#commentAttachment").uploadFile({
-			url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid'),
-		    maxFileCount: 1, 
-		    maxFileSize:5*1024*1024,                		   
-		    //allowedTypes: 'csv',  				       
-		    showFileSize: false,
-		    showDone: false,                           
-		    showDelete: true,                          
-		    showDownload:false,
-		    //statusBarWidth:590,
-		    onLoad: function(obj)
-		    {	
-		    	//if (typeof obj.createProgress !== "undefined") { 
-				    //obj.createProgress($('#reportPath').data('keyname'));
-				//}
-		    	//     	
-		    },
-		    deleteCallback: function(data,pd)
-		    {
-
-		        $.ajax({
-		            cache: false,
-		            url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid'),
-		            type: "DELETE",
-		            dataType: "json",
-		            contentType:'application/json',
-		            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
-		            success: function(data) 
-		            {
-		            	$('#reportPath').data('keyname', "");
-		                if(!data){
-		                    pd.statusbar.hide();        
-		                 }
-		              }
-		        }); 
-		    },
-		    onSuccess: function(files,data,xhr,pd){
-		    	//$('#reportPath').data('keyname', files[0]);
-		    	//$("#file-error")&&$("#file-error").remove();
-		    }
-		});
 
 	    $('#alertProcessModal').modal('show');  
 	  }

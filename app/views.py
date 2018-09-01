@@ -1298,15 +1298,23 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
-    @expose('/management/upload/<aid>',methods=['POST','DELETE'])
+    @expose('/management/upload/<aid>/<cid>',methods=['POST','DELETE'])
     @has_access
-    def uploadFile2S3(self,aid):
+    def uploadFile2S3(self,aid,cid):
 
         if request.method == 'POST':
             files = request.files['file']
 
             if files:
                 filename = secure_filename(files.filename)
+
+                if cid=='0':
+                    bucket = self.s3.Bucket(S3_BUCKET)
+                    for obj in bucket.objects.filter(Prefix='alerts/'+aid):
+                        print( obj.key )
+                        obj.delete()
+                    
+
 
                 """
                 mime_type = files.content_type
@@ -1319,7 +1327,7 @@ class AlertView(BaseView):
                         os.makedirs(dst_path)
                     files.save(os.path.join((dst_path), filename))
                 """
-                self.s3.Object('vizrules', 'alerts/'+aid+"/"+filename).put(Body=files)
+                self.s3.Object(S3_BUCKET, 'alerts/'+aid+"/"+filename).put(Body=files)
 
 
         if request.method == 'DELETE':
