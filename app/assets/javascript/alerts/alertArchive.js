@@ -27,6 +27,11 @@ $(function(){
 
 		  		console.log(data);
 
+		  		
+		  		if($('.ajax-file-upload-container')){
+		  			$('.ajax-file-upload-container').remove();
+		  		}
+
 		  		//restore to init
 		  		$('#commentTextArea').prop('disabled',false);
 		  		$('#commentTextArea').val('');
