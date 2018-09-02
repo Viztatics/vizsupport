@@ -1322,8 +1322,9 @@ class AlertView(BaseView):
                 if cid=='0':
                     bucket = self.s3.Bucket(S3_BUCKET)
                     for obj in bucket.objects.filter(Prefix='alerts/'+aid):
-                        print( obj.key )
-                        obj.delete()
+                        if len(obj.key.split("/"))==3:
+                            print( obj.key )
+                            obj.delete()
                     
 
 
@@ -1346,7 +1347,6 @@ class AlertView(BaseView):
             if cid=='0':
                 bucket = self.s3.Bucket(S3_BUCKET)
                 for obj in bucket.objects.filter(Prefix='alerts/'+aid+'/'+keyname):
-                    print( obj.key )
                     obj.delete()
             """
             bucket = self.s3.Bucket(self.bucket_name)

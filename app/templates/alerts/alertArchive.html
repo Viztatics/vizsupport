@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
 {% endblock %}
 {% block content %}
 
@@ -32,6 +33,11 @@
             <div class="form-group">
               <label for="commentTextArea">Comment</label>
               <textarea class="form-control" rows="4" id="commentTextArea" name="commentTextArea" placeholder="please add your comments for processing the alert"></textarea>
+            </div>
+            <div class="form-group form-inline">
+                <div class="col-md-2 input-group"><label for="commentAttachment">Attachement</label></div>
+                <div class="col-md-10 input-group" id="commentAttachment" data-aid="" data-keyname="">Upload</div>
+                <div class="col-md-12 input-group"><font color='red'> * only 1 file less than 5M</font></div>               
             </div>
             <div class="form-group">
               <label for="processCtl">Process</label>
@@ -176,5 +182,6 @@
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-toggle/js/bootstrap-toggle.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/alerts/alertArchive.js')}}"></script>    
 {% endblock %}

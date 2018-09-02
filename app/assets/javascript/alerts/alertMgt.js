@@ -253,51 +253,51 @@ $(function(){
 					//$('#commentTextArea').prop('disabled','disabled');
 					$('#processCtl').bootstrapToggle('disable');
 					//$('#noteSaveBtn').prop('disabled','disabled');
-				}else{
-
-					var upfile = $("#commentAttachment").uploadFile({
-						url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid')+'/0',
-					    maxFileCount: 1, 
-					    maxFileSize:5*1024*1024,                		   
-					    //allowedTypes: 'csv',  				       
-					    showFileSize: false,
-					    showDone: false,                           
-					    showDelete: true,                          
-					    showDownload:false,
-					    //statusBarWidth:590,
-					    onLoad: function(obj)
-					    {	
-					    	//if (typeof obj.createProgress !== "undefined") { 
-							    //obj.createProgress($('#reportPath').data('keyname'));
-							//}
-					    	//     	
-					    },
-					    deleteCallback: function(data,pd)
-					    {
-
-					        $.ajax({
-					            cache: false,
-					            url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid')+'/0',
-					            type: "DELETE",
-					            dataType: "json",
-					            contentType:'application/json',
-					            data: JSON.stringify({keyname:$('#commentAttachment').data('keyname')}),
-					            success: function(data) 
-					            {
-					            	$('#commentAttachment').data('keyname', "");
-					                if(!data){
-					                    pd.statusbar.hide();        
-					                 }
-					              }
-					        }); 
-					    },
-					    onSuccess: function(files,data,xhr,pd){
-					    	console.log(files);
-					    	$('#commentAttachment').data('keyname', files[0]);
-					    }
-					});
-
 				}
+
+				var upfile = $("#commentAttachment").uploadFile({
+					url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid')+'/0',
+				    maxFileCount: 1, 
+				    maxFileSize:5*1024*1024,                		   
+				    //allowedTypes: 'csv',  				       
+				    showFileSize: false,
+				    showDone: false,                           
+				    showDelete: true,                          
+				    showDownload:false,
+				    //statusBarWidth:590,
+				    onLoad: function(obj)
+				    {	
+				    	//if (typeof obj.createProgress !== "undefined") { 
+						    //obj.createProgress($('#reportPath').data('keyname'));
+						//}
+				    	//     	
+				    },
+				    deleteCallback: function(data,pd)
+				    {
+
+				        $.ajax({
+				            cache: false,
+				            url: $SCRIPT_ROOT+'/alerts/management/upload/'+$("#commentAttachment").data('aid')+'/0',
+				            type: "DELETE",
+				            dataType: "json",
+				            contentType:'application/json',
+				            data: JSON.stringify({keyname:$('#commentAttachment').data('keyname')}),
+				            success: function(data) 
+				            {
+				            	$('#commentAttachment').data('keyname', "");
+				                if(!data){
+				                    pd.statusbar.hide();        
+				                 }
+				              }
+				        }); 
+				    },
+				    onSuccess: function(files,data,xhr,pd){
+				    	console.log(files);
+				    	$('#commentAttachment').data('keyname', files[0]);
+				    }
+				});
+
+
 				
 						
 			}
