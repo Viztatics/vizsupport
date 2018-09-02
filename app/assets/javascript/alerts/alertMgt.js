@@ -319,6 +319,13 @@ $(function(){
 						return html.replace('#commentor#',row.creator).replace('#comment_on#',row.created_on)
 						.replace('#comment#',row.comment);						
 					});
+					if(row.attachment){
+						$clonele.find('.ctl-comment-attached')[0].style.display = 'block';
+						$clonele.html(function(index,html){
+							return html.replace('#ctl_comment_attached#',row.attachment.split("/")[4])
+								.replace('#ctl_href#','https://s3.amazonaws.com/vizrules/'+row.attachment);
+						});				
+					}
 					$('#aComments').append($clonele);					
 				})
 		  	}
