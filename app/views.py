@@ -1,4 +1,4 @@
-from flask import render_template, request, Response, jsonify
+from flask import render_template, request, Response, jsonify, make_response
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.security.sqla.models import User
@@ -1230,8 +1230,6 @@ class AlertView(BaseView):
         full_attached_path = ''
         if status is True:
             alert_status = StatusEnum.Close_True
-        if attachment:
-            full_attached_path = 'alerts/'+str(alert_id)+"/"+attachment
 
         if not process_id:
            alertProcess = AlertProcess(alert_id=alert_id, process_type=ProcessEnum.Analyst_Process, syslog=Analyst_Process.format(current_user.username,datetime.now(),alert_status.name,comment))
@@ -1239,8 +1237,17 @@ class AlertView(BaseView):
            self.appbuilder.get_session.flush()
            process_id = alertProcess.id
 
-        proComment = AlertProcessComments(process_id=process_id, comment=comment, attachment=full_attached_path)
+        proComment = AlertProcessComments(process_id=process_id, comment=comment)
         self.appbuilder.get_session.add(proComment)
+        self.appbuilder.get_session.flush()
+        comment_id=proComment.id
+        if attachment:
+            full_attached_path = 'alerts/'+str(alert_id)+"/"+str(process_id)+"/"+str(comment_id)+"/"+attachment
+            bucket = self.s3.Bucket(S3_BUCKET)
+            bucket.copy({'Bucket': S3_BUCKET, 'Key': 'alerts/'+str(alert_id)+"/"+attachment}, full_attached_path)
+            bucket.delete_objects(Delete={'Objects': [{'Key': 'alerts/'+str(alert_id)+"/"+attachment}]})
+            self.s3.Object(S3_BUCKET,full_attached_path).Acl().put(ACL='public-read')
+            self.appbuilder.get_session.query(AlertProcessComments).filter(AlertProcessComments.id==comment_id).update({'attachment':full_attached_path})
         self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id,VizAlerts.current_step!=None).update({'rule_status':alert_status,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
         self.appbuilder.get_session.commit()
 
@@ -1280,7 +1287,7 @@ class AlertView(BaseView):
 
         creator = aliased(User)
 
-        alert_result = db.session.query(AlertProcessComments.comment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcessComments.process_id==pid).order_by(AlertProcessComments.created_on.desc())
+        alert_result = db.session.query(AlertProcessComments.comment,AlertProcessComments.attachment,func.to_char(AlertProcessComments.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),creator.username.label("creator")).join(creator, AlertProcessComments.created_by_fk == creator.id).filter(AlertProcessComments.process_id==pid).order_by(AlertProcessComments.created_on.desc())
 
         data_result = [r._asdict() for r in alert_result]
 

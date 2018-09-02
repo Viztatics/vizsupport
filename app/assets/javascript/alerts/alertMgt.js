@@ -317,7 +317,7 @@ $(function(){
 					//console.log(row);
 					$clonele = $ele.clone().html(function(index,html){
 						return html.replace('#commentor#',row.creator).replace('#comment_on#',row.created_on)
-						.replace('#comment#',row.comment);
+						.replace('#comment#',row.comment);						
 					});
 					$('#aComments').append($clonele);					
 				})
@@ -404,6 +404,13 @@ $(function(){
 								return html.replace('#comment#',row.comment).replace('#creator#',row.creator)
 								.replace('#created_on#',row.created_on);
 							});
+							if(row.attachment){
+								$clonele.find('.id-comment-attached')[0].style.display = 'block';
+								$clonele.html(function(index,html){
+									return html.replace('#id_comment_attached#',row.attachment.split("/")[4])
+										.replace('#c_href#','https://s3.amazonaws.com/vizrules/'+row.attachment);
+								});				
+							}
 							$this.append($clonele);
 						  })
 					  }
