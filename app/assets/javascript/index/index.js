@@ -1,0 +1,127 @@
+$(function(){
+
+	$(document).ajaxStop(function () {
+        $('#mask').removeClass('lmask');	
+    });
+
+    $(document).ajaxStart(function () {
+        $('#mask').addClass('lmask');	
+    });
+
+    var performanceChart = echarts.init(document.getElementById('performanceChart'));
+	var successChart = echarts.init(document.getElementById('successChart'));
+
+	var	barOption = {
+	    title : {
+	        text: '',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    legend: {
+	        data:[]
+	    },
+	    xAxis : [
+	        {	        	
+	            type : 'category',
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	        	name : 'Alert Cnt',
+	            type : 'value',
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'Open',
+	            type:'bar',
+	            stack: 'status',
+	            data:[],
+	        },
+	        {
+	            name:'Close_True',
+	            type:'bar',
+	            stack: 'status',
+	            data:[],
+	        },
+	        {
+	            name:'Close_False',
+	            type:'bar',
+	            stack: 'status',
+	            data:[],
+	        },
+	    ]
+	};
+
+	var lineOption = {
+		title : {
+	        text: '',
+	    },
+	    tooltip : {
+	        trigger: 'axis'
+	    },
+	    legend: {
+	        data:[],
+	        left:'right',
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            axisLabel : {
+	            	rotate:30,
+	            },
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value',
+	        },
+	    ],
+	    series : [
+	        {
+	            name:'Percentage',
+	            type:'line',
+	            data:[]
+	        }
+	    ]
+	};
+
+	performanceChart.setOption(barOption);
+	successChart.setOption(lineOption);
+
+	$.ajax({
+		cache: false,
+	  	url: $SCRIPT_ROOT+'/home/alerts/monthPerf',
+	  	type: 'GET',
+	  	contentType:'application/json',
+	  	success:function(data){
+
+	  		console.log(data);
+
+	  		if(data){
+				barOption.xAxis[0].data=[];
+				barOption.series[0].data=[];
+				for (let i = 0; i < data.length; i++)
+				{
+					if($.inArray(data[i]['month'], barOption.xAxis[0].data) === -1) barOption.xAxis[0].data.push(data[i]['month']);																    
+				}
+				for(let j=0;j<3;j++){
+					for(let k=0;k<barOption.xAxis[0].data.length;k++){
+						barOption.series[j].data[k]=0;
+						for (let i = 0; i < data.length; i++){
+							if(barOption.series[j].name == data[i]['rule_status']['name']&&barOption.xAxis[0].data[k]==data[i]['month']){
+								barOption.series[j].data[k]=data[i]['count'];
+							}
+						}														
+					}						
+				}	
+				performanceChart.setOption(barOption);
+			}
+
+		}
+	});
+
+})

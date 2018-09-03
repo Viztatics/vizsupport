@@ -32,6 +32,7 @@ class ProcessEnum(enum.Enum):
     Alert_Created = "Alert_Created"
     Manager_Assign = "Manager_Assign"
     Analyst_Process = "Analyst_Process"
+    No_Issue = "No_Issue"
 
 class RuleEnum(enum.Enum):
     High_Risk_Country_Wire_Activity = "High_Risk_Country_Wire_Activity"

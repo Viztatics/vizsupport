@@ -4,7 +4,7 @@ from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
-from sqlalchemy import func,inspect,text
+from sqlalchemy import func,inspect,text,extract
 from sqlalchemy.sql.expression import case,literal_column,bindparam
 from sqlalchemy.orm import aliased
 from werkzeug import secure_filename
@@ -1385,6 +1385,31 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
+class HomeView(BaseView):
+
+    route_base = '/home'
+
+    @expose('/alerts/monthPerf',methods=['GET'])
+    @has_access
+    def getMonthPerformanceData(self):
+
+        data_result = []
+
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status)
+        else:
+            alert_result = db.session.query(VizAlerts.created_month,VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).group_by(VizAlerts.created_month,VizAlerts.rule_status)
+        
+        print(alert_result)
+
+        data_result = [r._asdict() for r in alert_result]
+
+        print(data_result)
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
 class VizAlertsView(ModelView):
 
     datamodel = SQLAInterface(VizAlerts)
@@ -1421,4 +1446,5 @@ appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/AC
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
 appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Alerts')
 appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Alerts')
+appbuilder.add_view_no_menu(HomeView())
 
