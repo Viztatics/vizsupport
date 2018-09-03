@@ -38,18 +38,33 @@ $(function(){
 	            name:'Open',
 	            type:'bar',
 	            stack: 'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#ffff66',
+				    },
+				},
 	            data:[],
 	        },
 	        {
 	            name:'Close_True',
 	            type:'bar',
 	            stack: 'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#ff3333',
+				    },
+				},
 	            data:[],
 	        },
 	        {
 	            name:'Close_False',
 	            type:'bar',
 	            stack: 'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#4d94ff',
+				    },
+				},
 	            data:[],
 	        },
 	    ]
