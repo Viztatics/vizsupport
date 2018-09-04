@@ -34,18 +34,7 @@ $(function(){
 	        }
 	    ],
 	    series : [
-	        {
-	            name:'Open',
-	            type:'bar',
-	            stack: 'status',
-	            itemStyle: {
-				    normal: {
-				       color:'#ffff66',
-				    },
-				},
-	            data:[],
-	        },
-	        {
+	    	{
 	            name:'Close_True',
 	            type:'bar',
 	            stack: 'status',
@@ -67,6 +56,18 @@ $(function(){
 				},
 	            data:[],
 	        },
+	        {
+	            name:'Open',
+	            type:'bar',
+	            stack: 'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#ffff66',
+				    },
+				},
+	            data:[],
+	        },
+	        
 	    ]
 	};
 
@@ -85,7 +86,7 @@ $(function(){
 	        {
 	            type : 'category',
 	            axisLabel : {
-	            	rotate:30,
+	            	//rotate:30,
 	            },
 	            data : []
 	        }
@@ -93,12 +94,19 @@ $(function(){
 	    yAxis : [
 	        {
 	            type : 'value',
+	            name : 'Percentage',
+	            axisLabel : {
+	                formatter: '{value} %'
+	            }
 	        },
 	    ],
 	    series : [
 	        {
-	            name:'Percentage',
+	            name:'Month Yields(%)',
 	            type:'line',
+	            smooth: true,
+	            symbol:'diamond',
+	            symbolSize:10,
 	            data:[]
 	        }
 	    ]
@@ -134,6 +142,30 @@ $(function(){
 					}						
 				}	
 				performanceChart.setOption(barOption);
+			}
+
+		}
+	});
+
+	$.ajax({
+		cache: false,
+	  	url: $SCRIPT_ROOT+'/home/alerts/monthYields',
+	  	type: 'GET',
+	  	contentType:'application/json',
+	  	success:function(data){
+
+	  		console.log(data);
+
+	  		if(data){
+	  			lineOption.xAxis[0].data=[];
+				lineOption.series[0].data=[];
+				for (let i = 0; i < data.length; i++)
+				{
+					if($.inArray(data[i]['month'], lineOption.xAxis[0].data) === -1) lineOption.xAxis[0].data.push(data[i]['month']);																    
+				}
+	  			lineOption.series[0].data = data.map(x=>x['ratio'].toFixed(2));
+
+				successChart.setOption(lineOption);
 			}
 
 		}

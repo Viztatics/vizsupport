@@ -1400,13 +1400,26 @@ class HomeView(BaseView):
         if is_analysis_manager is True:
             alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status)
         else:
-            alert_result = db.session.query(VizAlerts.created_month,VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).group_by(VizAlerts.created_month,VizAlerts.rule_status)
+            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status)
         
-        print(alert_result)
-
         data_result = [r._asdict() for r in alert_result]
 
-        print(data_result)
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+    @expose('/alerts/monthYields',methods=['GET'])
+    @has_access
+    def getMonthYieldsData(self):
+
+        data_result = []
+
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),case([(func.count(VizAlerts.id)==0,0)],else_=(func.sum(case([(VizAlerts.rule_status==StatusEnum.Close_True,1)],else_=0))*100.00/func.count(VizAlerts.id))).label("ratio")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM')).order_by(func.to_char(VizAlerts.created_on, 'YYYYMM'))
+        else:
+            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),case([(func.count(VizAlerts.id)==0,0)],else_=(func.sum(case([(VizAlerts.rule_status==StatusEnum.Close_True,1)],else_=0))*100.00/func.count(VizAlerts.id))).label("ratio")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM')).order_by(func.to_char(VizAlerts.created_on, 'YYYYMM'))
+        
+        data_result = [r._asdict() for r in alert_result]
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
