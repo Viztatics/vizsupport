@@ -4,7 +4,7 @@ from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
-from sqlalchemy import func,inspect,text,extract
+from sqlalchemy import func,inspect,text
 from sqlalchemy.sql.expression import case,literal_column,bindparam
 from sqlalchemy.orm import aliased
 from werkzeug import secure_filename
@@ -1121,6 +1121,21 @@ class AlertView(BaseView):
         else:
             status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter(VizAlerts.operated_by_fk==current_user.id)
         status_result = [r for r in status_result]
+        return Response(pd.io.json.dumps(status_result), mimetype='application/json')
+
+    @expose('/management/dateagingchart',methods=['GET'])
+    @has_access
+    def getDateAgingChartData(self):
+
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            status_result = db.session.query(func.count(VizAlerts.id).label('count'),case([(func.date_part('day',func.current_date()-VizAlerts.created_on)<=20,'0~20'),(func.date_part('day',func.current_date()-VizAlerts.created_on)<=25,'20~25'),(func.date_part('day',func.current_date()-VizAlerts.created_on)<=29,'25~29'),(func.date_part('day',func.current_date()-VizAlerts.created_on)==30,'Due Today(30)')],else_='Past Due 31+').label('aging')).join(User, VizAlerts.created_by_fk == User.id).group_by(case([(func.date_part('day',func.current_date()-VizAlerts.created_on)<=20,'0~20'),(func.date_part('day',func.current_date()-VizAlerts.created_on)<=25,'20~25'),(func.date_part('day',func.current_date()-VizAlerts.created_on)<=29,'25~29'),(func.date_part('day',func.current_date()-VizAlerts.created_on)==30,'Due Today(30)')],else_='Past Due 31+')).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open)
+        else:
+            status_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).group_by(VizAlerts.rule_status).filter(VizAlerts.operated_by_fk==current_user.id)
+        status_result = [r._asdict() for r in status_result]
+
+        print(status_result)
         return Response(pd.io.json.dumps(status_result), mimetype='application/json')
 
     @expose('/management/typechart',methods=['POST'])

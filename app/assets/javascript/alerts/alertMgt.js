@@ -14,7 +14,7 @@ $(function(){
 
 	let statusOption = {
 	    title : {
-	        text: 'Alerts Status',
+	        text: 'Alerts Aging',
 	        x:'center'
 	    },
 	    tooltip : {
@@ -24,7 +24,7 @@ $(function(){
 	    legend: {
 	        orient: 'vertical',
 	        x : 'right',
-	        data: ['Open','Close_True','Close_False']
+	        data: []
 	    },
 	    series : [
 	        {
@@ -149,17 +149,20 @@ $(function(){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/statuschart',
-		  	type: 'POST',
+		  	url: $SCRIPT_ROOT+'/alerts/management/dateagingchart',
+		  	type: 'GET',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({}),
 		  	success:function(data){
 
+		  		console.log(data);
+
 				if(data){
+					statusOption.legend.data=[];
 					statusOption.series[0].data=[];
 					for (let i = 0; i < data.length; i++)
 					{
-					    statusOption.series[0].data.push({name:data[i][1],value:data[i][0]})
+						statusOption.legend.data.push(data[i]['aging']);
+					    statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count']})
 					}
 					statusChart.setOption(statusOption);
 				}				
