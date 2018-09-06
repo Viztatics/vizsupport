@@ -619,6 +619,15 @@ $(function(){
 	    }],
 	});
 
+	statusChart.on('click', function(data){
+		console.log(data);		
+	});
+
+	typeChart.on('click', function(data){
+		console.log(data);
+		
+	});
+
 	$('#alertTable').on('load-success.bs.table', function (data) {
 
 		//$alerttable.bootstrapTable('hideColumn', 'username');
