@@ -26,7 +26,7 @@ $(function(){
 	        x : 'right',
 	        data: []
 	    },
-	    color:['#ff3333','#4d94ff','#ffff66','#7b68ee','#00fa9a'],
+	    color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
 	    series : [
 	        {
 	            name: 'status',
