@@ -33,6 +33,7 @@ $(function(){
 	            radius : '55%',
 	            center: ['40%', '50%'],
 	            data: [],
+	            selectedMode:'single',
 	            itemStyle: {
 	                emphasis: {
 	                    shadowBlur: 10,
@@ -65,6 +66,7 @@ $(function(){
 	            radius : '55%',
 	            center: ['40%', '50%'],
 	            data: [],
+	            selectedMode:'single',
 	            itemStyle: {
 	                emphasis: {
 	                    shadowBlur: 10,
@@ -524,7 +526,7 @@ $(function(){
 
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
-		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
+		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type'),
   		pagination:true,
   		search:true,
 	    columns: [{
@@ -620,11 +622,63 @@ $(function(){
 	});
 
 	statusChart.on('click', function(data){
-		console.log(data);		
+		console.log(data);
+		var old_start=$('#alertMgt').data('start');
+		var old_end = $('#alertMgt').data('end');
+        var aging = data.data.name;
+        if(data.data.name.startsWith('Due')){
+        	aging='30~30';
+        }else if(data.data.name.endsWith('+')){
+        	aging='31~1000000';
+        }
+
+		if(old_start==0&&old_end==0){
+			$('#alertMgt').data('start',aging.split("~")[0]);
+			$('#alertMgt').data('end',aging.split("~")[1]);
+		}else{
+			if(old_start==aging.split("~")[0]&&old_end==aging.split("~")[1]){//cancel select
+				$('#alertMgt').data('start',0);
+				$('#alertMgt').data('end',0);
+			}else{
+				$('#alertMgt').data('start',data.data.name.split("~")[0]);
+				$('#alertMgt').data('end',data.data.name.split("~")[1]);
+			}
+		}
+		
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type'),
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	success:function(data){
+		  		$alerttable.bootstrapTable('load',data);	  	
+		  	}
+		  });
+
 	});
 
 	typeChart.on('click', function(data){
 		console.log(data);
+		var old_type=$('#alertMgt').data('type');
+
+		if(old_type==0){
+			$('#alertMgt').data('type',data.data.name);
+		}else{
+			if(old_type==data.data.name){//cancel select
+				$('#alertMgt').data('type','0');
+			}else{
+				$('#alertMgt').data('type',data.data.name);
+			}
+		}
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type'),
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	success:function(data){
+		  		$alerttable.bootstrapTable('load',data);	  	
+		  	}
+		  });
 		
 	});
 
