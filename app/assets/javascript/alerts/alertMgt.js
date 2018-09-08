@@ -166,10 +166,10 @@ $(function(){
 					for (let i = 0; i < data.length; i++)
 					{
 						statusOption.legend.data.push(data[i]['aging']);
-						if(data[i]['aging']==''){
-							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count']});
-						}else{
+						if(data[i]['aging']=='Due Today(30)'){
 							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count'],itemStyle:{normal:{color:'#ff3333'}}});
+						}else{
+							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count']});
 						}
 					    
 					}
