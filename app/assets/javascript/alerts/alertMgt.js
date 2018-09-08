@@ -26,6 +26,7 @@ $(function(){
 	        x : 'right',
 	        data: []
 	    },
+	    color:['#ff3333','#4d94ff','#ffff66','#7b68ee','#00fa9a'],
 	    series : [
 	        {
 	            name: 'status',
@@ -59,6 +60,7 @@ $(function(){
         	x : 'right',
 	        data: ['High_Risk_Country','High_Volume_Value','Profiling','Flow_Through']
 	    },
+	    color:['#ff3333','#4d94ff','#ffff66','#7b68ee'],
 	    series : [
 	        {
 	            name: 'rules',
@@ -114,7 +116,7 @@ $(function(){
 	            stack: 'status',
 	            itemStyle: {
 				    normal: {
-				       //color:'#ff3333',
+				       color:'#ff3333',
 				    },
 				},
 	            data:[],
@@ -125,7 +127,7 @@ $(function(){
 	            stack: 'status',
 	            itemStyle: {
 				    normal: {
-				       //color:'#4d94ff',
+				       color:'#4d94ff',
 				    },
 				},
 	            data:[],
@@ -136,7 +138,7 @@ $(function(){
 	            stack: 'status',
 	            itemStyle: {
 				    normal: {
-				       //color:'#ffff66',
+				       color:'#ffff66',
 				    },
 				},
 	            data:[],
@@ -164,7 +166,12 @@ $(function(){
 					for (let i = 0; i < data.length; i++)
 					{
 						statusOption.legend.data.push(data[i]['aging']);
-					    statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count']})
+						if(data[i]['aging']==''){
+							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count']});
+						}else{
+							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count'],itemStyle:{normal:{color:'#ff3333'}}});
+						}
+					    
 					}
 					statusChart.setOption(statusOption);
 				}				
