@@ -1173,37 +1173,27 @@ class AlertView(BaseView):
     	type_result = [r for r in type_result]
     	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
-    @expose('/management/gettabledata/<start>/<end>/<atype>',methods=['GET'])
+    @expose('/management/gettabledata/<start>/<end>/<atype>/<customer>',methods=['GET'])
     @has_access
-    def getAlertTableData(self,start,end,atype):
+    def getAlertTableData(self,start,end,atype,customer):
 
         data_result = []
         iStart = int(start)
         iEnd = int(end)
-        iType = atype
 
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            if iStart==0 and iEnd==0 and iType=='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open.name).order_by(VizAlerts.operated_on.desc())
-            elif iStart>=0 and iEnd!=0 and iType!='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open.name,func.date_part('day',func.current_date()-VizAlerts.created_on)>=iStart,func.date_part('day',func.current_date()-VizAlerts.created_on)<=iEnd,VizAlerts.rule_type==atype).order_by(VizAlerts.operated_on.desc())
-            elif iStart>=0 and iEnd!=0 and iType=='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open.name,func.date_part('day',func.current_date()-VizAlerts.created_on)>=iStart,func.date_part('day',func.current_date()-VizAlerts.created_on)<=iEnd).order_by(VizAlerts.operated_on.desc())
-            elif iStart==0 and iEnd==0 and iType!='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open.name,VizAlerts.rule_type==iType).order_by(VizAlerts.operated_on.desc())
-
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open.name).order_by(VizAlerts.operated_on.desc())
         else:            
-            if iStart==0 and iEnd==0 and iType=='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open.name).order_by(VizAlerts.operated_on.desc())
-            elif iStart>=0 and iEnd!=0 and iType!='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open.name,func.date_part('day',func.current_date()-VizAlerts.created_on)>=iStart,func.date_part('day',func.current_date()-VizAlerts.created_on)<=iEnd,VizAlerts.rule_type==atype).order_by(VizAlerts.operated_on.desc())
-            elif iStart>=0 and iEnd!=0 and iType=='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open.name,func.date_part('day',func.current_date()-VizAlerts.created_on)>=iStart,func.date_part('day',func.current_date()-VizAlerts.created_on)<=iEnd).order_by(VizAlerts.operated_on.desc())
-            elif iStart==0 and iEnd==0 and iType!='0':
-                alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open.name,VizAlerts.rule_type==iType).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open.name).order_by(VizAlerts.operated_on.desc())
 
+        if iStart>=0 and iEnd!=0 : 
+            alert_result = alert_result.filter(func.date_part('day',func.current_date()-VizAlerts.created_on)>=iStart,func.date_part('day',func.current_date()-VizAlerts.created_on)<=iEnd,VizAlerts.rule_type==atype)
+        if atype!='0':
+            alert_result = alert_result.filter(VizAlerts.rule_type==atype)
+        if customer!='0':
+            alert_result = alert_result.filter(VizAlerts.account_key==customer)
 
         data_result = [r._asdict() for r in alert_result]
 

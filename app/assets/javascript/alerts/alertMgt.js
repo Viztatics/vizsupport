@@ -130,6 +130,7 @@ $(function(){
 	            name:'Alerts',
 	            type:'bar',
 	            stack: 'status',
+	            selectedMode:'single',
 	            itemStyle: {
 				    normal: {
 				       color:'#ff3333',
@@ -279,7 +280,7 @@ $(function(){
 					for (let i = 0; i < data.length; i++)
 					{
 						custop10BarOption.xAxis[0].data.push(data[i][1]);
-						custop10BarOption.series[0].data[i]=data[i][0];																    
+						custop10BarOption.series[0].data.push({name:data[i][1],value:data[i][0]});																    
 					}						
 					custop10BarChart.setOption(custop10BarOption);
 				}			
@@ -618,7 +619,7 @@ $(function(){
 
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
-		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type'),
+		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
   		pagination:true,
   		search:true,
 	    columns: [{
@@ -739,7 +740,7 @@ $(function(){
 		
 		$.ajax({
 		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type'),
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
 		  	type: 'GET',
 		  	contentType:'application/json',
 		  	success:function(data){
@@ -764,13 +765,39 @@ $(function(){
 		}
 		$.ajax({
 		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type'),
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
 		  	type: 'GET',
 		  	contentType:'application/json',
 		  	success:function(data){
 		  		$alerttable.bootstrapTable('load',data);	  	
 		  	}
 		  });
+		
+	});
+
+	custop10BarChart.on('click', function(data){
+		console.log(data);
+		var old_customer=$('#alertMgt').data('customer');
+
+		if(old_customer==0){
+			$('#alertMgt').data('customer',data.data.name);
+		}else{
+			if(old_customer==data.data.name){//cancel select
+				$('#alertMgt').data('customer','0');
+			}else{
+				$('#alertMgt').data('customer',data.data.name);
+			}
+		}
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	success:function(data){
+		  		$alerttable.bootstrapTable('load',data);	  	
+		  	}
+		  });
+		
 		
 	});
 
