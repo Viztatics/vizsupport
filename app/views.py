@@ -1151,6 +1151,19 @@ class AlertView(BaseView):
         type_result = [r for r in type_result]
         return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
+    @expose('/management/cusalertstop10',methods=['POST'])
+    @has_access
+    def getCustomerAlertTop10(self):
+
+        is_analysis_manager = isManager()
+
+        if is_analysis_manager is True:
+            type_result = db.session.query(func.count(VizAlerts.id).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open).order_by(func.count(VizAlerts.id).desc()).having(func.count(VizAlerts.id) <= 10)
+        else:
+            type_result = db.session.query(func.count(VizAlerts.id).label('count'),VizAlerts.account_key).group_by(VizAlerts.account_key).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open).order_by(func.count(VizAlerts.id).desc()).having(func.count(VizAlerts.id) <= 10)
+        type_result = [r for r in type_result]
+        return Response(pd.io.json.dumps(type_result), mimetype='application/json')
+
     #only for manager
     @expose('/management/barchart',methods=['POST'])
     @has_access

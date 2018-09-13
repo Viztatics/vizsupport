@@ -10,6 +10,7 @@ $(function(){
 
     let statusChart = echarts.init(document.getElementById('statusChart'));
 	let typeChart = echarts.init(document.getElementById('typeChart'));
+	let custop10BarChart = echarts.init(document.getElementById('custop10BarChart'));
 	let barChart = echarts.init(document.getElementById('barChart'));
 
 	let statusOption = {
@@ -93,6 +94,48 @@ $(function(){
 	                    shadowColor: 'rgba(0, 0, 0, 0.5)'
 	                }
 	            }
+	        }
+	    ]
+	};
+
+	let custop10BarOption = {
+		title : {
+	        text: 'Top 10 Alerts Distribution By Customer',
+	        x:'center'
+	    },
+	    tooltip : {
+	        trigger: 'axis',
+	        axisPointer : {            
+	            type : 'line'        
+	        }
+	    },
+	    xAxis : [
+	        {
+	        	name : 'Customer',
+	            type : 'category',
+	            axisLabel : {
+	            	rotate:30,
+	            },
+	            data : []
+	        }
+	    ],
+	    yAxis : [
+	        {
+	        	name : 'Alert No.',
+	            type : 'value'
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'Alerts',
+	            type:'bar',
+	            stack: 'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#ff3333',
+				    },
+				},
+	            data:[],
 	        }
 	    ]
 	};
@@ -215,6 +258,31 @@ $(function(){
 					}
 					typeChart.setOption(typeOption);
 				}				
+			}
+		});
+
+	};
+
+	let getCustop10BarChart=function(){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/cusalertstop10',
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+
+				if(data){
+					custop10BarOption.xAxis[0].data=[];
+					custop10BarOption.series[0].data=[];
+					for (let i = 0; i < data.length; i++)
+					{
+						custop10BarOption.xAxis[0].data.push(data[i][1]);
+						custop10BarOption.series[0].data[i]=data[i][0];																    
+					}						
+					custop10BarChart.setOption(custop10BarOption);
+				}			
 			}
 		});
 
@@ -780,6 +848,7 @@ $(function(){
 		}
 		getStatusChart();
 		getTypeChart();
+		getCustop10BarChart();
 		//getAlertTable();
 				
 
