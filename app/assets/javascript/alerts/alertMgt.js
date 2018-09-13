@@ -36,6 +36,13 @@ $(function(){
 	            data: [],
 	            selectedMode:'single',
 	            itemStyle: {
+	            	normal:{
+	            		label:{
+							textStyle:{
+								color:'#000',
+							}
+	            		},
+	            	},
 	                emphasis: {
 	                    shadowBlur: 10,
 	                    shadowOffsetX: 0,
@@ -68,8 +75,18 @@ $(function(){
 	            radius : '55%',
 	            center: ['40%', '50%'],
 	            data: [],
-	            selectedMode:'single',
+	            selectedMode:'single',	            
+				textStyle:{
+					color:'black',
+				},
 	            itemStyle: {
+	            	normal:{
+	            		label:{
+							textStyle:{
+								color:'#000',
+							}
+	            		},
+	            	},
 	                emphasis: {
 	                    shadowBlur: 10,
 	                    shadowOffsetX: 0,
