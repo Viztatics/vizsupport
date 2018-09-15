@@ -617,12 +617,27 @@ $(function(){
 	  }
 	};
 
+	let checkboxFormatter=function(value, row, index) {
+		if(row.current_step!='Manager_Assign'){
+			return {
+	            disabled: true
+	        };
+		}
+	  	return value;
+	};
+
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
   		pagination:true,
   		search:true,
 	    columns: [{
+		          field: 'state',
+		          checkbox: true,
+		          align: 'center',
+		          valign: 'middle',
+		          formatter: checkboxFormatter
+		}, {
 	        field: 'id',
 	        title: 'Item ID',
 	        sortable:true,
@@ -712,6 +727,43 @@ $(function(){
             events: assignEvents,
             formatter: assginFormatter
 	    }],
+	});  
+
+    $('#alertTable').on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', () => {
+    	
+	    $('#assginAlertBtn').prop('disabled', !$('#alertTable').bootstrapTable('getSelections').length);
+	});
+
+	$('#assginAlertBtn').click(() => {
+		ids = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
+    		return item.id;
+    	});
+    	//items = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
+    	//	return item;
+    	//});
+	    console.log(ids);
+
+	    //show pop window
+
+	  	$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/getanalystsbycompany',
+		  	type: 'GET',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+
+		  	  $('#hid_alertid').val(ids);
+		  	  $('#assginCommentTextArea').val('');
+		  	  $('#assignCtl').empty();  	  
+		  	  data.forEach(function(user){		  	  	
+		  	  	$('#assignCtl').append('<option value="'+user.value+'">'+user.text+'</option>')
+		  	  });
+
+		  	  $('#assginModal').modal('show'); 	 
+		  	  
+			  					  	
+		  	}
+		  }) 	 
 	});
 
 	statusChart.on('click', function(data){
@@ -870,8 +922,10 @@ $(function(){
 
 		if($('#alertMgt').data('ismanager')=='True'){		
 			getBarChart();
+			$("#toolbar").css('display','block');
 		}else{
-			$('#managerBar').css('display', 'none');
+			$('#barChart').css('display', 'none');
+			$("#toolbar").css('display','none');
 		}
 		getStatusChart();
 		getTypeChart();
