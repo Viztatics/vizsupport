@@ -880,6 +880,7 @@ $(function(){
 	  	success:function(data){
 	  		$('#assginModal').modal('hide');
 	  		$alerttable.bootstrapTable('refresh');
+	  		$('#assginAlertBtn').prop('disabled',true);
 	  		getBarChart();	  	
 	  	}
 	  });
