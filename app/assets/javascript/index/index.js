@@ -9,7 +9,7 @@ $(function(){
     });
 
     var performanceChart = echarts.init(document.getElementById('performanceChart'));
-	var successChart = echarts.init(document.getElementById('successChart'));
+	//var successChart = echarts.init(document.getElementById('successChart'));
 
 	var	barOption = {
 	    title : {
@@ -31,7 +31,14 @@ $(function(){
 	        {
 	        	name : 'Alert Cnt',
 	            type : 'value',
-	        }
+	        },
+	        {
+	            type : 'value',
+	            name : 'Percentage',
+	            axisLabel : {
+	                formatter: '{value} %'
+	            }
+	        },
 	    ],
 	    series : [
 	    	{
@@ -41,6 +48,10 @@ $(function(){
 	            itemStyle: {
 				    normal: {
 				       color:'#ff3333',
+				       label:{
+				       	show:true,
+				       	color:'black',
+				       },
 				    },
 				},
 	            data:[],
@@ -52,6 +63,10 @@ $(function(){
 	            itemStyle: {
 				    normal: {
 				       color:'#4d94ff',
+				       label:{
+				       	show:true,
+				       	color:'black',
+				       },
 				    },
 				},
 	            data:[],
@@ -63,47 +78,18 @@ $(function(){
 	            itemStyle: {
 				    normal: {
 				       color:'#ffff66',
+				       label:{
+				       	show:true,
+				       	color:'black',
+				       },
 				    },
 				},
 	            data:[],
 	        },
-	        
-	    ]
-	};
-
-	var lineOption = {
-		title : {
-	        text: '',
-	    },
-	    tooltip : {
-	        trigger: 'axis'
-	    },
-	    legend: {
-	        data:[],
-	        left:'right',
-	    },
-	    xAxis : [
-	        {
-	            type : 'category',
-	            axisLabel : {
-	            	//rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	            type : 'value',
-	            name : 'Percentage',
-	            axisLabel : {
-	                formatter: '{value} %'
-	            }
-	        },
-	    ],
-	    series : [
 	        {
 	            name:'Month Yields(%)',
 	            type:'line',
+	            yAxisIndex: 1,
 	            smooth: true,
 	            symbol:'diamond',
 	            symbolSize:10,
@@ -112,8 +98,10 @@ $(function(){
 	    ]
 	};
 
+	
+
 	performanceChart.setOption(barOption);
-	successChart.setOption(lineOption);
+	//uccessChart.setOption(lineOption);
 
 	$.ajax({
 		cache: false,
@@ -157,15 +145,10 @@ $(function(){
 	  		console.log(data);
 
 	  		if(data){
-	  			lineOption.xAxis[0].data=[];
-				lineOption.series[0].data=[];
-				for (let i = 0; i < data.length; i++)
-				{
-					if($.inArray(data[i]['month'], lineOption.xAxis[0].data) === -1) lineOption.xAxis[0].data.push(data[i]['month']);																    
-				}
-	  			lineOption.series[0].data = data.map(x=>x['ratio'].toFixed(2));
+	  			
+	  			barOption.series[3].data = data.map(x=>x['ratio'].toFixed(2));
 
-				successChart.setOption(lineOption);
+				performanceChart.setOption(barOption);
 			}
 
 		}
