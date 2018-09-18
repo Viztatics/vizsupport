@@ -1,0 +1,66 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+{% block head_css %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+	{{ lib.panel_begin(' Upload Bank Data Files ') }}
+		<div class="panel panel-default">
+		  <div class="panel-heading" style="background-color: #dff0d8;">Terra Bank</div>
+		  <div class="panel-body">
+		    <form id="bankdataForm">		        
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="customerFile">Customer</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" class="" id="customerFile" name="customerFile" >
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="alertFile">Alert</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" class=""  id="alertFile" name="alertFile" >
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="caseFile">Case</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" class=""  id="caseFile" name="caseFile" >
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="custAlertRel">Customer-Alert Relation</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" class=""  id="custAlertRel" name="custAlertRel" >
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="accountFile">Account</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" class=""  id="accountFile" name="accountFile" >
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="transFile">Transanction</label></div>
+		            <div class="col-md-4 input-group">
+		            	<input class="form-control" class=""  id="transFile" name="transFile" >
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		        	<div class="col-md-offset-2 col-md-2 input-group">
+		            	<button type="submit" class="btn btn-primary">Submit</button>
+		        	</div>
+		        </div>
+		    </form>
+		  </div>
+		</div>
+
+	{{ lib.panel_end() }}
+{% endblock %}
+
+{% block tail_js %}
+	  {{super()}}
+    <script type="text/javascript">
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+{% endblock %}

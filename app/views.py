@@ -1427,6 +1427,16 @@ class AlertView(BaseView):
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
+class DataCenterView(BaseView):
+
+    route_base = '/datacenter'
+
+    @expose('/bankdata/tb/index')
+    @has_access
+    def bankdatatd(self):
+
+        return self.render_template('datacenter/bankdataTB.html')
+
 class HomeView(BaseView):
 
     route_base = '/home'
@@ -1501,5 +1511,6 @@ appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/AC
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
 appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Alerts')
 appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Alerts')
+appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
 appbuilder.add_view_no_menu(HomeView())
 
