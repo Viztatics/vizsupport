@@ -579,31 +579,15 @@ $(function(){
 			  	data: JSON.stringify({}),
 			  	success:function(comments){
 			  		console.log(comments);
-			  		if(comments&&comments.length>0){
-			  			$('#assginCommentTextArea').val(comments[0].comment);
-			  			if(row.current_step!='Manager_Assign'){
-			  				if(comments[0].assigned_to_fk){
-				  				$('#assignCtl').val(comments[0].assigned_to_fk);
-				  			}else{
-			  					$('#assignCtl').empty();
-			  					$('#assignCtl').append('<option value="'+comments[0].operated_by_fk+'">'+comments[0].username+'</option>');			  				
-				  			}
-			  			}		
-			  		}
-			  		if(row.current_step!='Manager_Assign'){
-			  			$('#assginCommentTextArea').prop('disabled',true);
-			  			$('#assignCtl').prop('disabled', true);	  
-			  			$('#assignSaveBtn').prop('disabled', true);			
-	  		  		}else{
-	  		  			$('#assginCommentTextArea').prop('disabled',false);
-	  		  			$('#assignCtl').prop('disabled', false);
-	  		  			if(data.length>0){	  		  				
-			  				$('#assignSaveBtn').prop('disabled', false);
-	  		  			}else{
-	  		  				$('#assignSaveBtn').prop('disabled', true);
-	  		  			}
-			  				 
-	  		  		}
+			  		$('#assignCtl').prop('disabled', false);
+			  		$("#assignCtl").val(comments[0].operated_by_fk);	
+			  		$('#assginCommentTextArea').prop('disabled',false);  		  			
+  		  			if(data.length>0){	  		  				
+		  				$('#assignSaveBtn').prop('disabled', false);
+  		  			}else{
+  		  				$('#assignSaveBtn').prop('disabled', true);
+  		  			}
+			  		
 			  	}
 			  });
 
@@ -636,7 +620,7 @@ $(function(){
 		          checkbox: true,
 		          align: 'center',
 		          valign: 'middle',
-		          formatter: checkboxFormatter
+		          //formatter: checkboxFormatter
 		}, {
 	        field: 'id',
 	        title: 'Item ID',
@@ -880,7 +864,7 @@ $(function(){
 	  	success:function(data){
 	  		$('#assginModal').modal('hide');
 	  		$alerttable.bootstrapTable('refresh');
-	  		$('#assginAlertBtn').prop('disabled',true);
+	  		//$('#assginAlertBtn').prop('disabled',true);
 	  		getBarChart();	  	
 	  	}
 	  });
