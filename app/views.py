@@ -47,6 +47,14 @@ def isManager():
             is_analysis_manager = True
     return is_analysis_manager
 
+def isAdmin():
+
+    is_admin = False
+    for role in current_user.roles:
+        if role.name=='Admin':
+            is_admin = True
+    return is_admin
+
 def transTitle(transCode):
 
     if transCode=='Wire' or transCode=='ACH' :
@@ -1439,9 +1447,20 @@ class DataCenterView(BaseView):
 
     @expose('/rules/index')
     @has_access
-    def bankdatatd(self):
+    def rulesIndex(self):
 
-        return self.render_template('datacenter/rules_config.html')
+        is_admin = isAdmin()
+
+        companies = []
+
+        if is_admin is True:
+            companies = db.session.query(Company.id,Company.name).order_by(Company.id)
+        else:
+            companies = db.session.query(Company.id,Company.name).filter(Company.id==current_user.company_id).order_by(Company.id)
+
+        companies = [r._asdict() for r in companies]
+
+        return self.render_template('datacenter/rules_config.html',companies=companies)
 
 class HomeView(BaseView):
 
