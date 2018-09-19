@@ -1437,6 +1437,12 @@ class DataCenterView(BaseView):
 
         return self.render_template('datacenter/bankdataTB.html')
 
+    @expose('/rules/index')
+    @has_access
+    def bankdatatd(self):
+
+        return self.render_template('datacenter/rules_config.html')
+
 class HomeView(BaseView):
 
     route_base = '/home'
@@ -1512,5 +1518,6 @@ appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', 
 appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Alerts')
 appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Alerts')
 appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
+appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Data Center')
 appbuilder.add_view_no_menu(HomeView())
 
