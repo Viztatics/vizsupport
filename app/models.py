@@ -1,6 +1,6 @@
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime 
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -124,4 +124,46 @@ class AlertProcessComments(AuditMixin,Model):
     attachment = Column(String(100))
 
     def __repr__(self):
-        return self.process+" add comment: " +  self.comment       
+        return self.process+" add comment: " +  self.comment     
+
+class Rules(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
+    rule_code = Column(String(100))
+    rule_group = Column(String(100))
+    product_type = Column(String(100))
+    viz_template = Column(String(100))
+    rule_description = Column(String(200))
+    rule_type = Column(String(100))
+    susp_type = Column(String(100))
+    schedule = Column(String(100))
+    viz_schedule = Column(String(100))
+    pre_post_EOD = Column(String(100))
+    cust_acct = Column(String(100))
+    template_rule = Column(String(100))
+    time_horizon = Column(String(100))
+    customer_type = Column(String(100))
+    customer_risk_level = Column(String(100))
+    customer_risk_class = Column(String(100))
+    min_trans_no = Column(Integer)
+    min_ind_trans_amt = Column(Integer)
+    max_ind_trans_amt = Column(Integer)
+    min_agg_trans_amt = Column(Integer)
+    max_agg_trans_amt = Column(Integer)
+    additional = Column(String(100))
+    cash_ind = Column(String(100)) 
+    trans_code = Column(String(100)) 
+    trans_code_group = Column(String(100)) 
+    in_cash_ind = Column(String(100))
+    in_trans_code = Column(String(100)) 
+    in_trans_code_group = Column(String(100)) 
+    out_cash_ind = Column(String(100)) 
+    out_trans_code = Column(String(100)) 
+    out_trans_code_group = Column(String(100))
+    in_out_ratio_min = Column(Numeric(10,2))
+    in_out_ratio_max = Column(Numeric(10,2))
+    is_seleced = Column(Integer, default=0)  
+
+    def __repr__(self):
+        return self.company_id
+
