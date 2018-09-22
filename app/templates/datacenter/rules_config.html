@@ -2,6 +2,7 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 {% block head_css %}
     {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
 {% endblock %}
 
 {% block content %}
@@ -9,19 +10,26 @@
 		<div class="panel panel-default">
 		  <div class="panel-body">
 
-		    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+		    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" data-firstcom={{companies[0].id}}>
 		      {% for company in companies %}
 		      <div class="panel panel-default">
 			    <div class="panel-heading" role="tab" id="headingOne">
 			      <h4 class="panel-title">
-			        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapseOne">
+			        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{company.id}}" aria-expanded="true" aria-controls="collapseOne">
 			          {{company.name}}
 			        </a>
 			      </h4>
 			    </div>
-			    <div id="collapse{{loop.index}}" class="panel-collapse collapse {{ 'in' if loop.index==1 }}" role="tabpanel" aria-labelledby="headingOne">
+			    <div id="collapse_{{company.id}}" class="panel-collapse collapse {{ 'in' if loop.index==1 }}" role="tabpanel" aria-labelledby="headingOne">
 			      <div class="panel-body">
-			        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+			        <form class="form-horizontal" id="group_form_{{company.id}}">
+					  <div class="form-group" style="display: none">
+					    <label class="col-md-2 control-label">#rule_group#</label>
+					    <div class="col-md-6 control-label">#rule#</div>
+					    <div class="col-md-2">
+					      <input type="checkbox" class="form-control" id="#chk_id#" name="#chk_name#" placeholder="">
+					    </div>
+					  </div>
 			      </div>
 			    </div>
 			  </div>
@@ -38,6 +46,7 @@
 {% block tail_js %}
 	  {{super()}}
     <script type="text/javascript">
-      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};      
     </script>
+    <script src="{{url_for('static',filename='assets/javascript/datacenter/rule_config.js')}}"></script>
 {% endblock %}
