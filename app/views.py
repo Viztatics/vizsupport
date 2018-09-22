@@ -1492,7 +1492,7 @@ class DataCenterView(BaseView):
                 self.appbuilder.get_session.add(rule)
             self.appbuilder.get_session.commit()
 
-        rule_groups = db.session.query(Rules.rule_group).distinct()
+        rule_groups = db.session.query(Rules.rule_group).distinct().order_by(Rules.rule_group)
 
         rule_groups = [r._asdict() for r in rule_groups]
 
