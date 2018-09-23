@@ -24,13 +24,17 @@
 			      <div class="panel-body">
 			        <form class="form-horizontal" id="group_form_{{company.id}}">
 					  <div class="form-group" style="display: none">
-					    <label class="col-md-2 control-label">#rule_group#</label>					    
-					    <div class="col-md-3 control-label" style="text-align: center">#rule#</div>
+					    <label class="col-md-2 control-label">#rule_group#</label>
 					    <div class="col-md-1">
 					    	<div>
 						        <input type="checkbox" id="#chk_id#" name="#chk_name#">
 						    </div>
-					    </div>
+					    </div>					    
+					    <div class="col-md-9 control-label" style="text-align: left">
+							<a data-toggle="modal" data-target=".bs-example-modal-lg" href="javascript:void(0)" data-ruleid="#rule_id#">
+							  #rule#
+							</a>
+					    </div>					    
 					  </div>
 					</form>
 			      </div>
@@ -40,6 +44,40 @@
 			  
 			</div>
 
+		  </div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="ruleDetailModal">
+		  <div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">Rule Code : #detail_rule_code#</h4>
+		      </div>
+		      <div class="modal-body">
+		        <table class="table">
+				    <thead>
+				      <tr>
+				        <th class="col-md-3">Title/Description</th>
+				        <th class="col-md-6">Parameters</th>
+				        <th class="col-md-3"></th>
+				      </tr>
+				    </thead>
+			        <tbody>
+				      <tr>
+				        <td>#detail_desc#</td>
+				        <td>#detail_param#</td>
+				        <td>#detail_other#</td>
+				      </tr>
+				    </tbody>
+				</table>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary">Save changes</button>
+		      </div>
+		    </div>
 		  </div>
 		</div>
 

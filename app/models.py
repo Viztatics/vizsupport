@@ -164,6 +164,9 @@ class Rules(AuditMixin,Model):
     in_out_ratio_max = Column(Numeric(10,2))
     is_seleced = Column(Integer, default=0)  
 
+    def __str__(self):
+        return str(self.id)+", "+self.rule_code
+
     def __repr__(self):
-        return self.company_id
+        return str(self.id)+", "+self.rule_code
 

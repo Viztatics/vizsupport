@@ -39,6 +39,10 @@ import boto3
 """
     Application wide 404 error handler
 """
+def datetimeconverter(o):
+    if isinstance(o, datetime):
+        return o.__str__()
+
 def isManager():
 
     is_analysis_manager = False
@@ -1496,10 +1500,10 @@ class DataCenterView(BaseView):
 
         rule_groups = [r._asdict() for r in rule_groups]
 
-        rules = db.session.query(Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
+        rules = db.session.query(Rules.id,Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
             Rules.pre_post_EOD,Rules.cust_acct,Rules.template_rule,Rules.time_horizon,Rules.customer_type,Rules.customer_risk_level,Rules.customer_risk_class,Rules.min_trans_no,Rules.min_ind_trans_amt,
             Rules.max_ind_trans_amt,Rules.min_agg_trans_amt,Rules.max_agg_trans_amt,Rules.additional,Rules.cash_ind,Rules.trans_code,Rules.trans_code_group,Rules.in_cash_ind,Rules.in_trans_code,
-            Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==company).order_by(Rules.id)
+            Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==company).order_by(Rules.rule_group,Rules.id)
 
         rules = [r._asdict() for r in rules]
 
@@ -1510,6 +1514,16 @@ class DataCenterView(BaseView):
                     result[group['rule_group']].append(rule)
 
         return Response(pd.io.json.dumps(result), mimetype='application/json')
+
+    @expose('/rules/<rule_id>')
+    @has_access
+    def getRuleById(self,rule_id):
+
+        rule = db.session.query(Rules).filter(Rules.id==rule_id).first()
+
+        print(rule)
+
+        return Response(json.dumps(rule.__dict__, default = datetimeconverter), mimetype='application/json')
 
 class HomeView(BaseView):
 
