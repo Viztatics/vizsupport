@@ -13,7 +13,7 @@
 		    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" data-firstcom={{companies[0].id}}>
 		      {% for company in companies %}
 		      <div class="panel panel-default">
-			    <div class="panel-heading" role="tab" id="headingOne">
+			    <div class="panel-heading" role="tab">
 			      <h4 class="panel-title">
 			        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{company.id}}" aria-expanded="true" aria-controls="collapseOne">
 			          {{company.name}}
@@ -32,6 +32,7 @@
 						    </div>
 					    </div>
 					  </div>
+					</form>
 			      </div>
 			    </div>
 			  </div>
