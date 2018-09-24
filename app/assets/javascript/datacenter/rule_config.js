@@ -57,7 +57,7 @@ $(function(){
 		  		var detail_other = '<strong>Alert Or Case : </strong> '+data.rule_type+'</br>'+
 		  		'<strong>Schedule : </strong> '+data.schedule+'</br>'+
 		  		'<strong>Eval Time : </strong> '+data.pre_post_EOD+'</br>'+
-		  		'<strong>Schedule Freq : </strong> '+data.rule_type+'</br>';
+		  		'<strong>Schedule Freq : </strong> '+data.schedule+'</br>';
 		  		$this.find('.table').html(function(index,html){
 		  			return html.replace('#detail_desc#',data.rule_description).replace('#detail_other#',detail_other);
 		  		});
