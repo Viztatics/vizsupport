@@ -40,6 +40,15 @@ $(function(){
 
 	};
 
+	$('#ruleDetailModal').on('hidden.bs.modal', function (e) {
+		var $this = $(this);
+		$this.find('#myModalLabel').text('Rule Code : #detail_rule_code#');
+		$this.find('.table td:first').text('#detail_desc#');
+		$this.find('.table td:eq(1)').text('#detail_param#');
+		$this.find('.table td:last').text('#detail_other#');
+	  // do something...
+	})
+
 	$('#ruleDetailModal').on('show.bs.modal', function (event) {
 	  var $this = $(this);
 	  var button = $(event.relatedTarget) // Button that triggered the modal
@@ -58,8 +67,24 @@ $(function(){
 		  		'<strong>Schedule : </strong> '+data.schedule+'</br>'+
 		  		'<strong>Eval Time : </strong> '+data.pre_post_EOD+'</br>'+
 		  		'<strong>Schedule Freq : </strong> '+data.schedule+'</br>';
+		  		var detail_parameters = '';
+		  		detail_parameters+=data.customer_type?'List of Customer Types separated by comma. Use -ALL- for All. =\''+data.customer_type+'\'</br>':'';
+		  		detail_parameters+=data.customer_risk_class?'List of Risk Classes separated by comma. Use -ALL- for All. =\''+data.customer_risk_class+'\'</br>':'';
+		  		detail_parameters+=data.min_trans_no?'Minimum Total Transaction Count =\'' +data.min_trans_no+'\'</br>':'';
+		  		detail_parameters+=data.min_ind_trans_amt?'Minimum Total Transaction Amount (-1 if no minimum) =\'' +data.min_ind_trans_amt+'\'</br>':'';
+		  		detail_parameters+=data.max_ind_trans_amt?'Maximum Total Transaction Amount (-1 if no maximum) =\'' +data.max_ind_trans_amt+'\'</br>':'';
+		  		detail_parameters+=data.min_agg_trans_amt?'Minimum Transaction Amount (-1 if no minimum) =\'' +data.min_agg_trans_amt+'\'</br>':'';
+		  		detail_parameters+=data.max_agg_trans_amt?'Maximum Transaction Amount (-1 if no maximum) =\'' +data.max_agg_trans_amt+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.cash_ind?'Cash or non-Cash (inbound). 1 for Cash, 0 for NonCash, 2 for both =\'' +data.cash_ind+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
 		  		$this.find('.table').html(function(index,html){
-		  			return html.replace('#detail_desc#',data.rule_description).replace('#detail_other#',detail_other);
+		  			return html.replace('#detail_desc#',data.rule_description).replace('#detail_other#',detail_other).replace('#detail_param#',detail_parameters);
 		  		});
 		  	}
 	  })
