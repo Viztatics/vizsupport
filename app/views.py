@@ -1413,6 +1413,22 @@ class AlertView(BaseView):
 
         return  json.dumps({})
 
+    @expose('/management/initTrans',methods=['GET'])
+    @has_access
+    def initTrans(self):
+
+        trans_data = pd.read_csv(RULE_DEFAULT_FOLDER+'/initb.csv')
+
+        for index, row in trans_data.iterrows():
+            tran = Transanction(trans_no=row['TransNo'], customer_id=row['CustomerID'], account_key=row['AccountKey'], account_key10=row['AccountKey10'], trans_amt=row['TransAmt'], trans_code=row['TransCode'], is_cash_trans=row['IsCashTrans']
+                , trans_date=row['TransDate'], bene_name=('' if pd.isna(row['BeneName']) else row['BeneName']), bene_country=('' if pd.isna(row['BeneCountry']) else row['BeneCountry']), bene_bank_country=('' if pd.isna(row['BeneBankCountry']) else row['BeneBankCountry']), by_order_name=('' if pd.isna(row['ByOrderName']) else row['ByOrderName'])
+                , by_order_country=('' if pd.isna(row['ByOrderCountry']) else row['ByOrderCountry']), by_order_bank_country=('' if pd.isna(row['ByOrderBankCountry']) else row['ByOrderBankCountry']))
+            self.appbuilder.get_session.add(tran)
+        self.appbuilder.get_session.commit()
+
+        return  json.dumps({})
+
+
 
     @expose('/archive')
     @has_access

@@ -170,3 +170,19 @@ class Rules(AuditMixin,Model):
     def __repr__(self):
         return str(self.id)+", "+self.rule_code
 
+class Transanction(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    trans_no = Column(String(10))
+    customer_id = Column(String(100))   
+    account_key = Column(String(100))
+    account_key10 = Column(String(100))    
+    trans_amt = Column(Numeric(10,2))
+    trans_code = Column(String(100))   
+    is_cash_trans = Column(String(100))
+    trans_date = Column(String(8))  
+    bene_name = Column(String(100))    
+    bene_country = Column(String(10))
+    bene_bank_country = Column(String(10)) 
+    by_order_name = Column(String(100)) 
+    by_order_country = Column(String(10))  
+    by_order_bank_country = Column(String(10))

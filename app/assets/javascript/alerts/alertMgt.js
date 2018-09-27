@@ -903,6 +903,19 @@ $(function(){
 
 	});
 
+	let initTransTable=function(){
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/initTrans',
+		  	type: 'GET',
+		  	data: JSON.stringify({}),
+		  	success:function(data){ 	 
+		  	  
+			  					  	
+		  	}
+		  })
+	};
+
 	let init=function(){
 
 		if($('#alertMgt').data('ismanager')=='True'){		
@@ -916,6 +929,7 @@ $(function(){
 		getTypeChart();
 		getCustop10BarChart();
 		//getAlertTable();
+		//initTransTable();
 				
 
 	};
