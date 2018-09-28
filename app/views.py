@@ -1429,6 +1429,19 @@ class AlertView(BaseView):
         return  json.dumps({})
 
 
+    @expose('/management/getTrans/<custid>',methods=['GET'])
+    @has_access
+    def getTransByCust(self,custid):
+
+        print(custid)
+
+        trans_result = db.session.query(Transanction.id,Transanction.customer_id,Transanction.account_key,Transanction.account_key10,Transanction.trans_amt,Transanction.trans_code
+            ,Transanction.trans_date,Transanction.bene_name,Transanction.bene_country,Transanction.bene_bank_country,Transanction.by_order_name
+            ,Transanction.by_order_country,Transanction.by_order_bank_country).filter(Transanction.customer_id==custid).order_by(Transanction.trans_date.desc())
+
+        data_result = [r._asdict() for r in trans_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
 
     @expose('/archive')
     @has_access

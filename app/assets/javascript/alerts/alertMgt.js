@@ -482,6 +482,63 @@ $(function(){
 		  		$("#altOperatedDate").text(data[0].operated_on||'-');
 		  		$("#altCreatedDate").text(data[0].created_on||'-');
 				$("#altFinishedDate").text(data[0].finished_on||'-');
+
+				$.ajax({
+			    	url: $SCRIPT_ROOT+'/alerts/management/getTrans/'+$("#altAcckey").text(),
+			    	type: 'get',
+			    	dataType: 'JSON',
+			    	data: {},
+			    })
+			    .done(function(result) {
+			    	$('#transTable').bootstrapTable({
+						idField: 'id',
+						data:result,
+				  		pagination:true,
+					    columns: [{
+						          field: 'id',
+						          title: 'Trans Num',
+						          align: 'center',
+						          //formatter: checkboxFormatter
+						}, {
+					        field: 'customer_id',
+					        title: 'Customer Id',
+					    }, {
+				            field: 'account_key10',
+				            title: 'Account Key',
+				        }, {
+					        field: 'trans_amt',
+					        title: 'Trans Amount',
+					    }, {
+					        field: 'trans_code',
+					        title: 'Trans Code',
+					    }, {
+					        field: 'is_cash_trans',
+					        title: 'Is Cash Trans',
+					    },{
+					        field: 'trans_date',
+					        title: 'Trans Date',
+					    },{
+					        field: 'bene_name',
+					        title: 'Beneficial Name',
+					    },{
+					        field: 'bene_country',
+					        title: 'Beneficial Country',
+					    },{
+					        field: 'bene_bank_country',
+					        title: 'Beneficial Bank Country',
+					    },{
+					        field: 'by_order_name',
+					        title: 'By Order Name',
+					    },{
+					        field: 'by_order_country',
+					        title: 'By Order Country',
+					    },{
+					        field: 'by_order_bank_country',
+					        title: 'By Order Bank Country',
+					    }],
+					});
+					$('#transTable').bootstrapTable('load', result);
+			    });
 				
 				$('#aProcess').empty();
 				$ele = $('.procls').clone();
