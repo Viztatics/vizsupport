@@ -15,7 +15,7 @@ $(function(){
 		  		$('#group_form_'+company_id).empty();
 		  		$.each(data,function(key, el) {
 		  			$clonele = $ele.clone().html(function(index,html){
-									return html.replace('#rule_group#',key+":").replace('#rule#',el[0].rule_code)
+									return html.replace('#rule_group#',key+":").replace('#rule#',el[0].rule_description_short)
 									.replace('#chk_id#','chk_'+key+'_'+el[0].rule_code)
 									.replace('#chk_name#','chk_'+key).replace('#rule_id#',el[0].id);
 								});
@@ -25,7 +25,7 @@ $(function(){
 		  				//console.log(obj);
 		  				if(index!=0){
 		  					$clonele = $ele.clone().html(function(index,html){
-									return html.replace('#rule_group#','').replace('#rule#',obj.rule_code)
+									return html.replace('#rule_group#','').replace('#rule#',obj.rule_description_short)
 									.replace('#chk_id#','chk_'+key+'_'+obj.rule_code)
 									.replace('#chk_name#','chk_'+key).replace('#rule_id#',obj.id);
 								});

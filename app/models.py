@@ -133,6 +133,7 @@ class Rules(AuditMixin,Model):
     rule_group = Column(String(100))
     product_type = Column(String(100))
     viz_template = Column(String(100))
+    rule_description_short = Column(String(100))
     rule_description = Column(String(200))
     rule_type = Column(String(100))
     susp_type = Column(String(100))
