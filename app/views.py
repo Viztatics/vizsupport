@@ -13,6 +13,7 @@ from config import *
 from .fileUtils import *
 from .models import *
 from datetime import datetime
+import decimal
 
 import numpy as np
 import pandas as pd
@@ -39,9 +40,11 @@ import boto3
 """
     Application wide 404 error handler
 """
-def datetimeconverter(o):
+def jsonconverter(o):
     if isinstance(o, datetime):
         return o.__str__()
+    if isinstance(o, decimal.Decimal):
+        return str(o)
 
 def isManager():
 
@@ -1519,9 +1522,9 @@ class DataCenterView(BaseView):
                 rule = Rules(company_id=company, rule_code=row['RuleCode'], rule_group=row['RuleGroup'], product_type=row['ProductType'], viz_template=row['VizTemplate'], rule_description_short=row['RuleDescShort'], rule_description=('' if pd.isna(row['RuleDescription']) else row['RuleDescription']), rule_type=('' if pd.isna(row['Type']) else row['Type'])
                     , susp_type=('' if pd.isna(row['SuspType']) else row['SuspType']), schedule=('' if pd.isna(row['Schedule']) else row['Schedule']), viz_schedule=('' if pd.isna(row['VizSchedule']) else row['VizSchedule']), pre_post_EOD=('' if pd.isna(row['PrePostEOD']) else row['PrePostEOD']), cust_acct=('' if pd.isna(row['CustAcct']) else row['CustAcct']), template_rule=('' if pd.isna(row['TemplateRule']) else row['TemplateRule'])
                     , time_horizon=('' if pd.isna(row['TimeHorizon']) else row['TimeHorizon']), customer_type=('' if pd.isna(row['CustomerType']) else row['CustomerType']), customer_risk_level=('' if pd.isna(row['CustomerRiskLevel']) else row['CustomerRiskLevel']), customer_risk_class=('' if pd.isna(row['CustomerRiskClass']) else row['CustomerRiskClass']), min_trans_no=(-1 if pd.isna(row['Min_Trans_No']) else row['Min_Trans_No']), min_ind_trans_amt=(-1 if pd.isna(row['Min_Ind_Trans_Amt']) else row['Min_Ind_Trans_Amt'])
-                    , max_ind_trans_amt=(-1 if pd.isna(row['Max_Ind_Trans_Amt']) else row['Max_Ind_Trans_Amt']), min_agg_trans_amt=(-1 if pd.isna(row['Min_Agg_Trans_Amt']) else row['Min_Agg_Trans_Amt']), max_agg_trans_amt=(-1 if pd.isna(row['Max_Agg_Trans_Amt']) else row['Max_Agg_Trans_Amt']), additional=('' if pd.isna(row['Additional']) else row['Additional']), cash_ind=('' if pd.isna(row['Cash_Ind']) else row['Cash_Ind']), trans_code=('' if pd.isna(row['Trans_Code']) else row['Trans_Code'])
-                    , trans_code_group=('' if pd.isna(row['Trans_Code_Group']) else row['Trans_Code_Group']), in_cash_ind=('' if pd.isna(row['In_Cash_Ind']) else row['In_Cash_Ind']), in_trans_code=('' if pd.isna(row['In_Trans_Code']) else row['In_Trans_Code']), in_trans_code_group=('' if pd.isna(row['In_Trans_Code_Group']) else row['In_Trans_Code_Group']), out_cash_ind=('' if pd.isna(row['Out_Cash_Ind']) else row['Out_Cash_Ind']), out_trans_code=('' if pd.isna(row['Out_Trans_Code']) else row['Out_Trans_Code'])
-                    , out_trans_code_group=('' if pd.isna(row['Out_Trans_Code_Group']) else row['Out_Trans_Code_Group']), in_out_ratio_min=(-1 if pd.isna(row['In_Out_Ratio_Min']) else row['In_Out_Ratio_Min']), in_out_ratio_max=(-1 if pd.isna(row['In_Out_Ratio_Max']) else row['In_Out_Ratio_Max']))
+                    , max_ind_trans_amt=(-1 if pd.isna(row['Max_Ind_Trans_Amt']) else row['Max_Ind_Trans_Amt']), min_agg_trans_amt=(-1 if pd.isna(row['Min_Agg_Trans_Amt']) else row['Min_Agg_Trans_Amt']), max_agg_trans_amt=(-1 if pd.isna(row['Max_Agg_Trans_Amt']) else row['Max_Agg_Trans_Amt']), additional=('' if pd.isna(row['Additional']) else row['Additional']), cash_ind=(-1 if pd.isna(row['Cash_Ind']) else row['Cash_Ind']), trans_code=('' if pd.isna(row['Trans_Code']) else row['Trans_Code'])
+                    , trans_code_group=('' if pd.isna(row['Trans_Code_Group']) else row['Trans_Code_Group']), in_cash_ind=(-1 if pd.isna(row['In_Cash_Ind']) else row['In_Cash_Ind']), in_trans_code=('' if pd.isna(row['In_Trans_Code']) else row['In_Trans_Code']), in_trans_code_group=('' if pd.isna(row['In_Trans_Code_Group']) else row['In_Trans_Code_Group']), out_cash_ind=(-1 if pd.isna(row['Out_Cash_Ind']) else row['Out_Cash_Ind']), out_trans_code=('' if pd.isna(row['Out_Trans_Code']) else row['Out_Trans_Code'])
+                    , out_trans_code_group=('' if pd.isna(row['Out_Trans_Code_Group']) else row['Out_Trans_Code_Group']), in_out_ratio_min=(-1 if pd.isna(row['In_Out_Ratio_Min']) else row['In_Out_Ratio_Min']*100.00), in_out_ratio_max=(-1 if pd.isna(row['In_Out_Ratio_Max']) else row['In_Out_Ratio_Max']*100.00))
                 self.appbuilder.get_session.add(rule)
             self.appbuilder.get_session.commit()
 
@@ -1541,6 +1544,8 @@ class DataCenterView(BaseView):
             for rule in rules:
                 if group['rule_group'] == rule['rule_group']:
                     result[group['rule_group']].append(rule)
+                if rule["rule_code"]=='blvelshwir':
+                    print(rule)
 
         return Response(pd.io.json.dumps(result), mimetype='application/json')
 
@@ -1550,9 +1555,7 @@ class DataCenterView(BaseView):
 
         rule = db.session.query(Rules).filter(Rules.id==rule_id).first()
 
-        print(rule)
-
-        return Response(json.dumps(rule.__dict__, default = datetimeconverter), mimetype='application/json')
+        return Response(json.dumps(rule.__dict__, default = jsonconverter), mimetype='application/json')
 
 class HomeView(BaseView):
 

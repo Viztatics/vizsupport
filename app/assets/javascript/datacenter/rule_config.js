@@ -68,6 +68,7 @@ $(function(){
 		  		'<strong>Eval Time : </strong> '+data.pre_post_EOD+'</br>'+
 		  		'<strong>Schedule Freq : </strong> '+data.schedule+'</br>';
 		  		var detail_parameters = '';
+		  		debugger;
 		  		detail_parameters+=data.customer_type?'List of Customer Types separated by comma. Use -ALL- for All. =\''+data.customer_type+'\'</br>':'';
 		  		detail_parameters+=data.customer_risk_class?'List of Risk Classes separated by comma. Use -ALL- for All. =\''+data.customer_risk_class+'\'</br>':'';
 		  		detail_parameters+=data.min_trans_no?'Minimum Total Transaction Count =\'' +data.min_trans_no+'\'</br>':'';
@@ -76,13 +77,13 @@ $(function(){
 		  		detail_parameters+=data.min_agg_trans_amt?'Minimum Transaction Amount (-1 if no minimum) =\'' +data.min_agg_trans_amt+'\'</br>':'';
 		  		detail_parameters+=data.max_agg_trans_amt?'Maximum Transaction Amount (-1 if no maximum) =\'' +data.max_agg_trans_amt+'\'</br>':'';
 		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
-		  		detail_parameters+=data.cash_ind?'Cash or non-Cash (inbound). 1 for Cash, 0 for NonCash, 2 for both =\'' +data.cash_ind+'\'</br>':'';
-		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
-		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
-		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
-		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
-		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
-		  		detail_parameters+=data.additional?'High risk Customer Types (MSB/FCB/CIB/PSP/NBFI) =\'' +data.additional+'\'</br>':'';
+		  		detail_parameters+=data.cash_ind!=-1?'Cash or non-Cash. 1 for Cash, 0 for NonCash, 2 for both =\'' +data.cash_ind+'\'</br>':'';
+		  		detail_parameters+=data.trans_code?'List of Activity Types separated by comma. Use -ALL- for All. =\'' +data.trans_code+'\'</br>':'';
+		  		detail_parameters+=data.in_cash_ind!=-1?'Cash or non-Cash (inbound). 1 for Cash, 0 for NonCash, 2 for both =\'' +data.in_cash_ind+'\'</br>':'';
+		  		detail_parameters+=data.in_trans_code?'List of inbound activity Types separated by comma. Use -ALL- for any activity type. = \'' +data.in_trans_code+'\'</br>':'';
+		  		detail_parameters+=data.out_cash_ind!=-1?'Cash or non-Cash (outbound). 1 for Cash, 0 for NonCash, 2 for both =\'' +data.out_cash_ind+'\'</br>':'';
+		  		detail_parameters+=data.out_trans_code?'List of outbound activity Types separated by comma. Use -ALL- for All. = \'' +data.out_trans_code+'\'</br>':'';
+		  		detail_parameters+=data.in_out_ratio_min!=-1?'Percent = \'' +data.in_out_ratio_min+'\'</br>':'';
 		  		$this.find('.table').html(function(index,html){
 		  			return html.replace('#detail_desc#',data.rule_description).replace('#detail_other#',detail_other).replace('#detail_param#',detail_parameters);
 		  		});
