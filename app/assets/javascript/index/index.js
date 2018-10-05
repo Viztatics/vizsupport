@@ -8,8 +8,23 @@ $(function(){
         $('#mask').addClass('lmask');	
     });
 
+    var initCustomer = function(){
+
+	  	$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/home/alert/initCusts',
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+		  	}
+		})
+
+	};
+
     var performanceChart = echarts.init(document.getElementById('performanceChart'));
-	//var successChart = echarts.init(document.getElementById('successChart'));
+	var cusChart = echarts.init(document.getElementById('cusChart'));
+	var tranChart = echarts.init(document.getElementById('tranChart'));
 
 	var	barOption = {
 	    title : {
@@ -98,10 +113,93 @@ $(function(){
 	    ]
 	};
 
+	let cusPieOption = {
+	    title : {
+	        text: 'Alerts Customer',
+	        x:'center'
+	    },
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
+	    },
+	    legend: {
+	        orient: 'vertical',
+	        x : 'right',
+	        data: []
+	    },
+	    color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
+	    series : [
+	        {
+	            name: 'status',
+	            type: 'pie',
+	            radius : '55%',
+	            center: ['40%', '50%'],
+	            data: [],
+	            selectedMode:'single',
+	            itemStyle: {
+	            	normal:{
+	            		label:{
+							textStyle:{
+								color:'#000',
+							}
+	            		},
+	            	},
+	                emphasis: {
+	                    shadowBlur: 10,
+	                    shadowOffsetX: 0,
+	                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+	                }
+	            }
+	        }
+	    ]
+	};
+
+	let tranPieOption = {
+	    title : {
+	        text: 'Alerts Activity',
+	        x:'center'
+	    },
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
+	    },
+	    legend: {
+	        orient: 'vertical',
+	        x : 'right',
+	        data: []
+	    },
+	    color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
+	    series : [
+	        {
+	            name: 'status',
+	            type: 'pie',
+	            radius : '55%',
+	            center: ['40%', '50%'],
+	            data: [],
+	            selectedMode:'single',
+	            itemStyle: {
+	            	normal:{
+	            		label:{
+							textStyle:{
+								color:'#000',
+							}
+	            		},
+	            	},
+	                emphasis: {
+	                    shadowBlur: 10,
+	                    shadowOffsetX: 0,
+	                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+	                }
+	            }
+	        }
+	    ]
+	};
+
 	
 
 	performanceChart.setOption(barOption);
-	//uccessChart.setOption(lineOption);
+	cusChart.setOption(cusPieOption);
+	tranChart.setOption(tranPieOption);
 
 	$.ajax({
 		cache: false,
@@ -148,10 +246,36 @@ $(function(){
 	  			
 	  			barOption.series[3].data = data.map(x=>x['ratio'].toFixed(2));
 
-				performanceChart.setOption(barOption);
+				cusChart.setOption(barOption);
 			}
 
 		}
 	});
+
+	let getCusChart=function(){
+
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/home/alerts/getCusPieData',
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({}),
+		  	success:function(data){
+
+				if(data){
+					cusPieOption.series[0].data=[];
+					for (let i = 0; i < data.length; i++)
+					{
+					    cusPieOption.series[0].data.push({name:data[i][1],value:data[i][0]})
+					}
+					typeChart.setOption(cusPieOption);
+				}				
+			}
+		});
+
+	};
+
+	//initCustomer();
+	getCusChart();
 
 })

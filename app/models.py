@@ -173,6 +173,7 @@ class Rules(AuditMixin,Model):
 
 class Transanction(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
     trans_no = Column(String(10))
     customer_id = Column(String(100))   
     account_key = Column(String(100))
@@ -187,3 +188,24 @@ class Transanction(AuditMixin,Model):
     by_order_name = Column(String(100)) 
     by_order_country = Column(String(10))  
     by_order_bank_country = Column(String(10))
+
+
+class Customer(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
+    customer_id = Column(String(100)) 
+    customer_name = Column(String(200))   
+    customer_type = Column(String(50))   
+    customer_risk_class = Column(String(50))  
+    customer_risk_level = Column(String(50))  
+    is_charity_org = Column(Integer, default=0)    
+    is_closed = Column(Integer, default=0)    
+    is_corr_bank = Column(Integer, default=0)   
+    is_FEP = Column(Integer, default=0)   
+    is_MSB = Column(Integer, default=0)   
+    is_offshore_bank = Column(Integer, default=0)   
+    is_PEP = Column(Integer, default=0)   
+    is_PSP = Column(Integer, default=0)   
+    is_CIB = Column(Integer, default=0)    
+    is_NBFI = Column(Integer, default=0)  
+    is_FCB = Column(Integer, default=0) 

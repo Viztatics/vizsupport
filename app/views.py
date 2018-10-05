@@ -4,7 +4,7 @@ from flask_appbuilder.models.sqla.filters import FilterEqual
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
-from sqlalchemy import func,inspect,text
+from sqlalchemy import func,inspect,text,distinct
 from sqlalchemy.sql.expression import case,literal_column,bindparam
 from sqlalchemy.orm import aliased
 from werkzeug import secure_filename
@@ -1594,6 +1594,37 @@ class HomeView(BaseView):
         data_result = [r._asdict() for r in alert_result]
 
         return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+    @expose('/alert/initCusts',methods=['GET'])
+    @has_access
+    def initCusts(self):
+
+        custs_data = pd.read_csv(RULE_DEFAULT_FOLDER+'/initct.csv',encoding = 'unicode_escape')
+
+        for index, row in custs_data.iterrows():
+            customer = Customer(company_id=current_user.company_id,customer_id=row['CustomerID'], customer_name=row['CustomerName'], customer_type=row['CustomerType'], customer_risk_class=row['CustomerRiskClass'], customer_risk_level=row['CustomerRiskLevel']
+                , is_charity_org=(0 if pd.isna(row['IsCharityOrg']) else 1),is_closed=(0 if pd.isna(row['IsClosed']) else 1), is_corr_bank=(0 if pd.isna(row['IsCorrBank']) else 1), is_FEP=(0 if pd.isna(row['IsFEP']) else 1)
+                , is_MSB=(0 if pd.isna(row['IsMSB']) else 1), is_offshore_bank=(0 if pd.isna(row['IsOffshoreBank']) else 1), is_PEP=(0 if pd.isna(row['IsPEP']) else 1), is_PSP=(0 if pd.isna(row['IsPSP']) else 1)
+                , is_CIB=(0 if pd.isna(row['IsCIB']) else 1), is_NBFI=(0 if pd.isna(row['IsNBFI']) else 1), is_FCB=(0 if pd.isna(row['IsFCB']) else 1))
+            self.appbuilder.get_session.add(customer)
+        self.appbuilder.get_session.commit()
+
+        return  json.dumps({})
+
+    @expose('/alerts/getCusPieData',methods=['GET'])
+    @has_access
+    def getCusPieData(self):
+
+        total_result = db.session.query(func.count(Customer.id).label("total")).filter(Customer.company_id==current_user.company_id)
+        total_result = [r._asdict() for r in total_result]
+        cus_result = db.session.query(func.count(distinct(VizAlerts.account_key)).label("cus")).join(Customer, VizAlerts.account_key == Customer.customer_id).filter(Customer.company_id==current_user.company_id)
+        cus_result = [r._asdict() for r in cus_result]
+        print(type(total_result) is list)
+        total_result = total_result+cus_result
+
+        print(total_result)
+
+        return Response(pd.io.json.dumps({total_result}), mimetype='application/json')
 
 class VizAlertsView(ModelView):
 
