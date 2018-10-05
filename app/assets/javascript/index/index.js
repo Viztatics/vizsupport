@@ -127,10 +127,10 @@ $(function(){
 	        x : 'right',
 	        data: []
 	    },
-	    color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
+	    color:['#ff3333','#ffff66'],
 	    series : [
 	        {
-	            name: 'status',
+	            name: 'Alerts Customer',
 	            type: 'pie',
 	            radius : '55%',
 	            center: ['40%', '50%'],
@@ -168,14 +168,14 @@ $(function(){
 	        x : 'right',
 	        data: []
 	    },
-	    color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
+	    color:['#ff3333','#ffff66'],
 	    series : [
 	        {
-	            name: 'status',
+	            name: 'Alerts Activity',
 	            type: 'pie',
 	            radius : '55%',
 	            center: ['40%', '50%'],
-	            data: [],
+	            data: [{'name':'Alert Activity','value':5000},{'name':"Not Alert",'value':20000}],
 	            selectedMode:'single',
 	            itemStyle: {
 	            	normal:{
@@ -246,7 +246,7 @@ $(function(){
 	  			
 	  			barOption.series[3].data = data.map(x=>x['ratio'].toFixed(2));
 
-				cusChart.setOption(barOption);
+				performanceChart.setOption(barOption);
 			}
 
 		}
@@ -261,14 +261,16 @@ $(function(){
 		  	contentType:'application/json',
 		  	data: JSON.stringify({}),
 		  	success:function(data){
-
+		  		console.log(data)
 				if(data){
 					cusPieOption.series[0].data=[];
 					for (let i = 0; i < data.length; i++)
 					{
-					    cusPieOption.series[0].data.push({name:data[i][1],value:data[i][0]})
+						$.each(data[i],function(index, value) {
+							cusPieOption.series[0].data.push({'name':index,'value':value});
+						});
 					}
-					typeChart.setOption(cusPieOption);
+					cusChart.setOption(cusPieOption);
 				}				
 			}
 		});

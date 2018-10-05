@@ -1617,14 +1617,14 @@ class HomeView(BaseView):
 
         total_result = db.session.query(func.count(Customer.id).label("total")).filter(Customer.company_id==current_user.company_id)
         total_result = [r._asdict() for r in total_result]
-        cus_result = db.session.query(func.count(distinct(VizAlerts.account_key)).label("cus")).join(Customer, VizAlerts.account_key == Customer.customer_id).filter(Customer.company_id==current_user.company_id)
+        cus_result = db.session.query(func.count(distinct(VizAlerts.account_key)).label("Alert Customer")).join(Customer, VizAlerts.account_key == Customer.customer_id).filter(Customer.company_id==current_user.company_id)
         cus_result = [r._asdict() for r in cus_result]
-        print(type(total_result) is list)
+
         total_result = total_result+cus_result
+        others = total_result[0].get("total")-cus_result[0].get("Alert Customer")
+        cus_result.append({'Others':others})
 
-        print(total_result)
-
-        return Response(pd.io.json.dumps({total_result}), mimetype='application/json')
+        return Response(pd.io.json.dumps(cus_result), mimetype='application/json')
 
 class VizAlertsView(ModelView):
 
