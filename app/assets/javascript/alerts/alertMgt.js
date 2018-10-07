@@ -492,6 +492,7 @@ $(function(){
 			    .done(function(result) {
 			    	$('#transTable').bootstrapTable({
 						idField: 'id',
+						exportDataType: 'all',
 						data:result,
 				  		pagination:true,
 					    columns: [{
