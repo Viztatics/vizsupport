@@ -1647,6 +1647,8 @@ def page_not_found(e):
 db.create_all()
 appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
+appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
+appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Data Center')
 appbuilder.add_view(RuleView, "High Risk Country Wire Activity", href='/rules/highRiskCountry/Wire',category='Rules')
 appbuilder.add_link("High Risk Country ACH Activity", href='/rules/highRiskCountry/ACH', category='Rules')
 appbuilder.add_link("Cash Activity Limit", href='/rules/highRiskVolume/Cash', category='Rules')
@@ -1662,7 +1664,5 @@ appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/AC
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Rules')
 appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Alerts')
 appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Alerts')
-appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
-appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Data Center')
 appbuilder.add_view_no_menu(HomeView())
 
