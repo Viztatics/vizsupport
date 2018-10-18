@@ -68,6 +68,7 @@ class VizRules(AuditMixin,Model):
 
 class VizAlerts(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
     account_key = Column(String(100), nullable=False)
     trans_month = Column(String(6), nullable=False)
     country_abbr = Column(String(100))

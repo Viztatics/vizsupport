@@ -134,7 +134,8 @@ $(function(){
 	            type: 'pie',
 	            radius : '55%',
 	            center: ['40%', '50%'],
-	            data: [],
+	            data: [{'name':'Alert Customer','value':3000},{'name':"Non Alert Customer",'value':15000}],
+	            label:{show:true},
 	            selectedMode:'single',
 	            itemStyle: {
 	            	normal:{
@@ -278,6 +279,6 @@ $(function(){
 	};
 
 	//initCustomer();
-	getCusChart();
+	//getCusChart();
 
 })
