@@ -210,3 +210,11 @@ class Customer(AuditMixin,Model):
     is_CIB = Column(Integer, default=0)    
     is_NBFI = Column(Integer, default=0)  
     is_FCB = Column(Integer, default=0) 
+
+class UploadHis(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
+    file_path = Column(String(100))
+    file_name = Column(String(100))
+    datalife = Column(String(2))
+    datarange = Column(String(20))

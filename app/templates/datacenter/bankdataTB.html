@@ -2,6 +2,8 @@
 {% import 'appbuilder/general/lib.html' as lib %}
 {% block head_css %}
     {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
 {% endblock %}
 
 {% block content %}
@@ -9,42 +11,25 @@
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Terra Bank</div>
 		  <div class="panel-body">
-		    <form id="bankdataForm">		        
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="customerFile">Customer</label></div>
+		    <form id="bankdataForm">
+		    	<div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="datalife">Data Lifecycle</label></div>
 		            <div class="col-md-4 input-group">
-		            	<input class="form-control" class="" id="customerFile" name="customerFile" >
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="alertFile">Alert</label></div>
+		            	<select class="form-control" id="datalife">
+						  <option value="M" selected="selected">Month</option>
+						  <option value="D">Day</option>
+						</select>
+		            </div>		            
+			    </div>	
+			    <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="datarange">Data Range</label></div>
 		            <div class="col-md-4 input-group">
-		            	<input class="form-control" class=""  id="alertFile" name="alertFile" >
+		            	<input class="form-control" type="text" class="" maxlength="20" id="datarange" name="datarange" placeholder="201801~201806">
 		            </div>
-		        </div>
+		        </div>	        
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="caseFile">Case</label></div>
-		            <div class="col-md-4 input-group">
-		            	<input class="form-control" class=""  id="caseFile" name="caseFile" >
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="custAlertRel">Customer-Alert Relation</label></div>
-		            <div class="col-md-4 input-group">
-		            	<input class="form-control" class=""  id="custAlertRel" name="custAlertRel" >
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="accountFile">Account</label></div>
-		            <div class="col-md-4 input-group">
-		            	<input class="form-control" class=""  id="accountFile" name="accountFile" >
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="transFile">Transanction</label></div>
-		            <div class="col-md-4 input-group">
-		            	<input class="form-control" class=""  id="transFile" name="transFile" >
-		            </div>
+		            <div class="col-md-2 input-group"><label for="oneFile">One File upload</label></div>
+		            <div class="col-md-4 input-group" id="oneFile">Upload</div>
 		        </div>
 		        <div class="form-group form-inline">
 		        	<div class="col-md-offset-2 col-md-2 input-group">
@@ -52,6 +37,15 @@
 		        	</div>
 		        </div>
 		    </form>
+		  </div>
+		</div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading" style="background-color: #dff0d8;">Upload History</div>
+		  <div class="panel-body">
+		    <div class="row">
+		        <table id="uploadTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
+		    </div>
 		  </div>
 		</div>
 
@@ -63,4 +57,10 @@
     <script type="text/javascript">
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
+    <script src="{{url_for('static',filename='assets/3rd_party/upload/tableExport.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js')}}"></script>    
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>  
+    <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/javascript/datacenter/bankdataTB.js')}}"></script>
 {% endblock %}

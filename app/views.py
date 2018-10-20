@@ -54,6 +54,13 @@ def isManager():
             is_analysis_manager = True
     return is_analysis_manager
 
+def getCompanyName():
+
+    company_name = db.session.query(Company.name).filter(Company.id==current_user.company_id)
+    company_name = [r for r in company_name]
+
+    return company_name[0][0]
+
 def isAdmin():
 
     is_admin = False
@@ -1300,10 +1307,10 @@ class AlertView(BaseView):
         comment_id=proComment.id
         if attachment:
             full_attached_path = 'alerts/'+str(alert_id)+"/"+str(process_id)+"/"+str(comment_id)+"/"+attachment
-            bucket = self.s3.Bucket(S3_BUCKET)
-            bucket.copy({'Bucket': S3_BUCKET, 'Key': 'alerts/'+str(alert_id)+"/"+attachment}, full_attached_path)
+            bucket = self.s3.Bucket(S3_BUCKET_RULES)
+            bucket.copy({'Bucket': S3_BUCKET_RULES, 'Key': 'alerts/'+str(alert_id)+"/"+attachment}, full_attached_path)
             bucket.delete_objects(Delete={'Objects': [{'Key': 'alerts/'+str(alert_id)+"/"+attachment}]})
-            self.s3.Object(S3_BUCKET,full_attached_path).Acl().put(ACL='public-read')
+            self.s3.Object(S3_BUCKET_RULES,full_attached_path).Acl().put(ACL='public-read')
             self.appbuilder.get_session.query(AlertProcessComments).filter(AlertProcessComments.id==comment_id).update({'attachment':full_attached_path})
         self.appbuilder.get_session.query(VizAlerts).filter(VizAlerts.id==alert_id,VizAlerts.current_step!=None).update({'rule_status':alert_status,'operated_on':datetime.now(),'finished_on':datetime.now(),'current_step':None})
         self.appbuilder.get_session.commit()
@@ -1377,7 +1384,7 @@ class AlertView(BaseView):
                 filename = secure_filename(files.filename)
 
                 if cid=='0':
-                    bucket = self.s3.Bucket(S3_BUCKET)
+                    bucket = self.s3.Bucket(S3_BUCKET_RULES)
                     for obj in bucket.objects.filter(Prefix='alerts/'+aid):
                         if len(obj.key.split("/"))==3:
                             print( obj.key )
@@ -1396,13 +1403,13 @@ class AlertView(BaseView):
                         os.makedirs(dst_path)
                     files.save(os.path.join((dst_path), filename))
                 """
-                self.s3.Object(S3_BUCKET, 'alerts/'+aid+"/"+filename).put(Body=files)
+                self.s3.Object(S3_BUCKET_RULES, 'alerts/'+aid+"/"+filename).put(Body=files)
 
 
         if request.method == 'DELETE':
             keyname = request.get_json()["keyname"]
             if cid=='0':
-                bucket = self.s3.Bucket(S3_BUCKET)
+                bucket = self.s3.Bucket(S3_BUCKET_RULES)
                 for obj in bucket.objects.filter(Prefix='alerts/'+aid+'/'+keyname):
                     obj.delete()
             """
@@ -1474,12 +1481,40 @@ class AlertView(BaseView):
 class DataCenterView(BaseView):
 
     route_base = '/datacenter'
+    s3 = boto3.resource('s3')
 
     @expose('/bankdata/tb/index')
     @has_access
     def bankdatatd(self):
 
         return self.render_template('datacenter/bankdataTB.html')
+
+    @expose('/bankdata/tb/upload',methods=['POST'])
+    @has_access
+    def bankdatatdupload(self):
+
+        dst_path = RULE_UPLOAD_FOLDER+str(current_user.company_id)
+
+        if request.method == 'POST':
+            files = request.files['file']
+            datalife = request.form["datalife"]
+            datarange = request.form["datarange"]
+
+            if files:
+                filename = secure_filename(files.filename)
+                full_attached_path = getCompanyName()+"/"+datalife+"/"+datarange
+                print("=========================================================================================================")
+                print(full_attached_path+"/"+filename)
+                print("=========================================================================================================")
+                bucket = self.s3.Bucket(S3_BUCKET_COMPANYS)
+                self.s3.Object(S3_BUCKET_COMPANYS, full_attached_path+"/"+filename).put(Body=files)
+
+                row = UploadHis(company_id=current_user.company_id,file_path=full_attached_path,file_name=filename,datalife=datalife,datarange=datarange)
+                self.appbuilder.get_session.add(row)
+                self.appbuilder.get_session.commit() 
+ 
+
+        return  json.dumps({})
 
     @expose('/rules/index')
     @has_access
