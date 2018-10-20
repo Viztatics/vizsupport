@@ -45,24 +45,34 @@ console.log($("#datarange").val());
 	});
 
 	$('#uploadTable').bootstrapTable({
-	    columns: [{
+		idField: 'id',
+		url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
+  		pagination:true,
+  		columns: [{
 	        field: 'id',
 	        title: 'ID',
 	    }, {
 	        field: 'file_name',
 	        title: 'File Name',
 	    }, {
-	        field: 'created_by',
+	        field: 'datalife',
+	        title: 'Life circle',
+	        formatter: function formatter(value, row, index, field) {
+	        	if (value=='M'){
+	        		return 'Month';
+	        	}else if(value=='D'){
+	        		return 'Day';
+	        	}
+			},
+	    }, {
+	        field: 'datarange',
+	        title: 'Data Range',
+	    }, {
+	        field: 'username',
 	        title: 'Upload User',
 	    }, {
 	        field: 'created_on',
 	        title: 'Upload Time',
-	        formatter: function formatter(value, row, index, field) {
-	        	//return (value|0).toLocaleString('en-US', {
-				//  style: 'currency',
-				//  currency: 'USD',
-				//});
-			}
 	    }],
 	});
 
