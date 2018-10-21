@@ -1520,6 +1520,7 @@ class DataCenterView(BaseView):
         his_result = db.session.query(UploadHis.id,UploadHis.file_path,UploadHis.file_name,UploadHis.datalife,UploadHis.datarange,func.to_char(UploadHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),User.username).join(User, UploadHis.created_by_fk == User.id).filter(UploadHis.company_id==current_user.company_id).order_by(UploadHis.created_on.desc())
 
         his_result = [r._asdict() for r in his_result]
+        
 
         return Response(pd.io.json.dumps(his_result), mimetype='application/json')
 
