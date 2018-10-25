@@ -1493,7 +1493,7 @@ class DataCenterView(BaseView):
     @has_access
     def bankdatatdupload(self):
 
-        dst_path = RULE_UPLOAD_FOLDER+str(current_user.company_id)
+        #dst_path = RULE_UPLOAD_FOLDER+str(current_user.company_id)
 
         if request.method == 'POST':
             files = request.files['file']
@@ -1503,6 +1503,9 @@ class DataCenterView(BaseView):
             if files:
                 filename = secure_filename(files.filename)
                 full_attached_path = getCompanyName()+"/"+datalife+"/"+datarange
+                print("======================================================================================")
+                print(getCompanyName())
+                print(full_attached_path+"/"+filename)
                 bucket = self.s3.Bucket(S3_BUCKET_COMPANYS)
                 self.s3.Object(S3_BUCKET_COMPANYS, full_attached_path+"/"+filename).put(Body=files)
 
@@ -1519,9 +1522,29 @@ class DataCenterView(BaseView):
 
         his_result = db.session.query(UploadHis.id,UploadHis.file_path,UploadHis.file_name,UploadHis.datalife,UploadHis.datarange,func.to_char(UploadHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),User.username).join(User, UploadHis.created_by_fk == User.id).filter(UploadHis.company_id==current_user.company_id).order_by(UploadHis.created_on.desc())
 
-        his_result = [r._asdict() for r in his_result]        
+        his_result = [r._asdict() for r in his_result]
 
         return Response(pd.io.json.dumps(his_result), mimetype='application/json')
+
+    @expose('/bankdata/download/<id>',methods=['GET'])
+    @has_access
+    def bankddatatbdownload(self,id):
+
+        his_result = db.session.query(UploadHis.id,UploadHis.file_path,UploadHis.file_name).filter(UploadHis.id==id)
+
+        his_result = [r._asdict() for r in his_result]
+
+        full_file_path = his_result[0]['file_path']+"/"+his_result[0]['file_name']     
+
+        file = self.s3.Object(S3_BUCKET_COMPANYS, full_file_path).get() 
+
+        response = make_response(file['Body'].read())    
+
+        response.headers["Content-Disposition"] = "attachment; filename={0}".format(his_result[0]['file_name'])   
+
+        response.mimetype = file['ContentType']
+
+        return response
 
     @expose('/rules/index')
     @has_access

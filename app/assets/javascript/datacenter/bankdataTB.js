@@ -1,6 +1,6 @@
 $(function(){
 
-console.log($("#datarange").val());
+	console.log($("#datarange").val());
 	var oneFile = $("#oneFile").uploadFile({
 		url: $SCRIPT_ROOT+'/datacenter/bankdata/tb/upload',
 		dynamicFormData:function(){
@@ -44,6 +44,19 @@ console.log($("#datarange").val());
 		}
 	});
 
+	let operateFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="dlcol" title="Download">Download</a>';
+	};
+
+	window.operateEvents = {
+	  'click .dlcol': function (e, value, row, index) {
+
+	  	console.log(row);
+	  	window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.id,"_self");
+
+	  }
+	};
+
 	$('#uploadTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
@@ -73,7 +86,13 @@ console.log($("#datarange").val());
 	    }, {
 	        field: 'created_on',
 	        title: 'Upload Time',
-	    }],
+	    }, {
+            field: 'file_path',
+            title: 'Item Operate',
+            align: 'center',
+            events: operateEvents,
+            formatter: operateFormatter
+        },],
 	});
 
 })
