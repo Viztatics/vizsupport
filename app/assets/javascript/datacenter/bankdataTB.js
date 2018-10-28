@@ -1,48 +1,6 @@
 $(function(){
 
 	console.log($("#datarange").val());
-	var oneFile = $("#oneFile").uploadFile({
-		url: $SCRIPT_ROOT+'/datacenter/bankdata/tb/upload',
-		dynamicFormData:function(){
-			
-			return {"datalife": $("#datalife").val(),"datarange":$("#datarange").val()};
-		},
-	    maxFileCount: 1,
-	    maxFileCount: 1, 
-	    maxFileSize:20*1024*1024,                		   
-	    allowedTypes: 'xlsx',  				       
-	    showFileSize: false,
-	    showDone: false,                           
-	    showDelete: false,                          
-	    showDownload:false,
-	    statusBarWidth:590,
-	    onSubmit: function (files) {
-		    // The example input, doesn't have to be part of the upload form:
-		    if (!$("#datarange").val()) {
-		      $("#datarange").focus();
-		      $("#file-error")&&$("#file-error").remove();
-		      return false;
-	    	}		    
-	    },
-	    onLoad: function(obj)
-	    {	
-	    	//if (typeof obj.createProgress !== "undefined") { 
-			    //obj.createProgress($('#reportPath').data('keyname'));
-			//}
-	    	//     	
-	    },
-	    onSuccess: function(files,data,xhr,pd){
-	    	//$('#reportPath').data('keyname', files[0]);
-	    	$("#file-error")&&$("#file-error").remove();
-	    },
-	    onError: function(files,status,errMsg,pd)
-		{
-			console.log(errMsg);
-		    //files: list of files
-		    //status: error status
-		    //errMsg: error message
-		}
-	});
 
 	let operateFormatter=function(value, row, index) {
 	  return '<a href="javascript:void(0)" class="dlcol" title="Download">Download</a>';
@@ -57,7 +15,7 @@ $(function(){
 	  }
 	};
 
-	$('#uploadTable').bootstrapTable({
+	var $upTable = $('#uploadTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
   		pagination:true,
@@ -93,6 +51,50 @@ $(function(){
             events: operateEvents,
             formatter: operateFormatter
         },],
+	});
+
+	var oneFile = $("#oneFile").uploadFile({
+		url: $SCRIPT_ROOT+'/datacenter/bankdata/tb/upload',
+		dynamicFormData:function(){
+			
+			return {"datalife": $("#datalife").val(),"datarange":$("#datarange").val()};
+		},
+	    maxFileCount: 1,
+	    maxFileCount: 1, 
+	    maxFileSize:20*1024*1024,                		   
+	    allowedTypes: 'xlsx',  				       
+	    showFileSize: false,
+	    showDone: false,                           
+	    showDelete: false,                          
+	    showDownload:false,
+	    statusBarWidth:590,
+	    onSubmit: function (files) {
+		    // The example input, doesn't have to be part of the upload form:
+		    if (!$("#datarange").val()) {
+		      $("#datarange").focus();
+		      $("#file-error")&&$("#file-error").remove();
+		      return false;
+	    	}		    
+	    },
+	    onLoad: function(obj)
+	    {	
+	    	//if (typeof obj.createProgress !== "undefined") { 
+			    //obj.createProgress($('#reportPath').data('keyname'));
+			//}
+	    	//     	
+	    },
+	    onSuccess: function(files,data,xhr,pd){
+	    	//$('#reportPath').data('keyname', files[0]);
+	    	$("#file-error")&&$("#file-error").remove();
+	    	$upTable.bootstrapTable('refresh');
+	    },
+	    onError: function(files,status,errMsg,pd)
+		{
+			console.log(errMsg);
+		    //files: list of files
+		    //status: error status
+		    //errMsg: error message
+		}
 	});
 
 })
