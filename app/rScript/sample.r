@@ -1,11 +1,11 @@
-install.packages("aws.s3")
+#install.packages("aws.s3")
 library("aws.s3")
 
 
 bucketlist()
 save_object("Funding/M/201801~201806/s3.xlsx", file = "~/s3.xlsx", bucket = "3rdcompany")
 
-install.packages("RPostgreSQL")
+#install.packages("RPostgreSQL")
 library('RPostgreSQL')
 pg = dbDriver("PostgreSQL")
 
