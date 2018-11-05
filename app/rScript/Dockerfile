@@ -1,6 +1,7 @@
 FROM trestletech/plumber
 RUN apt install libcurl4-openssl-dev -y --no-install-recommends
 RUN apt install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev -y --no-install-recommends
+RUN apt-get update
 RUN apt-get install libpq-dev -y --no-install-recommends
 RUN Rscript -e "install.packages('devtools')"
 RUN Rscript -e "devtools::install_github('r-lib/xml2')"
