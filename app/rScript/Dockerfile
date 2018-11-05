@@ -1,4 +1,7 @@
 FROM trestletech/plumber
+RUN apt install libcurl4-openssl-dev
+RUN apt install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+RUN apt-get install libpq-dev
 RUN Rscript -e "install.packages('devtools')"
 RUN Rscript -e "devtools::install_github('r-lib/xml2')"
 RUN Rscript -e "install.packages('aws.s3', repos = c('cloudyr' = 'http://cloudyr.github.io/drat'))"
