@@ -1,4 +1,11 @@
 FROM trestletech/plumber
+
+ARG AWS_ACCESS_KEY
+ENV AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+
+ARG AWS_SECRET_ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+
 RUN apt install libcurl4-openssl-dev -y --no-install-recommends
 RUN apt install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev -y --no-install-recommends
 RUN apt-get update
