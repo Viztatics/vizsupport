@@ -11,3 +11,16 @@ function(){
   bucketlist()
   save_object("Funding/M/201801~201806/s3.xlsx", file = "~/s3.xlsx", bucket = "3rdcompany")
 }
+
+#* @get /psqltest
+function(){
+  library("RPostgreSQL")
+  drv <- dbDriver("PostgreSQL")
+	# creates a connection to the postgres database
+	# note that "con" will be used later in each connection to the database
+  con <- dbConnect(drv, dbname = "vizdatabase",
+	                 host = "ec2-18-234-58-200.compute-1.amazonaws.com", port = 5432,
+	                 user = "viz", password = "VizPostgres4rrr")
+  df_postgres <- dbGetQuery(con, "SELECT * from viz_rules")
+  df_postgres
+}
