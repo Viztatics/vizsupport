@@ -1635,9 +1635,9 @@ class HomeView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status)
+            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status).order_by(func.to_char(VizAlerts.created_on, 'YYYYMM'))
         else:
-            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status)
+            alert_result = db.session.query(func.to_char(VizAlerts.created_on, 'YYYYMM').label('month'),VizAlerts.rule_status,func.count(VizAlerts.id).label("count")).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).group_by(func.to_char(VizAlerts.created_on, 'YYYYMM'),VizAlerts.rule_status).order_by(func.to_char(VizAlerts.created_on, 'YYYYMM'))
         
         data_result = [r._asdict() for r in alert_result]
 
