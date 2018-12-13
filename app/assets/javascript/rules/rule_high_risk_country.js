@@ -136,7 +136,8 @@ $(function(){
             markLine : {
             	silent:true,
                 data : [
-                    {name: 'hello',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+                    {name: 'run1',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
+	                {name: 'run2',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
                 ]
             },
 	    },{
@@ -194,7 +195,14 @@ $(function(){
 	            smooth: true,
 	            symbol:'diamond',
 	            symbolSize:10,
-	            data:[]
+	            data:[],
+	          	markLine : {
+	            	silent:true,
+	                data : [
+	                    {name: 'run1',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
+	                    {name: 'run2',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+	                ]
+	            },
 	        }
 	    ]
 	};
@@ -292,6 +300,8 @@ $(function(){
 		  	success:function(data){
 
 		  		if(data){
+		  			lineoption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
+		  			lineoption.series[0].markLine.data[1].yAxis=$('#threshNum2').val();
 		  			lineoption.series[0].data = data.map(x=>x.toFixed(2));
 			  		percentileChart.setOption(lineoption);
 		  		}	  		
@@ -827,9 +837,22 @@ $(function(){
 	  	success:function(data){
 	  		var normaldata = [];
 	  		var outlierdata = [];
-	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
+	  		data.data.map(x => x[4]==1?outlierdata.push({value:x}):normaldata.push({value:x}));
+	  		$.each(normaldata,function(index, el) {
+	  			if(el.value[1]<$('#threshNum').val()){
+	  				el.itemStyle={color:'yellow'};
+	  			}else if(el.value[1]>$('#threshNum2').val()){
+	  				el.itemStyle={color:'green'};
+	  			}else{
+	  				//el.symbol='emptyCircle';
+	  			}
+	  		});
+	  		$.each(outlierdata,function(index, el) {
+	  				el.symbol='emptyCircle';
+	  		});
 		  	scatteroption.series[0].data = normaldata;
 		  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
+		  	scatteroption.series[0].markLine.data[1].yAxis=$('#threshNum2').val();
 	  		scatteroption.series[1].data = outlierdata;
 		  	scatterChart.setOption(scatteroption);		  	
 	  	}

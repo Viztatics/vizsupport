@@ -16,7 +16,7 @@
 {% block content %}
 	{{ lib.panel_begin("High Risk Country "+transCode + " Activity") }}
 		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Query Area</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
 		        <div class="form-group form-inline">
@@ -25,13 +25,24 @@
 		            <div class="col-md-12 input-group"><font color='red'> * Upload CSV file with Following data elements in the specific sequence : [ACCOUNT_KEY,Trans_Code_Type,OPP_CNTRY,Country Risk Level(Promontory),Country Name,Month of Trans Date,Trans_Amt,Trans_Count]</font></div>		            
 		        </div>
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="threshNum">Define a threshold</label></div>
-		            <div class="col-md-4 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="1000" value="1000">
+		            <div class="col-md-2 input-group"><label for="dataId">Input Data Id</label></div>
+		            <div class="col-md-3 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="dataId" name="dataId" placeholder="1" value="">
 		            </div>
 		        </div>
 		        <div class="form-group form-inline">
-		        	<div class="col-md-offset-2 col-md-2 input-group">
+		            <div class="col-md-2 input-group"><label for="threshNum">Threshold 1</label></div>
+		            <div class="col-md-2 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="1000" value="1000">
+		            </div>
+		            <div class="col-md-2 input-group"></div>
+		            <div class="col-md-2 input-group"><label for="threshNum2">Threshold 2</label></div>
+		            <div class="col-md-2 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum2" name="threshNum2" placeholder="10000" value="10000">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		        	<div class="col-md-offset-5 col-md-2 input-group">
 		            	<button type="submit" class="btn btn-primary">Submit</button>
 		        	</div>
 		        </div>
