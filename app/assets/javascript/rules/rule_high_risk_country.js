@@ -1118,7 +1118,12 @@ $(function(){
 		            	if(itemOpt.value>=$('#threshNum2').val()){
 		            		geoclone.data.push({
 			                    name: itemOpt.name,
-			                    tooltip:{show:false},
+			                    tooltip:{
+			                    	formatter:function(params){
+			                    		console.log(params);
+			                    		return params.data.name+"</br>$"+itemOpt.value
+			                    	}
+			                    },
 			                    value: [
 			                        latlong[itemOpt.code].longitude,
 			                        latlong[itemOpt.code].latitude,
@@ -1138,7 +1143,6 @@ $(function(){
 		  	console.log(heatoption);
 		  	console.log(timeoptions);
 		  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);		
-		  	debugger;  	
 	  	}
 	  });
 
