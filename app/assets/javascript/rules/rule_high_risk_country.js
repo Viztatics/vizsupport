@@ -797,7 +797,8 @@ $(function(){
 		});
 
 	};
-
+/*
+**delete file upload 
 	var upfile = $("#reportPath").uploadFile({
 		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload/'+transcode,
 	    maxFileCount: 1, 
@@ -845,6 +846,7 @@ $(function(){
 	if($('#reportPath').data('keyname')&&upfile){
 		upfile.createProgress($('#reportPath').data('keyname'));
 	}
+*/
 
 	$('#statisticsTable').bootstrapTable({
   		pagination:false,
@@ -1089,7 +1091,7 @@ $(function(){
 	  getHighRiskCountryStatics($("#isOutlier").val());	  
 	  getHighRiskCountryPercentile($("#isOutlier").val());
 	  getHighRiskCountryPareto($("#isOutlier").val());	  
-
+/*
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
 	  	if(filecount ==0){
@@ -1098,6 +1100,8 @@ $(function(){
 	  	}	  	
 	  	return false;
 	  }
+
+*/
 
 	  $.ajax({
 	  	cache: false,
