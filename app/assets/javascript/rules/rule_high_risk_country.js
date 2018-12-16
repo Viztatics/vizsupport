@@ -899,6 +899,14 @@ $(function(){
 		}
 	};
 
+	let run2Formatter=function(value, row, index) {
+		if(value==1){
+			return '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>';
+		}else{
+			return '-';
+		}
+	};
+
 	window.operateEvents = {
 	  'click .note': function (e, value, row, index) {
 	  	$this = $(this);
@@ -968,6 +976,10 @@ $(function(){
 			        sortable:true,
 			        events: operateEvents,
           			formatter: operateFormatter
+			    },{
+			        field: 'run2',
+			        title: 'Run 2',
+          			formatter: run2Formatter
 			    }],
 			});
 
@@ -1181,7 +1193,7 @@ $(function(){
 	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata/'+transcode,
 	  	type: 'POST',
 	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
 	  	success:function(data){
 	  		$('#alertTable').bootstrapTable('load',data);	  			  	
 	  	}

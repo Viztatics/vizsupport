@@ -294,6 +294,8 @@ class RuleView(BaseView):
 
         threshold = request.get_json()["threshNum"]
 
+        threshold2 = request.get_json()["threshNum2"]
+
         def_data_no_county = dst_path+"/"+dst_file
 
         table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt','Trans_Code_Type'])
@@ -301,6 +303,8 @@ class RuleView(BaseView):
         #table_data = table_data.groupby(['ACCOUNT_KEY', 'Month of Trans Date'],as_index=False).sum()
 
         table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
+
+        table_data['run2'] = np.where(table_data['Trans_Amt']>=int(threshold2), '1', '0')
 
         db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
