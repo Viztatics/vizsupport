@@ -541,10 +541,10 @@ $(function(){
 	        borderWidth: 1,
 		    formatter : function (params) {
 		    	console.log(params);
-	            return "Account Key: "+params.data[2]+"<br/>"
-		                          +"Trans Month:  "+params.data[3]+"<br/>"
-		                          +"Trans Count: "+params.data[0]+"<br/>"
-		                          +"Trans Amt: "+(params.data[1]).toLocaleString('en-US', {
+	            return "Account Key: "+params.data.value[2]+"<br/>"
+		                          +"Trans Month:  "+params.data.value[3]+"<br/>"
+		                          +"Trans Count: "+params.data.value[0]+"<br/>"
+		                          +"Trans Amt: "+(params.data.value[1]).toLocaleString('en-US', {
 															  style: 'currency',
 															  currency: 'USD',
 															});
