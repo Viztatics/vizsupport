@@ -465,7 +465,7 @@ $(function(){
 	        name: 'High Risk Countries',
 	        type: 'map',
 	        map: 'world',
-	        roam: true,
+	        roam: false,
 	    },
 	    series: [
 	        {
@@ -473,7 +473,7 @@ $(function(){
 	            type: 'map',
 	            mapType: 'world',
 	            //left: document.getElementById('heatChart').offsetWidth - 1100,
-	            roam: true,
+	            roam: false,
 	            itemStyle:{
 	                emphasis:{label:{show:true}}
 	            },
@@ -980,7 +980,7 @@ $(function(){
           			formatter: operateFormatter
 			    },{
 			        field: 'run2',
-			        title: 'Run 2',
+			        title: 'In Both Run',
           			formatter: run2Formatter
 			    }],
 			});
@@ -1199,6 +1199,51 @@ $(function(){
 		  	scatteroption.series[0].markLine.data[1].yAxis=$('#threshNum2').val();
 	  		scatteroption.series[1].data = outlierdata;
 		  	scatterChart.setOption(scatteroption);		  	
+	  	}
+	  });
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterstatistics/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
+	  	success:function(data){
+	  		console.log(data);
+	  		$("#amountRun1").text(data.amount.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountRun2").text(data.amount.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountBelowRun1").text(data.below_amount_below.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountBelowRun2").text(data.below_amount_above.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountAboveRun1").text(data.above_amount_below.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountAboveRun2").text(data.above_amount_above.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountPercentRun1").text(data.percent_amount_below+'%');
+	  		$("#amountPercentRun2").text(data.percent_amount_above+'%');
+	  		$("#countRun1").text(data.count);
+	  		$("#countRun2").text(data.count);
+	  		$("#countBelowRun1").text(data.below_count_below);
+	  		$("#countBelowRun2").text(data.below_count_above);	  
+	  		$("#countAboveRun1").text(data.above_count_below);
+	  		$("#countAboveRun2").text(data.above_count_above);
+	  		$("#countPercentRun1").text(data.percent_acount_below+'%');
+	  		$("#countPercentRun2").text(data.percent_acount_above+'%');	
 	  	}
 	  });
 

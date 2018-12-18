@@ -282,6 +282,46 @@ class RuleView(BaseView):
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
+    @expose('/highRiskCountry/scatterstatistics/<transCode>',methods=['POST'])
+    @has_access
+    def getHighRiskCountryScatterStatisticsData(self,transCode):
+
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        threshold_below = request.get_json()["threshNum"]
+
+        threshold_above = request.get_json()["threshNum2"]
+
+        def_data_no_county = dst_path+"/"+dst_file
+
+        plot_data = pd.read_csv(def_data_no_county,usecols=['Trans_Count','Trans_Amt','ACCOUNT_KEY','Month of Trans Date','outlier','Trans_Code_Type'])
+        #plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
+        plot_data = plot_data[plot_data['Trans_Code_Type']==transDesc(transCode)]
+        amount = np.round(plot_data['Trans_Amt'].sum(),decimals=2)
+        count = plot_data['Trans_Count'].sum()
+
+        plot_below = plot_data[(plot_data['Trans_Amt']>=int(threshold_below))]
+        above_amount_below = np.round(plot_below['Trans_Amt'].sum(),decimals=2)
+        above_count_below = plot_below['Trans_Count'].sum()
+        below_amount_below = np.round(amount - above_amount_below,decimals=2)
+        below_count_below = count - above_count_below
+        percent_amount_below = np.round(above_amount_below*100/amount,decimals=2)
+        percent_acount_below = np.round(above_count_below*100/count,decimals=2)
+
+        plot_above = plot_data[(plot_data['Trans_Amt']>=int(threshold_above))]
+        above_amount_above = np.round(plot_above['Trans_Amt'].sum(),decimals=2)
+        above_count_above = plot_above['Trans_Count'].sum()
+        below_amount_above = np.round(amount - above_amount_above,decimals=2)
+        below_count_above = count - above_count_above
+        percent_amount_above = np.round(above_amount_above*100/amount,decimals=2)
+        percent_acount_above = np.round(above_count_above*100/count,decimals=2)
+
+        return Response(pd.io.json.dumps({'amount':amount,'count':count,'above_amount_below':above_amount_below,'above_count_below':above_count_below,'below_amount_below':below_amount_below,'below_count_below':below_count_below,'percent_amount_below':percent_amount_below,'percent_acount_below':percent_acount_below,'above_amount_above':above_amount_above,'above_count_above':above_count_above,'below_amount_above':below_amount_above,'below_count_above':below_count_above,'percent_amount_above':percent_amount_above,'percent_acount_above':percent_acount_above}), mimetype='application/json')
+
     @expose('/highRiskCountry/tabledata/<transCode>',methods=['POST'])
     @has_access
     def getHighRiskCountryTableData(self,transCode):
