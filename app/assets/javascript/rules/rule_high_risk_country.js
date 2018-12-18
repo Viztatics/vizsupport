@@ -1072,7 +1072,13 @@ $(function(){
 	      threshNum:{
 	      	required: true,
 	      	digits:true,
-	      }
+	      	min:0,
+	      },
+	      threshNum2: {
+		    digits:true,
+		    min: 0,
+		    greaterThan: "#threshNum"
+		  },
 	    },
 	});
 
@@ -1087,6 +1093,10 @@ $(function(){
 
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
+
+	  if(!$("form").valid()){
+	  	return false;
+	  }
 
 	  getHighRiskCountryStatics($("#isOutlier").val());	  
 	  getHighRiskCountryPercentile($("#isOutlier").val());
