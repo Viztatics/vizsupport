@@ -36,7 +36,7 @@ $(function(){
 	        title: 'ID',
 	    }, {
 	        field: 'file_name',
-	        title: 'File Name',
+	        title: 'Source File Name',
 	    }, {
 	        field: 'datalife',
 	        title: 'Life circle',

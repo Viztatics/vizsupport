@@ -380,6 +380,32 @@ class RuleView(BaseView):
 
         table_data['run2'] = np.where(table_data['Trans_Amt']>=int(threshold2), '1', '0')
 
+        db_result = db.session.query(func.count(Customer.id).label('count')).filter(Customer.company_id==current_user.company_id)
+
+        db_result = [r._asdict() for r in db_result]
+
+        total = db_result[0]["count"]
+
+        run1_customer = table_data['ACCOUNT_KEY'].nunique()
+
+        run1_customer_not = int(total)-int(run1_customer)
+
+        run1_customer_percent = np.round(int(run1_customer)*100/total,decimals=2)
+
+        run1_customer_percent_not = np.round(run1_customer_not*100/total,decimals=2)
+
+        table_data2 = table_data[table_data['run2']=='1']
+
+        run2_customer = table_data2['ACCOUNT_KEY'].nunique()
+
+        run2_customer_not = int(total)-int(run2_customer)
+
+        run2_customer_percent = np.round(int(run2_customer)*100/total,decimals=2)
+
+        run2_customer_percent_not = np.round(run2_customer_not*100/total,decimals=2)
+
+        return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
+
 
     @expose('/highRiskCountry/alertdata/<transCode>',methods=['POST'])
     @has_access

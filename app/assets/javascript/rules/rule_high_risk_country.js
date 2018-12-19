@@ -1258,6 +1258,29 @@ $(function(){
 	  	}
 	  });
 
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tablestatistics/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
+	  	success:function(data){
+	  		console.log(data);
+	  		$("#run1Cust").text(data.total);
+	  		$("#run2Cust").text(data.total);
+	  		$("#run1CustAlerted").text(data.run1_customer);
+	  		$("#run1CustAlertedPer").text(data.run1_customer_percent+'%');
+	  		$("#run2CustAlerted").text(data.run2_customer);
+	  		$("#run2CustAlertedPer").text(data.run2_customer_percent+'%');
+	  		$("#run1CustNotAlerted").text(data.run1_customer_not);
+	  		$("#run1CustNotAlertedPer").text(data.run1_customer_percent_not+'%');
+	  		$("#run2CustNotAlerted").text(data.run2_customer_not);
+	  		$("#run2CustNotAlertedPer").text(data.run2_customer_percent_not+'%');
+	  		$("#missCust").text(data.run1_customer-data.run2_customer);
+
+	  	}
+	  });
+
 	});
 
 })

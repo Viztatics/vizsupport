@@ -144,6 +144,48 @@
 				</div>
 		        <table id="alertTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
 		    </div>
+		    <div class="row">
+		    	<h4>Statistics:</h4>
+		    </div>
+		    <div class="row">
+		    	<table class="table table-hover">
+		    		<thead>
+		    			<tr >
+		    				<td>#</td>
+		    				<td>Run1 Count</td>
+		    				<td>Run1 Percent</td>
+		    				<td>Run2 Count</td>
+		    				<td>Run2 Percent</td>
+		    			</tr>		    			
+		    		</thead>
+		    		<tbody>
+		    			<tr>
+		    				<td>Total Customer</td>
+		    				<td id="run1Cust">-</td>
+		    				<td>-</td>
+		    				<td id="run2Cust">-</td>
+		    				<td></td>
+		    			</tr>
+		    			<tr>
+		    				<td>Total Customer Alerted</td>
+		    				<td id="run1CustAlerted">-</td>
+		    				<td id="run1CustAlertedPer">-</td>
+		    				<td id="run2CustAlerted">-</td>
+		    				<td id="run2CustAlertedPer">-</td>
+		    			</tr>
+		    			<tr>
+		    				<td>Total Customer Not Alerted</td>
+		    				<td id="run1CustNotAlerted">-</td>
+		    				<td id="run1CustNotAlertedPer">-</td>
+		    				<td id="run2CustNotAlerted">-</td>
+		    				<td id="run2CustNotAlertedPer">-</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    </div>
+		    <div class="row">
+		    	<label class="col-md-3 control-label">Run2 Customers missed from Run1</label><div id="missCust" class="col-md-2">-</div>
+		    </div>
 		  </div>
 		</div>
 
