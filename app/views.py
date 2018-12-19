@@ -358,6 +358,29 @@ class RuleView(BaseView):
 
         return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
+    @expose('/highRiskCountry/tablestatistics/<transCode>',methods=['POST'])
+    @has_access
+    def getHighRiskCountryTableStatistics(self,transCode):
+
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        threshold = request.get_json()["threshNum"]
+
+        threshold2 = request.get_json()["threshNum2"]
+
+        def_data_no_county = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt','Trans_Code_Type'])
+
+        table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
+
+        table_data['run2'] = np.where(table_data['Trans_Amt']>=int(threshold2), '1', '0')
+
+
     @expose('/highRiskCountry/alertdata/<transCode>',methods=['POST'])
     @has_access
     def createHighRiskCountryAlertData(self,transCode):

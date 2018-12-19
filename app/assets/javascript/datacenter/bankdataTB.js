@@ -15,6 +15,18 @@ $(function(){
 	  }
 	};
 
+	let validateFormatter=function(value, row, index) {
+	  return '<a href="javascript:void(0)" class="btn btn-primary btn-sm valcomp" title="Compare">Compare</a>';
+	};
+
+	window.validateEvents = {
+	  'click .valcomp': function (e, value, row, index) {
+
+	  	//window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.id,"_self");
+
+	  }
+	};
+
 	var $upTable = $('#uploadTable').bootstrapTable({
 		idField: 'id',
 		url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
@@ -46,11 +58,23 @@ $(function(){
 	        title: 'Upload Time',
 	    }, {
             field: 'file_path',
-            title: 'Item Operate',
+            title: 'Source File',
             align: 'center',
             events: operateEvents,
             formatter: operateFormatter
-        },],
+        }, {
+            field: 'file_path',
+            title: 'Target File',
+            align: 'center',
+            events: operateEvents,
+            formatter: operateFormatter
+        }, {
+            field: 'id',
+            title: 'Validation',
+            align: 'center',
+            events: validateEvents,
+            formatter: validateFormatter
+        }],
 	});
 
 	var oneFile = $("#oneFile").uploadFile({
@@ -95,6 +119,10 @@ $(function(){
 		    //status: error status
 		    //errMsg: error message
 		}
+	});
+
+	var targetFile = $("#targetFile").uploadFile({
+		
 	});
 
 })

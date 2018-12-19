@@ -29,8 +29,12 @@
 		            </div>
 		        </div>	        
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="oneFile">One File upload</label></div>
+		            <div class="col-md-2 input-group"><label for="oneFile">Source File upload</label></div>
 		            <div class="col-md-4 input-group" id="oneFile">Upload</div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="targetFile">Target File upload</label></div>
+		            <div class="col-md-4 input-group" id="targetFile">Upload</div>
 		        </div>
 		    </form>
 		  </div>
@@ -45,6 +49,23 @@
 		  </div>
 		</div>
 
+		<div class="panel panel-default">
+		  <div class="panel-heading" style="background-color: #dff0d8;">Data Validation</div>
+		  <div class="panel-body">
+			<div class="row">
+	          <label class="col-md-4 control-label" style="text-align:right">Source File</label><label class="col-md-4 control-label" style="text-align:right">Target File</label>
+	          <label class="col-md-4 control-label"></label>          
+	        </div>
+			<div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Number of Counts</label><div id="" class="col-md-2">4690843</div>
+	          <label class="col-md-2 control-label">Number of Counts</label><div id="" class="col-md-2">4690843</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Number of Trans.</label><div id="" class="col-md-2">579846</div>
+	          <label class="col-md-2 control-label">Number of Trans.</label><div id="" class="col-md-2">579846</div><label class="col-md-2 control-label"></label>
+	        </div>
+		  </div>
+		</div>
 	{{ lib.panel_end() }}
 {% endblock %}
 
