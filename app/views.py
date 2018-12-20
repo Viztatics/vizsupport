@@ -724,6 +724,63 @@ class RuleView(BaseView):
 
         return Response(table_data.to_json(orient='records'), mimetype='application/json')
 
+    @expose('/highRiskVolume/tablestatistics/<transCode>',methods=['POST'])
+    @has_access
+    def getHighRiskVolumeTableStatistics(self,transCode):
+
+        highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        crDb = request.get_json()["crDb"]
+
+        amtThreshold = request.get_json()["amtThreshNum"]
+
+        cntThreshold = request.get_json()["cntThreshNum"]
+
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        cntThreshold2 = request.get_json()["cntThreshNum2"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_volume_data)
+
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
+
+        table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]
+
+        table_data['run2'] = np.where((table_data['TRANS_AMT']>=int(amtThreshold2))&(table_data['TRANS_CNT']>=int(cntThreshold2)), '1', '0')
+
+        db_result = db.session.query(func.count(Customer.id).label('count')).filter(Customer.company_id==current_user.company_id)
+
+        db_result = [r._asdict() for r in db_result]
+
+        total = db_result[0]["count"]
+
+        run1_customer = table_data['ACCOUNT_KEY'].nunique()
+
+        run1_customer_not = int(total)-int(run1_customer)
+
+        run1_customer_percent = np.round(int(run1_customer)*100/total,decimals=2)
+
+        run1_customer_percent_not = np.round(run1_customer_not*100/total,decimals=2)
+
+        table_data2 = table_data[table_data['run2']=='1']
+
+        run2_customer = table_data2['ACCOUNT_KEY'].nunique()
+
+        run2_customer_not = int(total)-int(run2_customer)
+
+        run2_customer_percent = np.round(int(run2_customer)*100/total,decimals=2)
+
+        run2_customer_percent_not = np.round(run2_customer_not*100/total,decimals=2)
+
+        return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
+
+
     @expose('/highRiskVolume/alertdata/<transCode>',methods=['POST'])
     @has_access
     def createHighRiskVolumeAlertData(self,transCode):
