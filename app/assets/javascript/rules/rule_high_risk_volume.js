@@ -532,6 +532,14 @@ $(function(){
 		    
 	  }
 	};
+	
+	let run2Formatter=function(value, row, index) {
+		if(value==1){
+			return '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>';
+		}else{
+			return '-';
+		}
+	};
 
 	$('#alertTable').bootstrapTable({
   		pagination:true,
@@ -569,6 +577,10 @@ $(function(){
 	        sortable:true,
 	        events: operateEvents,
 	        formatter: operateFormatter
+	    },{
+	        field: 'run2',
+	        title: 'In Both Run',
+  			formatter: run2Formatter
 	    }],
 	});
 
@@ -682,6 +694,7 @@ $(function(){
 	  	contentType:'application/json',
 	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),crDb:$('#crDb').val()
 	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  		,amtThreshNum2:$('#amtThreshNum2').val(),cntThreshNum2:$('#cntThreshNum2').val()
 	  	}),
 	  	success:function(data){
 

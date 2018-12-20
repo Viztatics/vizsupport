@@ -648,6 +648,10 @@ class RuleView(BaseView):
 
         cntThreshold = request.get_json()["cntThreshNum"]
 
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        cntThreshold2 = request.get_json()["cntThreshNum2"]
+
         def_volume_data = dst_path+"/"+dst_file
 
         table_data = pd.read_csv(def_volume_data)
@@ -655,6 +659,8 @@ class RuleView(BaseView):
         table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
 
         table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]
+
+        table_data['run2'] = np.where((table_data['TRANS_AMT']>=int(amtThreshold2))&(table_data['TRANS_CNT']>=int(cntThreshold2)), '1', '0')
 
         db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
@@ -923,6 +929,10 @@ class RuleView(BaseView):
 
         cntThreshold = request.get_json()["cntThreshNum"]
 
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        cntThreshold2 = request.get_json()["cntThreshNum2"]
+
         def_volume_data = dst_path+"/"+dst_file
 
         table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
@@ -930,6 +940,8 @@ class RuleView(BaseView):
         table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
 
         table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))] 
+
+        table_data['run2'] = np.where((table_data['TRANS_AMT']>=int(amtThreshold2))&(table_data['TRANS_CNT']>=int(cntThreshold2)), '1', '0')
 
         db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
