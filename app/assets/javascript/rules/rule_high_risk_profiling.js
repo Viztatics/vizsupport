@@ -13,47 +13,6 @@ $(function(){
 	var patharr = pathname.split("/");
 	var transcode = patharr[patharr.length - 1];
 
-	var upfile = $("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/profiling/upload',
-	    maxFileCount: 1,
-	    maxFileSize:5*1024*1024,                		   
-	    allowedTypes: 'csv',  				       
-	    showFileSize: false,
-	    showDone: false,                           
-	    showDelete: true,                          
-	    showDownload:false,
-	    statusBarWidth:590,
-	    onLoad: function(obj)
-	    { 
-	    	obj.createProgress($('#reportPath').data('keyname'));   	   
-	    },
-	    deleteCallback: function(data,pd)
-	    {
-
-	        $.ajax({
-	            cache: false,
-	            url: $SCRIPT_ROOT+'/rules/profiling/upload',
-	            type: "DELETE",
-	            dataType: "json",
-	            contentType:'application/json',
-	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
-	            success: function(data) 
-	            {
-	            	$('#reportPath').data('keyname', "");
-	                if(!data){
-	                    pd.statusbar.hide();        
-	                 }else{
-	                    console.log(data.message); 
-	                 }
-	              }
-	        }); 
-	    },
-	    onSuccess: function(files,data,xhr,pd){
-	    	$('#reportPath').data('keyname', files[0]);
-	    	$("#file-error")&&$("#file-error").remove();
-	    }
-	});
-
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileAmountChart = echarts.init(document.getElementById('percentileAmountChart'));
 	var paretoAmountChart = echarts.init(document.getElementById('paretoAmountChart'));
@@ -194,7 +153,14 @@ $(function(){
 	            smooth: true,
 	            symbol:'diamond',
 	            symbolSize:10,
-	            data:[]
+	            data:[],
+	            markLine : {
+	            	silent:true,
+	                data : [
+	                    {name: 'run1',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
+		                {name: 'run2',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+	                ]
+	            },
 	        }
 	    ]
 	};
@@ -283,7 +249,14 @@ $(function(){
 	            smooth: true,
 	            symbol:'diamond',
 	            symbolSize:10,
-	            data:[]
+	            data:[],
+	            markLine : {
+	            	silent:true,
+	                data : [
+	                    {name: 'run1',yAxis:5,itemStyle:{normal:{color:'#1e90ff'}}},
+		                {name: 'run2',yAxis:10,itemStyle:{normal:{color:'#dc143c'}}},
+	                ]
+	            },
 	        }
 	    ]
 	};
@@ -459,6 +432,8 @@ $(function(){
 		  	success:function(data){
 
 		  		if(data){
+		  			amtlineoption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
+		  			amtlineoption.series[0].markLine.data[1].yAxis=$('#amtThreshNum2').val();
 		  			amtlineoption.series[0].data = data.map(x=>!x?0:x.toFixed(2));
 			  		percentileAmountChart.setOption(amtlineoption);
 		  		}
@@ -505,6 +480,8 @@ $(function(){
 		  	success:function(data){
 
 		  		if(data){
+		  			cntlineoption.series[0].markLine.data[0].yAxis=$('#cntThreshNum').val();
+		  			cntlineoption.series[0].markLine.data[1].yAxis=$('#cntThreshNum2').val();
 		  			cntlineoption.series[0].data = data.map(x=>!x?0:x.toFixed(2));
 			  	    percentileCountChart.setOption(cntlineoption);
 		  		}
@@ -755,15 +732,6 @@ $(function(){
 	  getprofilingAmountPareto($("#isOutlier").val());
 	  getprofilingCountPercentile($("#isOutlier").val());
 	  getprofilingCountPareto($("#isOutlier").val());
-
-	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
-	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
-	  	if(filecount ==0){
-	  		$("#file-error").remove();
-	  		$("<label id='file-error' style='color:red;margin-left:10px'>This field is required!</label>").appendTo($('#reportPath'));
-	  	}	  	
-	  	return false;
-	  }
 
 	  $.ajax({
 	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterplot/'+transcode,
