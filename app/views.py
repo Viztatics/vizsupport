@@ -632,6 +632,56 @@ class RuleView(BaseView):
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
+    @expose('/highRiskVolume/scatterstatistics/<transCode>',methods=['POST'])
+    @has_access
+    def getHighRiskVolumeScatterStatisticsData(self,transCode):
+
+        highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        crDb = request.get_json()["crDb"]
+
+        amt_threshold_below = request.get_json()["amtThreshNum"]
+
+        amt_threshold_above = request.get_json()["amtThreshNum2"]
+
+        cnt_threshold_below = request.get_json()["cntThreshNum"]
+
+        cnt_threshold_above = request.get_json()["cntThreshNum2"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        plot_data = pd.read_csv(def_volume_data)
+
+        plot_data = plot_data[(plot_data['Trans Code Type']==transDesc(transCode))&(plot_data['Cr_Db']==crDb)]
+        plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','Month of Trans Date','outlier']]
+
+        #plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
+        amount = np.round(plot_data['TRANS_AMT'].sum(),decimals=2)
+        count = plot_data['TRANS_CNT'].sum()
+
+        plot_below = plot_data[(plot_data['TRANS_AMT']>=int(amt_threshold_below))&(plot_data['TRANS_CNT']>=int(cnt_threshold_below))]
+        above_amount_below = np.round(plot_below['TRANS_AMT'].sum(),decimals=2)
+        above_count_below = plot_below['TRANS_CNT'].sum()
+        below_amount_below = np.round(amount - above_amount_below,decimals=2)
+        below_count_below = count - above_count_below
+        percent_amount_below = np.round(above_amount_below*100/amount,decimals=2)
+        percent_acount_below = np.round(above_count_below*100/count,decimals=2)
+
+        plot_above = plot_data[(plot_data['TRANS_AMT']>=int(amt_threshold_above))&(plot_data['TRANS_CNT']>=int(cnt_threshold_above))]
+        above_amount_above = np.round(plot_above['TRANS_AMT'].sum(),decimals=2)
+        above_count_above = plot_above['TRANS_CNT'].sum()
+        below_amount_above = np.round(amount - above_amount_above,decimals=2)
+        below_count_above = count - above_count_above
+        percent_amount_above = np.round(above_amount_above*100/amount,decimals=2)
+        percent_acount_above = np.round(above_count_above*100/count,decimals=2)
+
+        return Response(pd.io.json.dumps({'amount':amount,'count':count,'above_amount_below':above_amount_below,'above_count_below':above_count_below,'below_amount_below':below_amount_below,'below_count_below':below_count_below,'percent_amount_below':percent_amount_below,'percent_acount_below':percent_acount_below,'above_amount_above':above_amount_above,'above_count_above':above_count_above,'below_amount_above':below_amount_above,'below_count_above':below_count_above,'percent_amount_above':percent_amount_above,'percent_acount_above':percent_acount_above}), mimetype='application/json')
+
+
     @expose('/highRiskVolume/tabledata/<transCode>',methods=['POST'])
     @has_access
     def getHighRiskVolumeTableData(self,transCode):
