@@ -1336,6 +1336,51 @@ class RuleView(BaseView):
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
+    @expose('/flowthrough/scatterstatistics',methods=['POST'])
+    @has_access
+    def getFlowthroughScatterStatisticsData(self):
+
+        flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+
+        dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        threshold_below = request.get_json()["amtThreshNum"]
+
+        threshold_above = request.get_json()["amtThreshNum2"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        plot_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','outlier','Credit+TRANS_CNT','Debit+TRANS_CNT'])
+
+        #plot_data = plot_data[['Debit+TRANS_AMT','Credit+TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
+        #plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
+        plot_data['Trans_Amt'] = plot_data['Debit+TRANS_AMT']+plot_data['Credit+TRANS_AMT']
+        plot_data['Trans_Count'] = plot_data['Debit+TRANS_AMT']+plot_data['Credit+TRANS_AMT']
+        #plot_data = plot_data[plot_data['Trans_Code_Type']==transDesc(transCode)]
+        amount = np.round(plot_data['Trans_Amt'].sum(),decimals=2)
+        count = plot_data['Trans_Count'].sum()
+
+        plot_below = plot_data[(plot_data['Trans_Amt']>=int(threshold_below))]
+        above_amount_below = np.round(plot_below['Trans_Amt'].sum(),decimals=2)
+        above_count_below = plot_below['Trans_Count'].sum()
+        below_amount_below = np.round(amount - above_amount_below,decimals=2)
+        below_count_below = count - above_count_below
+        percent_amount_below = np.round(above_amount_below*100/amount,decimals=2)
+        percent_acount_below = np.round(above_count_below*100/count,decimals=2)
+
+        plot_above = plot_data[(plot_data['Trans_Amt']>=int(threshold_above))]
+        above_amount_above = np.round(plot_above['Trans_Amt'].sum(),decimals=2)
+        above_count_above = plot_above['Trans_Count'].sum()
+        below_amount_above = np.round(amount - above_amount_above,decimals=2)
+        below_count_above = count - above_count_above
+        percent_amount_above = np.round(above_amount_above*100/amount,decimals=2)
+        percent_acount_above = np.round(above_count_above*100/count,decimals=2)
+
+        return Response(pd.io.json.dumps({'amount':amount,'count':count,'above_amount_below':above_amount_below,'above_count_below':above_count_below,'below_amount_below':below_amount_below,'below_count_below':below_count_below,'percent_amount_below':percent_amount_below,'percent_acount_below':percent_acount_below,'above_amount_above':above_amount_above,'above_count_above':above_count_above,'below_amount_above':below_amount_above,'below_count_above':below_count_above,'percent_amount_above':percent_amount_above,'percent_acount_above':percent_acount_above}), mimetype='application/json')
+
+
     @expose('/flowthrough/tabledata',methods=['POST'])
     @has_access
     def getFlowthroughTableData(self):
@@ -1350,6 +1395,8 @@ class RuleView(BaseView):
 
         amtThreshold = request.get_json()["amtThreshNum"]
 
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
         lowerRatio = request.get_json()["lowerRatio"]
 
         upperRatio = request.get_json()["upperRatio"]
@@ -1359,6 +1406,8 @@ class RuleView(BaseView):
         table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','TRANS_AMT','outlier'])
 
         table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))] 	
+
+        table_data['run2'] = np.where(table_data['TRANS_AMT']>=int(amtThreshold2), '1', '0')
 
         db_result = db.session.query(func.count(VizAlerts.account_key).label('count'),VizAlerts.account_key).join(User, VizAlerts.created_by_fk == User.id).group_by(VizAlerts.account_key).filter(VizUser.company_id==current_user.company_id)
 
@@ -1371,6 +1420,59 @@ class RuleView(BaseView):
         table_data['ID'] = table_data.index	
 
         return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/flowthrough/tablestatistics',methods=['POST'])
+    @has_access
+    def getFlowThoughTableStatistics(self):
+
+        flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+
+        dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        amtThreshold = request.get_json()["amtThreshNum"]
+
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        lowerRatio = request.get_json()["lowerRatio"]
+
+        upperRatio = request.get_json()["upperRatio"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','TRANS_AMT','outlier'])
+
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))]     
+
+        table_data['run2'] = np.where(table_data['TRANS_AMT']>=int(amtThreshold2), '1', '0')
+
+        db_result = db.session.query(func.count(Customer.id).label('count')).filter(Customer.company_id==current_user.company_id)
+
+        db_result = [r._asdict() for r in db_result]
+
+        total = db_result[0]["count"]
+
+        run1_customer = table_data['ACCOUNT_KEY'].nunique()
+
+        run1_customer_not = int(total)-int(run1_customer)
+
+        run1_customer_percent = np.round(int(run1_customer)*100/total,decimals=2)
+
+        run1_customer_percent_not = np.round(run1_customer_not*100/total,decimals=2)
+
+        table_data2 = table_data[table_data['run2']=='1']
+
+        run2_customer = table_data2['ACCOUNT_KEY'].nunique()
+
+        run2_customer_not = int(total)-int(run2_customer)
+
+        run2_customer_percent = np.round(int(run2_customer)*100/total,decimals=2)
+
+        run2_customer_percent_not = np.round(run2_customer_not*100/total,decimals=2)
+
+        return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
+
 
     @expose('/flowthrough/alertdata',methods=['POST'])
     @has_access

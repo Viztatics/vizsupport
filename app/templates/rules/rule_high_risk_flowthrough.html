@@ -16,34 +16,39 @@
 {% block content %}
 	{{ lib.panel_begin('Flow Through Activity Pattern') }}
 		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Query Area</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="reportPath">Choose your data file</label><a href="../../static/csv/rules/Trans_Min_High_Risk_Transfer.xlsx" target="_blank" id="filelink">Sample File</a></div>
-		            <div class="col-md-4 input-group" id="reportPath" data-keyname={{keyname}}>Upload</div>
-		            <div class="col-md-12 input-group"><font color='red'> * Upload CSV file with Following data elements in the specific sequence : [ACCOUNT_KEY,YearMonth,TRANS_AMT,Credit+TRANS_CNT,Credit+TRANS_AMT,Debit+TRANS_CNT,Debit+TRANS_AMT]</font></div>		            
+		       	<div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="dataId">Input Data Id</label></div>
+		            <div class="col-md-2 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="dataId" name="dataId" placeholder="1" value="">
+		            </div>
 		        </div>		        
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="amtThreshNum">Amount Threshold</label></div>
-		            <div class="col-md-4 input-group">
+		            <div class="col-md-2 input-group"><label for="amtThreshNum">Threshold Below The Line</label></div>
+		            <div class="col-md-2 input-group">
 		            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum" name="amtThreshNum" placeholder="1000" value="1000">
+		            </div>
+		            <div class="col-md-2 input-group"></div>
+		            <div class="col-md-2 input-group"><label for="amtThreshNum2">Threshold Above The Line</label></div>
+		            <div class="col-md-2 input-group">
+		            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum2" name="amtThreshNum2" placeholder="10000" value="10000">
 		            </div>
 		        </div>
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="minSD">Lower Ratio</label></div>
-		            <div class="col-md-4 input-group">
+		            <div class="col-md-2 input-group">
 		            	<input class="form-control" type="number" class="" maxlength="8" id="lowerRatio" name="lowerRatio" placeholder="90" value="90">
 		            </div>
-		        </div>
-		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"></div>
 		            <div class="col-md-2 input-group"><label for="yearMon">Upper Ratio</label></div>
-		            <div class="col-md-4 input-group">
+		            <div class="col-md-2 input-group">
 		            	<input class="form-control" type="number" class="" maxlength="6" id="upperRatio" name="upperRatio" placeholder="110" value="110">
 		            </div>
 		        </div>
 		        <div class="form-group form-inline">
-		        	<div class="col-md-offset-2 col-md-2 input-group">
+		        	<div class="col-md-offset-5 col-md-2 input-group">
 		            	<button type="submit" class="btn btn-primary">Submit</button>
 		        	</div>
 		        </div>
@@ -57,16 +62,97 @@
 		    <div class="row">
 		        <div id="scatterChart" style="height:600px"></div>
 		    </div>
+
+		    <div class="row">
+	          <label class="col-md-4 control-label" style="text-align:right">Run 1</label><label class="col-md-4 control-label" style="text-align:right">Run 2</label>
+	          <label class="col-md-4 control-label"></label>          
+	        </div>
+			<div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% Above</label><div id="amountPercentRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">% of Above</label><div id="amountPercentRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% of Above</label><div id="countPercentRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">% of Above</label><div id="countPercentRun2" class="col-md-2">-</div>          
+	        </div>	
+
 		  </div>
 		</div>
 
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Output Results</div>
 		  <div class="panel-body">
+	    	<div class="row">
+		    	<h4>Statistics:</h4>
+		    </div>
 		    <div class="row">
-		    	<div id="toolbar" style="position: relative;top: 45px;margin-top: -45px;">
+		    	<table class="table table-hover">
+		    		<thead>
+		    			<tr >
+		    				<td>#</td>
+		    				<td>Run1 Count</td>
+		    				<td>Run1 Percent</td>
+		    				<td>Run2 Count</td>
+		    				<td>Run2 Percent</td>
+		    			</tr>		    			
+		    		</thead>
+		    		<tbody>
+		    			<tr>
+		    				<td>Total Customer</td>
+		    				<td id="run1Cust">-</td>
+		    				<td>-</td>
+		    				<td id="run2Cust">-</td>
+		    				<td></td>
+		    			</tr>
+		    			<tr>
+		    				<td>Total Customer Alerted</td>
+		    				<td id="run1CustAlerted">-</td>
+		    				<td id="run1CustAlertedPer">-</td>
+		    				<td id="run2CustAlerted">-</td>
+		    				<td id="run2CustAlertedPer">-</td>
+		    			</tr>
+		    			<tr>
+		    				<td>Total Customer Not Alerted</td>
+		    				<td id="run1CustNotAlerted">-</td>
+		    				<td id="run1CustNotAlertedPer">-</td>
+		    				<td id="run2CustNotAlerted">-</td>
+		    				<td id="run2CustNotAlertedPer">-</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    </div>
+		    <div class="row">
+		    	<label class="col-md-3 control-label">Run2 Customers missed from Run1</label><div id="missCust" class="col-md-2">-</div>
+		    </div>
+
+			<div class="row">
+		    	<div id="toolbar" style="margin-bottom: -45px;">
 				  <button id="crtAlertBtn" class="btn btn-danger" disabled>
-				    <i class="glyphicon glyphicon-transfer"></i>Create Alerts
+				    <i class="glyphicon glyphicon-transfer"></i>Alerts - Send to Quanlitative
 				  </button>
 				</div>
 		        <table id="alertTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
@@ -82,7 +168,7 @@
 		        <h4 class="modal-title">Notice</h4>
 		      </div>
 		      <div class="modal-body">
-		        <p><span id="alertNum" style="color:red"></span> Output Results sent to Alerts!</p>
+		        <p><span id="alertNum" style="color:red"></span> Output Results sent to Quanlitative!</p>
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -108,5 +194,6 @@
     <script src="{{url_for('static',filename='assets/node_modules/jquery-validation/dist/jquery.validate.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>   
     <script src="{{url_for('static',filename='assets/3rd_party/layer/layer.js')}}"></script> 
+    <script src="{{url_for('static',filename='assets/3rd_party/validate/validate-ext.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/rules/rule_high_risk_flowthrough.js')}}"></script>
 {% endblock %}

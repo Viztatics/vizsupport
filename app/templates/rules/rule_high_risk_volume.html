@@ -16,7 +16,7 @@
 {% block content %}
 	{{ lib.panel_begin(transCode+ " Activity Limit") }}
 		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Query Area</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
 		        <div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
@@ -150,7 +150,7 @@
 		    <div class="row">
 		    	<div id="toolbar" style="position: relative;top: 45px;margin-top: -45px;">
 				  <button id="crtAlertBtn" class="btn btn-danger" disabled>
-				    <i class="glyphicon glyphicon-transfer"></i>Create Alerts
+				    <i class="glyphicon glyphicon-transfer"></i>Alerts - Send to Quanlitative
 				  </button>
 				</div>
 		        <table id="alertTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
@@ -208,7 +208,7 @@
 		        <h4 class="modal-title">Notice</h4>
 		      </div>
 		      <div class="modal-body">
-		        <p><span id="alertNum" style="color:red"></span> Output Results sent to Alerts!</p>
+		        <p><span id="alertNum" style="color:red"></span> Output Results sent to Quanlitative!</p>
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
