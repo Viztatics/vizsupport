@@ -636,7 +636,7 @@ $(function(){
 	      amtThreshNum2: {
 		    digits:true,
 		    min: 0,
-		    greaterThan: "#threshNum"
+		    greaterThan: "#amtThreshNum"
 		  },
 	      cntThreshNum:{
 	      	required: true,
