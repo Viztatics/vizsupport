@@ -109,6 +109,44 @@
 		    <div class="row">
 		        <div id="scatterChart" style="height:600px"></div>
 		    </div>
+
+			<div class="row">
+	          <label class="col-md-4 control-label" style="text-align:right">Run 1</label><label class="col-md-4 control-label" style="text-align:right">Run 2</label>
+	          <label class="col-md-4 control-label"></label>          
+	        </div>
+			<div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% Above</label><div id="amountPercentRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">% of Above</label><div id="amountPercentRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun2" class="col-md-2">-</div>          
+	        </div>
+	        <div class="row">
+	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% of Above</label><div id="countPercentRun1" class="col-md-2">-</div>
+	          <label class="col-md-2 control-label">% of Above</label><div id="countPercentRun2" class="col-md-2">-</div>          
+	        </div>
+
 		  </div>
 		</div>
 
@@ -123,6 +161,50 @@
 				</div>
 		        <table id="alertTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
 		    </div>
+
+		    <div class="row">
+		    	<h4>Statistics:</h4>
+		    </div>
+		    <div class="row">
+		    	<table class="table table-hover">
+		    		<thead>
+		    			<tr >
+		    				<td>#</td>
+		    				<td>Run1 Count</td>
+		    				<td>Run1 Percent</td>
+		    				<td>Run2 Count</td>
+		    				<td>Run2 Percent</td>
+		    			</tr>		    			
+		    		</thead>
+		    		<tbody>
+		    			<tr>
+		    				<td>Total Customer</td>
+		    				<td id="run1Cust">-</td>
+		    				<td>-</td>
+		    				<td id="run2Cust">-</td>
+		    				<td></td>
+		    			</tr>
+		    			<tr>
+		    				<td>Total Customer Alerted</td>
+		    				<td id="run1CustAlerted">-</td>
+		    				<td id="run1CustAlertedPer">-</td>
+		    				<td id="run2CustAlerted">-</td>
+		    				<td id="run2CustAlertedPer">-</td>
+		    			</tr>
+		    			<tr>
+		    				<td>Total Customer Not Alerted</td>
+		    				<td id="run1CustNotAlerted">-</td>
+		    				<td id="run1CustNotAlertedPer">-</td>
+		    				<td id="run2CustNotAlerted">-</td>
+		    				<td id="run2CustNotAlertedPer">-</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    </div>
+		    <div class="row">
+		    	<label class="col-md-3 control-label">Run2 Customers missed from Run1</label><div id="missCust" class="col-md-2">-</div>
+		    </div>
+		    
 		  </div>
 		</div>
 

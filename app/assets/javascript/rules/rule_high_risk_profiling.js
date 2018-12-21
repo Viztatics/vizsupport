@@ -94,8 +94,10 @@ $(function(){
             markLine : {
             	silent:true,
                 data : [
-                    {name: 'ythreshold',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+                    {name: 'ythreshold',yAxis:1000,itemStyle:{normal:{color:'#dc143c'}}},
                     {name: 'xthreshold',xAxis: 5, itemStyle:{normal:{color:'#1e90ff'}}},
+                    {name: 'ythreshold2',yAxis:10000,itemStyle:{normal:{color:'#dc143c'}}},
+                    {name: 'xthreshold2',xAxis: 10, itemStyle:{normal:{color:'#1e90ff'}}},
                 ]
             },
 	    },{
@@ -758,8 +760,57 @@ $(function(){
 		  	scatteroption.series[0].data = normaldata;
 		  	scatteroption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
 		  	scatteroption.series[0].markLine.data[1].xAxis=$('#cntThreshNum').val();
+		  	scatteroption.series[0].markLine.data[2].yAxis=$('#amtThreshNum2').val();
+		  	scatteroption.series[0].markLine.data[3].xAxis=$('#cntThreshNum2').val();
 		  	scatteroption.series[1].data = outlierdata;
 		  	scatterChart.setOption(scatteroption);
+	  	}
+	  });
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterstatistics/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
+	  		,amtThreshNum:$('#amtThreshNum').val(),amtThreshNum2:$('#amtThreshNum2').val()
+	  		,cntThreshNum:$('#cntThreshNum').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
+	  	success:function(data){
+	  		console.log(data);
+	  		$("#amountRun1").text(data.amount.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountRun2").text(data.amount.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountBelowRun1").text(data.below_amount_below.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountBelowRun2").text(data.below_amount_above.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountAboveRun1").text(data.above_amount_below.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountAboveRun2").text(data.above_amount_above.toLocaleString('en-US', {
+						  style: 'currency',
+						  currency: 'USD',
+						}));
+	  		$("#amountPercentRun1").text(data.percent_amount_below+'%');
+	  		$("#amountPercentRun2").text(data.percent_amount_above+'%');
+	  		$("#countRun1").text(data.count);
+	  		$("#countRun2").text(data.count);
+	  		$("#countBelowRun1").text(data.below_count_below);
+	  		$("#countBelowRun2").text(data.below_count_above);	  
+	  		$("#countAboveRun1").text(data.above_count_below);
+	  		$("#countAboveRun2").text(data.above_count_above);
+	  		$("#countPercentRun1").text(data.percent_acount_below+'%');
+	  		$("#countPercentRun2").text(data.percent_acount_above+'%');	
 	  	}
 	  });
 	  
@@ -774,6 +825,31 @@ $(function(){
 	  	success:function(data){
 
 	  		$('#alertTable').bootstrapTable('load',data);
+
+	  	}
+	  });
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/profiling/tablestatistics/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname')
+	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  		,amtThreshNum2:$('#amtThreshNum2').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
+	  	success:function(data){
+	  		console.log(data);
+	  		$("#run1Cust").text(data.total);
+	  		$("#run2Cust").text(data.total);
+	  		$("#run1CustAlerted").text(data.run1_customer);
+	  		$("#run1CustAlertedPer").text(data.run1_customer_percent+'%');
+	  		$("#run2CustAlerted").text(data.run2_customer);
+	  		$("#run2CustAlertedPer").text(data.run2_customer_percent+'%');
+	  		$("#run1CustNotAlerted").text(data.run1_customer_not);
+	  		$("#run1CustNotAlertedPer").text(data.run1_customer_percent_not+'%');
+	  		$("#run2CustNotAlerted").text(data.run2_customer_not);
+	  		$("#run2CustNotAlertedPer").text(data.run2_customer_percent_not+'%');
+	  		$("#missCust").text(data.run1_customer-data.run2_customer);
 
 	  	}
 	  });

@@ -1020,6 +1020,57 @@ class RuleView(BaseView):
 
     	return Response(plot_data.to_json(orient='split'), mimetype='application/json')
 
+    @expose('/profiling/scatterstatistics/<transCode>',methods=['POST'])
+    @has_access
+    def getProfilingScatterStatisticsData(self,transCode):
+
+        profilingFolder = self.ACTIVITY_PROFILING_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+profilingFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        amt_threshold_below = request.get_json()["amtThreshNum"]
+
+        amt_threshold_above = request.get_json()["amtThreshNum2"]
+
+        cnt_threshold_below = request.get_json()["cntThreshNum"]
+
+        cnt_threshold_above = request.get_json()["cntThreshNum2"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        plot_data = pd.read_csv(def_volume_data)
+
+        plot_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+
+        plot_data['TRANS_CNT'] = plot_data['Credit+TRANS_CNT'] + plot_data['Debit+TRANS_CNT']
+
+        plot_data = plot_data[['TRANS_CNT','TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
+
+        #plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
+        amount = np.round(plot_data['TRANS_AMT'].sum(),decimals=2)
+        count = plot_data['TRANS_CNT'].sum()
+
+        plot_below = plot_data[(plot_data['TRANS_AMT']>=int(amt_threshold_below))&(plot_data['TRANS_CNT']>=int(cnt_threshold_below))]
+        above_amount_below = np.round(plot_below['TRANS_AMT'].sum(),decimals=2)
+        above_count_below = plot_below['TRANS_CNT'].sum()
+        below_amount_below = np.round(amount - above_amount_below,decimals=2)
+        below_count_below = count - above_count_below
+        percent_amount_below = np.round(above_amount_below*100/amount,decimals=2)
+        percent_acount_below = np.round(above_count_below*100/count,decimals=2)
+
+        plot_above = plot_data[(plot_data['TRANS_AMT']>=int(amt_threshold_above))&(plot_data['TRANS_CNT']>=int(cnt_threshold_above))]
+        above_amount_above = np.round(plot_above['TRANS_AMT'].sum(),decimals=2)
+        above_count_above = plot_above['TRANS_CNT'].sum()
+        below_amount_above = np.round(amount - above_amount_above,decimals=2)
+        below_count_above = count - above_count_above
+        percent_amount_above = np.round(above_amount_above*100/amount,decimals=2)
+        percent_acount_above = np.round(above_count_above*100/count,decimals=2)
+
+        return Response(pd.io.json.dumps({'amount':amount,'count':count,'above_amount_below':above_amount_below,'above_count_below':above_count_below,'below_amount_below':below_amount_below,'below_count_below':below_count_below,'percent_amount_below':percent_amount_below,'percent_acount_below':percent_acount_below,'above_amount_above':above_amount_above,'above_count_above':above_count_above,'below_amount_above':below_amount_above,'below_count_above':below_count_above,'percent_amount_above':percent_amount_above,'percent_acount_above':percent_acount_above}), mimetype='application/json')
+
+
     @expose('/profiling/tabledata/<transCode>',methods=['POST'])
     @has_access
     def getProfilingTableData(self,transCode):
@@ -1061,6 +1112,61 @@ class RuleView(BaseView):
         table_data['ID'] = table_data.index	
 
         return Response(table_data.to_json(orient='records'), mimetype='application/json')
+
+    @expose('/profiling/tablestatistics/<transCode>',methods=['POST'])
+    @has_access
+    def getProfilingTableStatistics(self,transCode):
+
+        profilingFolder = self.ACTIVITY_PROFILING_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+profilingFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        amtThreshold = request.get_json()["amtThreshNum"]
+
+        cntThreshold = request.get_json()["cntThreshNum"]
+
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        cntThreshold2 = request.get_json()["cntThreshNum2"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_CNT','Debit+TRANS_CNT','TRANS_AMT','outlier'])
+
+        table_data['TRANS_CNT'] = table_data['Credit+TRANS_CNT'] + table_data['Debit+TRANS_CNT']
+
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))]
+
+        table_data['run2'] = np.where((table_data['TRANS_AMT']>=int(amtThreshold2))&(table_data['TRANS_CNT']>=int(cntThreshold2)), '1', '0')
+
+        db_result = db.session.query(func.count(Customer.id).label('count')).filter(Customer.company_id==current_user.company_id)
+
+        db_result = [r._asdict() for r in db_result]
+
+        total = db_result[0]["count"]
+
+        run1_customer = table_data['ACCOUNT_KEY'].nunique()
+
+        run1_customer_not = int(total)-int(run1_customer)
+
+        run1_customer_percent = np.round(int(run1_customer)*100/total,decimals=2)
+
+        run1_customer_percent_not = np.round(run1_customer_not*100/total,decimals=2)
+
+        table_data2 = table_data[table_data['run2']=='1']
+
+        run2_customer = table_data2['ACCOUNT_KEY'].nunique()
+
+        run2_customer_not = int(total)-int(run2_customer)
+
+        run2_customer_percent = np.round(int(run2_customer)*100/total,decimals=2)
+
+        run2_customer_percent_not = np.round(run2_customer_not*100/total,decimals=2)
+
+        return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
+
 
     @expose('/profiling/ruledata/<transCode>',methods=['POST'])
     @has_access
