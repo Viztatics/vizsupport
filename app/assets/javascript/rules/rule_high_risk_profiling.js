@@ -718,10 +718,20 @@ $(function(){
 	      	required: true,
 	      	digits:true,
 	      },
+	      amtThreshNum2: {
+		    digits:true,
+		    min: 0,
+		    greaterThan: "#threshNum"
+		  },
 	      cntThreshNum:{
 	      	required: true,
 	      	digits:true,
 	      },
+	      cntThreshNum2: {
+		    digits:true,
+		    min: 0,
+		    greaterThan: "#cntThreshNum"
+		  },
 	    },
 	});
 
@@ -739,6 +749,10 @@ $(function(){
 
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
+
+	  if(!$("form").valid()){
+	  	return false;
+	  }
 
 	  getprofilingStatics($("#isOutlier").val());
 	  getprofilingAmountPercentile($("#isOutlier").val());
