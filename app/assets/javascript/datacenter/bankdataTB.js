@@ -1,6 +1,10 @@
 $(function(){
 
-	console.log($("#datarange").val());
+	$('#start_date').datepicker({
+    });
+
+    $('#end_date').datepicker({
+    });
 
 	let operateFormatter=function(value, row, index) {
 	  return '<a href="javascript:void(0)" class="dlcol" title="Download">Download</a>';

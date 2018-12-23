@@ -214,7 +214,9 @@ class Customer(AuditMixin,Model):
 class UploadHis(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
     company_id = Column(Integer)
-    file_path = Column(String(100))
-    file_name = Column(String(100))
-    datalife = Column(String(2))
-    datarange = Column(String(20))
+    source_file_path = Column(String(100))
+    source_file_name = Column(String(100))
+    target_file_path = Column(String(100))
+    target_file_name = Column(String(100))
+    start_date = Column(String(8))
+    end_date = Column(String(8))

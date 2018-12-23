@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{url_for('static',filename='assets/css/mask.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-datepicker/dist/css/bootstrap-table.css')}}"></link>
 {% endblock %}
 
 {% block content %}
@@ -12,22 +13,25 @@
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Data Transfer</div>
 		  <div class="panel-body">
-		    <form id="bankdataForm">
-		    	<div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="datalife">Data Lifecycle</label></div>
-		            <div class="col-md-4 input-group">
-		            	<select class="form-control" id="datalife">
-						  <option value="M" selected="selected">Month</option>
-						  <option value="D">Day</option>
-						</select>
-		            </div>		            
-			    </div>	
+		    <form id="bankdataForm">	
 			    <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="datarange">Data Range</label></div>
-		            <div class="col-md-4 input-group">
-		            	<input class="form-control" type="text" class="" maxlength="20" id="datarange" name="datarange" placeholder="201801~201806">
-		            </div>
-		        </div>	        
+		            <div class="col-md-2 input-group"><label for="start_date">Start Date</label></div>
+		            <div class="col-md-4 input-group date">
+					    <input type="text" class="form-control" id="start_date" name="start_date">
+					    <div class="input-group-addon">
+					        <span class="glyphicon glyphicon-th"></span>
+					    </div>
+					</div>
+		        </div>	
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="end_date">End Date</label></div>
+		            <div class="col-md-4 input-group date">
+					    <input type="text" class="form-control" id="end_date" name="end_date">
+					    <div class="input-group-addon">
+					        <span class="glyphicon glyphicon-th"></span>
+					    </div>
+					</div>
+		        </div>        
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="oneFile">Source File upload</label></div>
 		            <div class="col-md-4 input-group" id="oneFile">Upload</div>
@@ -79,5 +83,6 @@
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js')}}"></script>    
     <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>  
     <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/datacenter/bankdataTB.js')}}"></script>
 {% endblock %}
