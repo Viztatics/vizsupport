@@ -213,10 +213,15 @@ class Customer(AuditMixin,Model):
 
 class UploadHis(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
+    file_path = Column(String(100))
+    file_name = Column(String(100))
+
+class ValidHis(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
     company_id = Column(Integer)
-    source_file_path = Column(String(100))
-    source_file_name = Column(String(100))
-    target_file_path = Column(String(100))
-    target_file_name = Column(String(100))
+    source_file_id = Column(Integer)
+    target_file_id = Column(Integer)
     start_date = Column(String(8))
     end_date = Column(String(8))
+    source_valid = Column(Integer)
+    alert_valid = Column(Integer)

@@ -1917,34 +1917,52 @@ class DataCenterView(BaseView):
 
         if request.method == 'POST':
             files = request.files['file']
-            datalife = request.form["datalife"]
-            datarange = request.form["datarange"]
 
             if files:
                 filename = secure_filename(files.filename)
-                full_attached_path = getCompanyName()+"/"+datalife+"/"+datarange
-                print("======================================================================================")
-                print(getCompanyName())
-                print(full_attached_path+"/"+filename)
+                full_attached_path = getCompanyName()+"/"+str(current_user.id)
                 bucket = self.s3.Bucket(S3_BUCKET_COMPANYS)
                 self.s3.Object(S3_BUCKET_COMPANYS, full_attached_path+"/"+filename).put(Body=files)
 
-                row = UploadHis(company_id=current_user.company_id,file_path=full_attached_path,file_name=filename,datalife=datalife,datarange=datarange)
+                row = UploadHis(file_path=full_attached_path,file_name=filename)
                 self.appbuilder.get_session.add(row)
                 self.appbuilder.get_session.commit() 
  
 
-        return  json.dumps({})
+        return  Response(pd.io.json.dumps({'id':row.id}), mimetype='application/json')
 
-    @expose('/bankdata/uploadhis',methods=['GET'])
+    @expose('/bankdata/uploadhis',methods=['GET','POST'])
     @has_access
     def getuploadhis(self):
 
-        his_result = db.session.query(UploadHis.id,UploadHis.file_path,UploadHis.file_name,UploadHis.datalife,UploadHis.datarange,func.to_char(UploadHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),User.username).join(User, UploadHis.created_by_fk == User.id).filter(UploadHis.company_id==current_user.company_id).order_by(UploadHis.created_on.desc())
+        if request.method == 'GET':
 
-        his_result = [r._asdict() for r in his_result]
+            TargetFile = aliased(UploadHis)
+            SourceFile = aliased(UploadHis)
 
-        return Response(pd.io.json.dumps(his_result), mimetype='application/json')
+            his_result = db.session.query(ValidHis.id,TargetFile.id.label("target_id"),TargetFile.file_name.label("target_file_name"),SourceFile.id.label("source_id"),SourceFile.file_name.label("source_file_name"),ValidHis.start_date,ValidHis.end_date,func.to_char(ValidHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),case([(ValidHis.source_valid==0,'Fail'),(ValidHis.source_valid==1,'Pass')],else_='-').label("source_valid"),case([(ValidHis.source_valid==0,'Fail'),(ValidHis.alert_valid==1,'Pass')],else_='-').label("alert_valid"),User.username).join(TargetFile, ValidHis.target_file_id == TargetFile.id).join(SourceFile, ValidHis.source_file_id == SourceFile.id).join(User, ValidHis.created_by_fk == User.id).filter(ValidHis.company_id==current_user.company_id).order_by(ValidHis.created_on.desc())
+
+            his_result = [r._asdict() for r in his_result]
+            print("======================================================================================")
+            print(his_result)
+
+            return Response(pd.io.json.dumps(his_result), mimetype='application/json')
+
+        if request.method == 'POST':
+
+            start_date = request.get_json()["start_date"]
+            end_date = request.get_json()["end_date"]
+            targetid = request.get_json()["targetid"]
+            sourceid = request.get_json()["sourceid"]
+            print("======================================================================================")
+            print(targetid)
+            print(sourceid)
+
+
+            validhis = ValidHis(company_id=current_user.company_id,source_file_id=sourceid, target_file_id=targetid, start_date=start_date, end_date = end_date)
+            self.appbuilder.get_session.add(validhis)
+            self.appbuilder.get_session.commit()
+            return  json.dumps({})
 
     @expose('/bankdata/download/<id>',methods=['GET'])
     @has_access
