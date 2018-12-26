@@ -1,6 +1,8 @@
 {% extends "appbuilder/base.html" %}
 {% block head_css %}
     {{ super() }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/3rd_party/mdb/css/mdb.min.css')}}"></link>
 {% endblock %}
 
 {% block content %}
@@ -22,6 +24,78 @@
 	        <div class="col-md-6" id="tranChart" style="height:400px">
 	        </div>
 	    </div>
+	    <div class="row">
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/progamming.jpeg')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>Prog Decision Enhancement</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/visulization.jpeg')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>Data Validation</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/txm.jpeg')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>TXM System OPtimazation</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="row">
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/rating.png')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>Cust Risk Rating</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/ofac.jpeg')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>OFAC(Fuzzy Logic)</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/risk.png')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>Risk Assesment</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="row">
+		  <div class="col-sm-6 col-md-4">
+		    <div class="thumbnail">
+		      <img src="{{url_for('static',filename='assets/images/index/metrics.png')}}" alt="" style="height: 200px; width: 100%; display: block;">
+		      <div class="caption elegant-color white-text rounded-bottom">
+		        <h3>Metrics Reporting</h3>
+		        <a href="#!" class="white-text d-flex justify-content-end" style="text-align: right"><h5>Get it <i class="glyphicon glyphicon-circle-arrow-right"></i></h5></a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
 	</div>
 </div>
 
@@ -42,6 +116,7 @@
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
     <script src="{{url_for('static',filename='assets/node_modules/echarts/dist/echarts.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/3rd_party/mdb/js/mdb.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/index/index.js')}}"></script>    
 {% endblock %}
 
