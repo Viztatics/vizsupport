@@ -61,10 +61,10 @@ $(function(){
 	};
 
 	let alertvalidateFormatter=function(value, row, index) {
-		if(row.alert_valid=='-'){
-			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid disabled" title="Alert Validate">Validate</a>';
+		if(row.source_valid=='Pass'){
+			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid" title="Alert Validate">Validate</a>';
 		}else{
-			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid"  title="Alert Validate">Validate</a>';
+			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid disabled"  title="Alert Validate">Validate</a>';
 		}
 	  
 	};
