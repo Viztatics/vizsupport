@@ -1931,7 +1931,7 @@ class DataCenterView(BaseView):
 
         return  Response(pd.io.json.dumps({'id':row.id}), mimetype='application/json')
 
-    @expose('/bankdata/uploadhis',methods=['GET','POST'])
+    @expose('/bankdata/uploadhis',methods=['GET','POST','PUT'])
     @has_access
     def getuploadhis(self):
 
@@ -1940,11 +1940,9 @@ class DataCenterView(BaseView):
             TargetFile = aliased(UploadHis)
             SourceFile = aliased(UploadHis)
 
-            his_result = db.session.query(ValidHis.id,TargetFile.id.label("target_id"),TargetFile.file_name.label("target_file_name"),SourceFile.id.label("source_id"),SourceFile.file_name.label("source_file_name"),ValidHis.start_date,ValidHis.end_date,func.to_char(ValidHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),case([(ValidHis.source_valid==0,'Fail'),(ValidHis.source_valid==1,'Pass')],else_='-').label("source_valid"),case([(ValidHis.source_valid==0,'Fail'),(ValidHis.alert_valid==1,'Pass')],else_='-').label("alert_valid"),User.username).join(TargetFile, ValidHis.target_file_id == TargetFile.id).join(SourceFile, ValidHis.source_file_id == SourceFile.id).join(User, ValidHis.created_by_fk == User.id).filter(ValidHis.company_id==current_user.company_id).order_by(ValidHis.created_on.desc())
+            his_result = db.session.query(ValidHis.id,TargetFile.id.label("target_id"),TargetFile.file_name.label("target_file_name"),SourceFile.id.label("source_id"),SourceFile.file_name.label("source_file_name"),ValidHis.start_date,ValidHis.end_date,func.to_char(ValidHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),case([(ValidHis.source_valid==0,'Fail'),(ValidHis.source_valid==1,'Pass')],else_='-').label("source_valid"),ValidHis.id.label("source_id"),case([(ValidHis.alert_valid==0,'Fail'),(ValidHis.alert_valid==1,'Pass')],else_='-').label("alert_valid"),ValidHis.id.label("alert_id"),User.username).join(TargetFile, ValidHis.target_file_id == TargetFile.id).join(SourceFile, ValidHis.source_file_id == SourceFile.id).join(User, ValidHis.created_by_fk == User.id).filter(ValidHis.company_id==current_user.company_id).order_by(ValidHis.created_on.desc())
 
             his_result = [r._asdict() for r in his_result]
-            print("======================================================================================")
-            print(his_result)
 
             return Response(pd.io.json.dumps(his_result), mimetype='application/json')
 
@@ -1954,13 +1952,23 @@ class DataCenterView(BaseView):
             end_date = request.get_json()["end_date"]
             targetid = request.get_json()["targetid"]
             sourceid = request.get_json()["sourceid"]
-            print("======================================================================================")
-            print(targetid)
-            print(sourceid)
-
 
             validhis = ValidHis(company_id=current_user.company_id,source_file_id=sourceid, target_file_id=targetid, start_date=start_date, end_date = end_date)
             self.appbuilder.get_session.add(validhis)
+            self.appbuilder.get_session.commit()
+            return  json.dumps({})
+
+        if request.method == 'PUT':
+
+            his_id = request.get_json()["his_id"]
+            source_valid = request.get_json()["source_valid"]
+            alert_valid = request.get_json()["alert_valid"]
+            print("======================================================================================")
+            print(his_id)
+            print(source_valid)
+
+            validhis = self.appbuilder.get_session.query(ValidHis).filter(ValidHis.id==his_id).update({"source_valid":source_valid, "alert_valid":alert_valid})
+
             self.appbuilder.get_session.commit()
             return  json.dumps({})
 

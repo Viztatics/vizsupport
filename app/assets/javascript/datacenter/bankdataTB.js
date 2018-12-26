@@ -24,7 +24,7 @@ $(function(){
 	};
 
 	window.sourceEvents = {
-	  'click .coltsource': function (e, value, row, index) {
+	  'click .coltsource': function(e, value, row, index) {
 	  	window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.source_id,"_self");
 
 	  }
@@ -35,19 +35,44 @@ $(function(){
 	};
 
 	window.sourcevalidateEvents = {
-	  'click .sourcevalid': function (e, value, row, index) {
+	  'click .sourcevalid': function(e, value, row, index) {
 
-	  	//window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.id,"_self");
+	  	console.log('in');
+
+	  	$(document).ajaxStart(function () {
+	        $('#mask').addClass('lmask');	
+	    });
+
+  	 	$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
+		  	type: 'PUT',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'his_id':row.id,'source_valid':0,'alert_valid':-1}),
+		  	success:function(data){
+		  		$upTable.bootstrapTable('refresh');	
+		  		$(document).ajaxStop(function () {
+			        $('#mask').removeClass('lmask');	
+			    });
+		  	}
+		});
 
 	  }
 	};
 
 	let alertvalidateFormatter=function(value, row, index) {
-	  return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid disabled" title="Alert Validate">Validate</a>';
+		if(row.alert_valid=='-'){
+			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid disabled" title="Alert Validate">Validate</a>';
+		}else{
+			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid"  title="Alert Validate">Validate</a>';
+		}
+	  
 	};
 
 	window.alertvalidateEvents = {
 	  'click .alertvalid': function (e, value, row, index) {
+
+	  	console.log('alert');
 
 	  	//window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.id,"_self");
 
@@ -83,8 +108,9 @@ $(function(){
 	    }, {
 	        field: 'source_valid',
 	        title: 'Source Valid Status',
+	        align: 'center',
 	    },  {
-            field: 'id',
+            field: 'source_id',
             title: 'Source Validation',
             align: 'center',
             events: sourcevalidateEvents,
@@ -92,8 +118,9 @@ $(function(){
         }, {
 	        field: 'alert_valid',
 	        title: 'Alert Valid Status',
+	        align: 'center',
 	    },  {
-            field: 'id',
+            field: 'alert_id',
             title: 'Alert Validation',
             align: 'center',
             events: alertvalidateEvents,
@@ -190,7 +217,9 @@ $(function(){
 	});
 
 	$( "form" ).submit(function( event ) {
-		
+		$(document).ajaxStart(function () {
+	        $('#mask').addClass('lmask');	
+	    });
 		$.ajax({
 		  	url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
 		  	type: 'POST',
@@ -199,6 +228,9 @@ $(function(){
 		  			,'targetid':$('#targetFile').data('targetid'),'sourceid':$('#oneFile').data('sourceid')}),
 		  	success:function(data){	
 		  		$upTable.bootstrapTable('refresh');	
+		  		$(document).ajaxStop(function () {
+			        $('#mask').removeClass('lmask');	
+			    });
 		  	}
 		});
 
