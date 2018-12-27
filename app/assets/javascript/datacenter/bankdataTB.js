@@ -10,9 +10,9 @@ $(function(){
 
 /**Venn Diagram**/
 		var sets = [
-                    {sets:["Accounts Run1"], figure: 30, label: "Accounts Run1", size: 30},
-                    {sets:["Accounts Run2"], figure: 30, label: "Accounts Run2", size: 30},
-                    {sets: ["Accounts Run1", "Accounts Run2"], figure: 70, label: "Both Runs", size: 70}
+                    {sets:["Accounts Run1"], figure: 100, label: "Accounts Run1", size: 100},
+                    {sets:["Accounts Run2"], figure: 100, label: "Accounts Run2", size: 100},
+                    {sets: ["Accounts Run1", "Accounts Run2"], figure: 90, label: "Both Runs", size: 90}
                     ];
 
 
@@ -25,7 +25,7 @@ $(function(){
         var div = d3.select("#accountChart").datum(sets).call(chart);
             div.selectAll("text").style("fill", "white");
             div.selectAll(".venn-circle path")
-                    .style("fill-opacity", .8)
+                    .style("fill-opacity", .5)
                     .style("stroke-width", 1)
                     .style("stroke-opacity", 1)
                     .style("stroke", "fff");
@@ -37,36 +37,35 @@ $(function(){
 
 
         div.selectAll("g")
-            .on("mouseover", function(d, i) {
-                // sort all the areas relative to the current item
-                venn.sortAreas(div, d);
+		    .on("mouseover", function(d, i) {
+		        // sort all the areas relative to the current item
+		        venn.sortAreas(div, d);
 
-                // Display a tooltip with the current size
-                tooltip.transition().duration(40).style("opacity", 1);
-                tooltip.text(d.size + "% in " + d.label);
+		        // Display a tooltip with the current size
+		        tooltip.transition().duration(400).style("opacity", .9);
+		        tooltip.text(d.size + " in " + d.label);
+		        
+		        // highlight the current path
+		        var selection = d3.select(this).transition("tooltip").duration(400);
+		        selection.select("path")
+		            .style("stroke-width", 3)
+		            .style("fill-opacity", d.sets.length == 1 ? .4 : .1)
+		            .style("stroke-opacity", 1);
+		    })
 
-                // highlight the current path
-                // highlight the current path
-                var selection = d3.select(this).transition("tooltip").duration(400);
-                selection.select("path")
-                    .style("stroke-width", 3)
-                    .style("fill-opacity", d.sets.length == 1 ? .8 : 0)
-                    .style("stroke-opacity", 1);
-            })
-
-            .on("mousemove", function() {
-                tooltip.style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY - 28) + "px");
-            })
-
-            .on("mouseout", function(d, i) {
-                tooltip.transition().duration(2000).style("opacity", 0);
-                var selection = d3.select(this).transition("tooltip").duration(400);
-                selection.select("path")
-                    .style("stroke-width", 3)
-                    .style("fill-opacity", d.sets.length == 1 ? .8 : 0)
-                    .style("stroke-opacity", 1);
-            });
+		    .on("mousemove", function() {
+		        tooltip.style("left", (d3.event.pageX - 650) + "px")
+		               .style("top", (d3.event.pageY - 228) + "px");
+		    })
+		    
+		    .on("mouseout", function(d, i) {
+		        tooltip.transition().duration(400).style("opacity", 0);
+		        var selection = d3.select(this).transition("tooltip").duration(400);
+		        selection.select("path")
+		            .style("stroke-width", 0)
+		            .style("fill-opacity", d.sets.length == 1 ? .5 : .0)
+		            .style("stroke-opacity", 0);
+		    });
 
                     
 

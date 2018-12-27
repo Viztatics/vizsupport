@@ -12,7 +12,7 @@
                     position: absolute;
                     text-align: center;
                     width: 128px;
-                    height: 85px;
+                    height: 50px;
                     background: #333;
                     color: #fff;
                     padding: 2px;  
@@ -74,23 +74,6 @@
 		  </div>
 		</div>
 
-		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Data Validation</div>
-		  <div class="panel-body">
-			<div class="row">
-	          <label class="col-md-4 control-label" style="text-align:right">Source File</label><label class="col-md-4 control-label" style="text-align:right">Target File</label>
-	          <label class="col-md-4 control-label"></label>          
-	        </div>
-			<div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Count of Accounts</label><div id="" class="col-md-2">579846</div>
-	          <label class="col-md-2 control-label">Count of Accounts</label><div id="" class="col-md-2">579846</div><label class="col-md-2 control-label"></label>
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Number of Trans.</label><div id="" class="col-md-2">4690843</div>
-	          <label class="col-md-2 control-label">Number of Trans.</label><div id="" class="col-md-2">4690843</div><label class="col-md-2 control-label"></label>
-	        </div>
-		  </div>
-		</div>
 	{{ lib.panel_end() }}
 
 	<div class="modal fade" id="sourceModal" tabindex="-1" role="dialog" data-pid=''>
@@ -101,11 +84,7 @@
 	        <h4 class="modal-title">Source File Validation</h4>
 	      </div>
 	        <div class="modal-body">
-	            <div class="row">
-			        <div class="col-md-6" id="accountChart" style="height:400px">
-			        </div>
-			        <div class="col-md-6" id="transChart" style="height:400px">
-			        </div>
+	            <div id="accountChart">
 			    </div>
 	        </div>
 	        <div class="modal-footer">
