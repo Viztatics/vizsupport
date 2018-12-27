@@ -54,8 +54,8 @@ $(function(){
 		    })
 
 		    .on("mousemove", function() {
-		        tooltip.style("left", (d3.event.pageX - 650) + "px")
-		               .style("top", (d3.event.pageY - 228) + "px");
+		        tooltip.style("left", (d3.event.pageX - 500) + "px")
+		               .style("top", (d3.event.pageY - 78) + "px");
 		    })
 		    
 		    .on("mouseout", function(d, i) {
