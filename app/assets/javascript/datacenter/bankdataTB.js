@@ -8,6 +8,68 @@ $(function(){
     	format:'yyyymmdd'
     });
 
+/**Venn Diagram**/
+		var sets = [
+                    {sets:["Accounts Run1"], figure: 30, label: "Accounts Run1", size: 30},
+                    {sets:["Accounts Run2"], figure: 30, label: "Accounts Run2", size: 30},
+                    {sets: ["Accounts Run1", "Accounts Run2"], figure: 70, label: "Both Runs", size: 70}
+                    ];
+
+
+        var chart = venn.VennDiagram()
+            .width(500)
+            .height(400)
+
+          
+
+        var div = d3.select("#accountChart").datum(sets).call(chart);
+            div.selectAll("text").style("fill", "white");
+            div.selectAll(".venn-circle path")
+                    .style("fill-opacity", .8)
+                    .style("stroke-width", 1)
+                    .style("stroke-opacity", 1)
+                    .style("stroke", "fff");
+
+
+
+        var tooltip = d3.select("#accountChart").append("div")
+            .attr("class", "venntooltip");
+
+
+        div.selectAll("g")
+            .on("mouseover", function(d, i) {
+                // sort all the areas relative to the current item
+                venn.sortAreas(div, d);
+
+                // Display a tooltip with the current size
+                tooltip.transition().duration(40).style("opacity", 1);
+                tooltip.text(d.size + "% in " + d.label);
+
+                // highlight the current path
+                // highlight the current path
+                var selection = d3.select(this).transition("tooltip").duration(400);
+                selection.select("path")
+                    .style("stroke-width", 3)
+                    .style("fill-opacity", d.sets.length == 1 ? .8 : 0)
+                    .style("stroke-opacity", 1);
+            })
+
+            .on("mousemove", function() {
+                tooltip.style("left", (d3.event.pageX) + "px")
+                       .style("top", (d3.event.pageY - 28) + "px");
+            })
+
+            .on("mouseout", function(d, i) {
+                tooltip.transition().duration(2000).style("opacity", 0);
+                var selection = d3.select(this).transition("tooltip").duration(400);
+                selection.select("path")
+                    .style("stroke-width", 3)
+                    .style("fill-opacity", d.sets.length == 1 ? .8 : 0)
+                    .style("stroke-opacity", 1);
+            });
+
+                    
+
 	let targetFormatter=function(value, row, index) {
 	  return '<a href="javascript:void(0)" class="coltarget" title="Download">'+row.target_file_name+'</a>';
 	};
@@ -27,6 +89,23 @@ $(function(){
 	  'click .coltsource': function(e, value, row, index) {
 	  	window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.source_id,"_self");
 
+	  }
+	};
+
+	let sourceStatusFormatter=function(value, row, index) {
+		console.log(value);
+		if(value!='-'){
+			return '<a href="javascript:void(0)" class="sourcestatus" title="click to show detail">'+value+'</a>';
+		}else{
+			return value;
+		}
+
+	};
+
+	window.sourceStatusEvents = {
+	  'click .sourcestatus': function(e, value, row, index) {
+
+	  	 $('#sourceModal').modal('show'); 	 
 	  }
 	};
 
@@ -109,6 +188,8 @@ $(function(){
 	        field: 'source_valid',
 	        title: 'Source Valid Status',
 	        align: 'center',
+	        events: sourceStatusEvents,
+            formatter: sourceStatusFormatter,
 	    },  {
             field: 'source_id',
             title: 'Source Validation',

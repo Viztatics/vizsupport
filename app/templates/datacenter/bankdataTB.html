@@ -6,6 +6,21 @@
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/jquery-file-upload/css/uploadfile.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}"></link>
+    <style type="text/css">
+    	.venntooltip {
+                    font-size : 14px;
+                    position: absolute;
+                    text-align: center;
+                    width: 128px;
+                    height: 85px;
+                    background: #333;
+                    color: #fff;
+                    padding: 2px;  
+                    border: 0px;
+                    border-radius: 8px;
+                    opacity: 0;
+                }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -78,6 +93,28 @@
 		</div>
 	{{ lib.panel_end() }}
 
+	<div class="modal fade" id="sourceModal" tabindex="-1" role="dialog" data-pid=''>
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">Source File Validation</h4>
+	      </div>
+	        <div class="modal-body">
+	            <div class="row">
+			        <div class="col-md-6" id="accountChart" style="height:400px">
+			        </div>
+			        <div class="col-md-6" id="transChart" style="height:400px">
+			        </div>
+			    </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
 	<div id="mask"></div>
 {% endblock %}
 
@@ -86,11 +123,13 @@
     <script type="text/javascript">
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
+    <script src="{{url_for('static',filename='assets/3rd_party/d3/d3.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/3rd_party/upload/tableExport.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/bootstrap-table.min.js')}}"></script>
-    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js')}}"></script>    
+    <script src="{{url_for('static',filename='assets/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>  
     <script src="{{url_for('static',filename='assets/node_modules/jquery-file-upload/js/jquery.uploadfile.js')}}"></script>
     <script src="{{url_for('static',filename='assets/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/node_modules/venn.js/venn.js')}}"></script>
     <script src="{{url_for('static',filename='assets/javascript/datacenter/bankdataTB.js')}}"></script>
 {% endblock %}
