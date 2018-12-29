@@ -534,6 +534,7 @@ $(function(){
 	    	right:'15%',
 	    },
 	    legend: {
+	    	top:20,
 	        right: 10,
 	        data: ['Normal', 'Outlier']
 	    },
