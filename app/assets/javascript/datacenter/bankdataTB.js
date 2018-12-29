@@ -103,7 +103,8 @@ $(function(){
 
 	window.customerStatusEvents = {
 	  'click .customerstatus': function(e, value, row, index) {
-
+	  	 $('#validTitle').text('Customer Validation Status');
+	  	 $('#valiaTabs a:first').tab('show');
 	  	 $('#sourceModal').modal('show'); 	 
 	  }
 	};
@@ -121,7 +122,8 @@ $(function(){
 
 	window.accountStatusEvents = {
 	  'click .accountstatus': function(e, value, row, index) {
-
+	  	 $('#validTitle').text('Account Validation Status');
+	  	 $('#valiaTabs a:first').tab('show');
 	  	 $('#sourceModal').modal('show'); 	 
 	  }
 	};
@@ -138,7 +140,8 @@ $(function(){
 
 	window.transStatusEvents = {
 	  'click .transstatus': function(e, value, row, index) {
-
+	  	 $('#validTitle').text('Transaction Validation Status');
+	  	 $('#valiaTabs a:first').tab('show');
 	  	 $('#sourceModal').modal('show'); 	 
 	  }
 	};
