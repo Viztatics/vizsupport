@@ -92,13 +92,13 @@ $(function(){
 	};
 
 	let customerStatusFormatter=function(value, row, index) {
-		console.log(value);
-		if(value!='-'){
-			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail">'+value+'</a>';
+		if(value=='Pass'){
+			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="color:green"></i></a>';
+		}else if(value=='Fail'){
+			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="color:red"></i></a>';
 		}else{
 			return value;
 		}
-
 	};
 
 	window.customerStatusEvents = {
@@ -109,9 +109,10 @@ $(function(){
 	};
 
 	let accountStatusFormatter=function(value, row, index) {
-		console.log(value);
-		if(value!='-'){
-			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail">'+value+'</a>';
+		if(value=='Pass'){
+			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="color:green"></i></a>';
+		}else if(value=='Fail'){
+			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="color:red"></i></a>';
 		}else{
 			return value;
 		}
@@ -126,13 +127,13 @@ $(function(){
 	};
 
 	let transStatusFormatter=function(value, row, index) {
-		console.log(value);
-		if(value!='-'){
-			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail">'+value+'</a>';
+		if(value=='Pass'){
+			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="color:green"></i></a>';
+		}else if(value=='Fail'){
+			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="color:red"></i></a>';
 		}else{
 			return value;
 		}
-
 	};
 
 	window.transStatusEvents = {
