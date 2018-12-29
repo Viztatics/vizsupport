@@ -757,6 +757,234 @@ $(function(){
 
 	};
 
+	var initMapData = function(mapdata,filedata){
+
+        var maxamount = 0
+        var minamount = filedata[0]['Trans_Amt'];
+        var datamonths = filedata.map(function(item) { return item['Month of Trans Date']; });
+        datamonths = datamonths.filter(function (el, i, arr) {
+			return arr.indexOf(el) === i;
+		});
+        var allmonth_result = {};        
+		allmonth_result.mapdata = [];
+
+		datamonths.forEach(function(amonth){
+
+			var result_data=[];
+
+			mapdata.forEach(function(element){
+				eleclone = Object.assign({}, element);
+				eleclone['value']=0;
+				delete eleclone['color'];
+				filedata.forEach(function (countrydata){					
+					if(countrydata['Month of Trans Date']==amonth&&eleclone.code==countrydata['OPP_CNTRY']){
+						if(maxamount<countrydata['Trans_Amt']){
+							maxamount = countrydata['Trans_Amt'];
+						}
+						if(minamount>countrydata['Trans_Amt']){
+							minamount = countrydata['Trans_Amt'];
+						}
+						eleclone['value']=countrydata['Trans_Amt'];	
+						result_data.push(eleclone);					
+					}					
+					
+				});	
+			});
+
+			var obj={};
+			obj[amonth]=result_data;
+			allmonth_result.mapdata.push(obj);
+			delete result_data;
+			delete obj;
+		});
+
+		allmonth_result.maxamount = maxamount;
+		allmonth_result.minamount = minamount;
+
+		return allmonth_result;
+	}
+
+	var getHeatMap=function(){
+		  $.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/heatmap/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
+		  	success:function(data){
+		  		var result_data = initMapData(mapData,data);
+			  	heatoption.visualMap.max = result_data.maxamount;
+			  	heatoption.visualMap.min = result_data.minamount;
+			  	$.each( result_data.mapdata[0], function( key, value ) {
+			  		heatoption.title.text = 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")";
+				  	heatoption.series[0].data = value;
+				    heatoption.series[0].name = key;
+			  	});
+
+			  	timeoptions=[];
+			  	heatoption.timeline.data = [];
+			  	result_data.mapdata.forEach(function(monthdata){
+			  		$.each( monthdata, function( key, value ) {
+					 	heatoption.timeline.data.push(key.slice(0, 4)+"-"+key.slice(4, 6));
+					 	seriesclone = Object.assign({},heatoption.series[0]);
+					 	seriesclone.name = key;
+					 	seriesclone.data = value;
+					 	geoclone = Object.assign({},heatoption.series[1]);
+					 	geoclone.name = key;
+					 	geoclone.data = [];
+					 	value.map(function (itemOpt) {
+			            	if(itemOpt.value>=$('#threshNum2').val()){
+			            		geoclone.data.push({
+				                    name: itemOpt.name,
+				                    tooltip:{
+				                    	formatter:function(params){
+				                    		console.log(params);
+				                    		return params.data.name+"</br>$"+itemOpt.value
+				                    	}
+				                    },
+				                    value: [
+				                        latlong[itemOpt.code].longitude,
+				                        latlong[itemOpt.code].latitude,
+				                        itemOpt.value+5000000000000,
+				                    ],
+				                    itemStyle: {
+				                        normal: {
+				                            color: 'red',
+				                        }
+				                    }		                    
+				                });
+			            	}	                
+			            })
+					 	timeoptions.push({title: {text: 'High Risk Country ' +transcode+ ' Activity('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:[geoclone,seriesclone]});
+					}); 
+			  	})
+			  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);		
+		  	}
+		  });
+	}
+
+	var getScatterPlot=function(){
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
+		  	success:function(data){
+		  		var normaldata = [];
+		  		var outlierdata = [];
+		  		data.data.map(x => x[4]==1?outlierdata.push({value:x}):normaldata.push({value:x}));
+		  		$.each(normaldata,function(index, el) {
+		  			if(el.value[1]<$('#threshNum').val()){
+		  				el.itemStyle={color:'yellow'};
+		  			}else if(el.value[1]>$('#threshNum2').val()){
+		  				el.itemStyle={color:'green'};
+		  			}else{
+		  				//el.symbol='emptyCircle';
+		  			}
+		  		});
+		  		$.each(outlierdata,function(index, el) {
+		  				el.symbol='emptyCircle';
+		  		});
+			  	scatteroption.series[0].data = normaldata;
+			  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
+			  	scatteroption.series[0].markLine.data[1].yAxis=$('#threshNum2').val();
+		  		scatteroption.series[1].data = outlierdata;
+			  	scatterChart.setOption(scatteroption);		  	
+	  	}
+	  });
+	}
+
+	var getScatterStatistics=function(){
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterstatistics/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
+		  	success:function(data){
+		  		console.log(data);
+
+		  		let run1CntOption = $.extend(true,{},pieOption)
+		  		run1CntOption.title.text='Run1 Count';
+		  		run1CntOption.series[0].name = 'Run1 Count';
+		  		run1CntOption.series[0].data = [{value:data.below_count_below,name:"Below Threshold"},{value:data.above_count_below,name:'Above Threshold'}];
+		  		run1CntChart.setOption(run1CntOption);
+
+		  		let run1AmtOption = $.extend(true,{},pieOption)
+		  		run1AmtOption.title.text='Run1 Amount';
+		  		run1AmtOption.tooltip.formatter=function(params){
+		  											let num = params.data.value.toLocaleString('en-US', {
+																				  style: 'currency',
+																				  currency: 'USD',
+																				});
+		  											return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+		  										};
+		  		run1AmtOption.series[0].name = 'Run1 Amount';
+		  		run1AmtOption.series[0].data = [{value:data.below_amount_below,name:"Below Threshold"},{value:data.above_amount_below,name:'Above Threshold'}];
+		  		run1AmtChart.setOption(run1AmtOption);
+
+		  		let run2CntOption = $.extend(true,{},pieOption)
+		  		run2CntOption.title.text='Run2 Count';
+		  		run2CntOption.series[0].name = 'Run2 Count';
+		  		run2CntOption.series[0].data = [{value:data.below_count_above,name:"Below Threshold"},{value:data.above_count_above,name:'Above Threshold'}];
+		  		run2CntChart.setOption(run2CntOption);
+
+		  		let run2AmtOption = $.extend(true,{},pieOption)
+		  		run2AmtOption.title.text='Run2 Amount';
+		  		run2AmtOption.tooltip.formatter=function(params){
+										let num = params.data.value.toLocaleString('en-US', {
+																  style: 'currency',
+																  currency: 'USD',
+																});
+										return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+									};
+		  		run2AmtOption.series[0].name = 'Run2 Amount';
+		  		run2AmtOption.series[0].data = [{value:data.below_amount_above,name:"Below Threshold"},{value:data.above_amount_above,name:'Above Threshold'}];
+		  		run2AmtChart.setOption(run2AmtOption);
+		
+		  	}
+	  	});
+	}
+
+	var getTableData = function(){
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
+		  	success:function(data){
+		  		$('#alertTable').bootstrapTable('load',data);	  			  	
+		  	}
+		  });
+	}
+
+	var getTableStatistics = function(){
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tablestatistics/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
+		  	success:function(data){
+		  		console.log(data);
+		  		$("#run1Cust").text(data.total);
+		  		$("#run2Cust").text(data.total);
+		  		$("#run1CustAlerted").text(data.run1_customer);
+		  		$("#run1CustAlertedPer").text(data.run1_customer_percent+'%');
+		  		$("#run2CustAlerted").text(data.run2_customer);
+		  		$("#run2CustAlertedPer").text(data.run2_customer_percent+'%');
+		  		$("#run1CustNotAlerted").text(data.run1_customer_not);
+		  		$("#run1CustNotAlertedPer").text(data.run1_customer_percent_not+'%');
+		  		$("#run2CustNotAlerted").text(data.run2_customer_not);
+		  		$("#run2CustNotAlertedPer").text(data.run2_customer_percent_not+'%');
+		  		$("#missCust").text(data.run1_customer-data.run2_customer);
+
+		  	}
+		  });
+	}
+
 
 	$('#statisticsTable').bootstrapTable({
   		pagination:false,
@@ -798,9 +1026,6 @@ $(function(){
 			}
 	    }],
 	});
-
-	getHighRiskCountryStatics(1);
-	getHighRiskCountryPercentile(1);
 
 	let operateFormatter=function(value, row, index) {
 	  	if(value){
@@ -928,53 +1153,6 @@ $(function(){
 	});
 
 
-	var initMapData = function(mapdata,filedata){
-
-        var maxamount = 0
-        var minamount = filedata[0]['Trans_Amt'];
-        var datamonths = filedata.map(function(item) { return item['Month of Trans Date']; });
-        datamonths = datamonths.filter(function (el, i, arr) {
-			return arr.indexOf(el) === i;
-		});
-        var allmonth_result = {};        
-		allmonth_result.mapdata = [];
-
-		datamonths.forEach(function(amonth){
-
-			var result_data=[];
-
-			mapdata.forEach(function(element){
-				eleclone = Object.assign({}, element);
-				eleclone['value']=0;
-				delete eleclone['color'];
-				filedata.forEach(function (countrydata){					
-					if(countrydata['Month of Trans Date']==amonth&&eleclone.code==countrydata['OPP_CNTRY']){
-						if(maxamount<countrydata['Trans_Amt']){
-							maxamount = countrydata['Trans_Amt'];
-						}
-						if(minamount>countrydata['Trans_Amt']){
-							minamount = countrydata['Trans_Amt'];
-						}
-						eleclone['value']=countrydata['Trans_Amt'];	
-						result_data.push(eleclone);					
-					}					
-					
-				});	
-			});
-
-			var obj={};
-			obj[amonth]=result_data;
-			allmonth_result.mapdata.push(obj);
-			delete result_data;
-			delete obj;
-		});
-
-		allmonth_result.maxamount = maxamount;
-		allmonth_result.minamount = minamount;
-
-		return allmonth_result;
-	}
-
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
@@ -990,6 +1168,15 @@ $(function(){
 		  },
 	    },
 	});
+
+	getHighRiskCountryStatics(1);
+	getHighRiskCountryPercentile(1);
+	getHeatMap();
+	getScatterPlot();
+	getScatterStatistics();
+	getTableData();
+	getTableStatistics();
+
 
 	$("#isOutlier").on('change', function(event) {
 		event.preventDefault();
@@ -1008,190 +1195,11 @@ $(function(){
 
 	  getHighRiskCountryStatics($("#isOutlier").val());	  
 	  getHighRiskCountryPercentile($("#isOutlier").val());
-/*
-	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
-	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
-	  	if(filecount ==0){
-	  		$("#file-error").remove();
-	  		$("<label id='file-error' style='color:red;margin-left:10px'>This field is required!</label>").appendTo($('#reportPath'));
-	  	}	  	
-	  	return false;
-	  }
-
-*/
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/heatmap/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
-	  	success:function(data){
-	  		var result_data = initMapData(mapData,data);
-		  	heatoption.visualMap.max = result_data.maxamount;
-		  	heatoption.visualMap.min = result_data.minamount;
-		  	$.each( result_data.mapdata[0], function( key, value ) {
-		  		heatoption.title.text = 'High Risk Countries('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")";
-			  	heatoption.series[0].data = value;
-			    heatoption.series[0].name = key;
-		  	});
-
-		  	timeoptions=[];
-		  	heatoption.timeline.data = [];
-		  	result_data.mapdata.forEach(function(monthdata){
-		  		$.each( monthdata, function( key, value ) {
-				 	heatoption.timeline.data.push(key.slice(0, 4)+"-"+key.slice(4, 6));
-				 	seriesclone = Object.assign({},heatoption.series[0]);
-				 	seriesclone.name = key;
-				 	seriesclone.data = value;
-				 	geoclone = Object.assign({},heatoption.series[1]);
-				 	geoclone.name = key;
-				 	geoclone.data = [];
-				 	value.map(function (itemOpt) {
-		            	if(itemOpt.value>=$('#threshNum2').val()){
-		            		geoclone.data.push({
-			                    name: itemOpt.name,
-			                    tooltip:{
-			                    	formatter:function(params){
-			                    		console.log(params);
-			                    		return params.data.name+"</br>$"+itemOpt.value
-			                    	}
-			                    },
-			                    value: [
-			                        latlong[itemOpt.code].longitude,
-			                        latlong[itemOpt.code].latitude,
-			                        itemOpt.value+5000000000000,
-			                    ],
-			                    itemStyle: {
-			                        normal: {
-			                            color: 'red',
-			                        }
-			                    }		                    
-			                });
-		            	}	                
-		            })
-				 	timeoptions.push({title: {text: 'High Risk Country ' +transcode+ ' Activity('+ key.slice(0, 4)+"-"+key.slice(4, 6)+")"},series:[geoclone,seriesclone]});
-				}); 
-		  	})
-		  	console.log(heatoption);
-		  	console.log(timeoptions);
-		  	heatChart.setOption({baseOption:heatoption,options:timeoptions},true);		
-	  	}
-	  });
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterplot/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val()}),
-	  	success:function(data){
-	  		var normaldata = [];
-	  		var outlierdata = [];
-	  		data.data.map(x => x[4]==1?outlierdata.push({value:x}):normaldata.push({value:x}));
-	  		$.each(normaldata,function(index, el) {
-	  			if(el.value[1]<$('#threshNum').val()){
-	  				el.itemStyle={color:'yellow'};
-	  			}else if(el.value[1]>$('#threshNum2').val()){
-	  				el.itemStyle={color:'green'};
-	  			}else{
-	  				//el.symbol='emptyCircle';
-	  			}
-	  		});
-	  		$.each(outlierdata,function(index, el) {
-	  				el.symbol='emptyCircle';
-	  		});
-		  	scatteroption.series[0].data = normaldata;
-		  	scatteroption.series[0].markLine.data[0].yAxis=$('#threshNum').val();
-		  	scatteroption.series[0].markLine.data[1].yAxis=$('#threshNum2').val();
-	  		scatteroption.series[1].data = outlierdata;
-		  	scatterChart.setOption(scatteroption);		  	
-	  	}
-	  });
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/scatterstatistics/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
-	  	success:function(data){
-	  		console.log(data);
-
-	  		let run1CntOption = $.extend(true,{},pieOption)
-	  		run1CntOption.title.text='Run1 Count';
-	  		run1CntOption.series[0].name = 'Run1 Count';
-	  		run1CntOption.series[0].data = [{value:data.below_count_below,name:"Below Threshold"},{value:data.above_count_below,name:'Above Threshold'}];
-	  		run1CntChart.setOption(run1CntOption);
-
-	  		let run1AmtOption = $.extend(true,{},pieOption)
-	  		run1AmtOption.title.text='Run1 Amount';
-	  		run1AmtOption.tooltip.formatter=function(params){
-	  											let num = params.data.value.toLocaleString('en-US', {
-																			  style: 'currency',
-																			  currency: 'USD',
-																			});
-	  											return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
-	  										};
-	  		run1AmtOption.series[0].name = 'Run1 Amount';
-	  		run1AmtOption.series[0].data = [{value:data.below_amount_below,name:"Below Threshold"},{value:data.above_amount_below,name:'Above Threshold'}];
-	  		run1AmtChart.setOption(run1AmtOption);
-
-	  		let run2CntOption = $.extend(true,{},pieOption)
-	  		run2CntOption.title.text='Run2 Count';
-	  		run2CntOption.series[0].name = 'Run2 Count';
-	  		run2CntOption.series[0].data = [{value:data.below_count_above,name:"Below Threshold"},{value:data.above_count_above,name:'Above Threshold'}];
-	  		run2CntChart.setOption(run2CntOption);
-
-	  		let run2AmtOption = $.extend(true,{},pieOption)
-	  		run2AmtOption.title.text='Run2 Amount';
-	  		run2AmtOption.tooltip.formatter=function(params){
-									let num = params.data.value.toLocaleString('en-US', {
-															  style: 'currency',
-															  currency: 'USD',
-															});
-									return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
-								};
-	  		run2AmtOption.series[0].name = 'Run2 Amount';
-	  		run2AmtOption.series[0].data = [{value:data.below_amount_above,name:"Below Threshold"},{value:data.above_amount_above,name:'Above Threshold'}];
-	  		run2AmtChart.setOption(run2AmtOption);
-	
-	  	}
-	  });
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tabledata/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
-	  	success:function(data){
-	  		$('#alertTable').bootstrapTable('load',data);	  			  	
-	  	}
-	  });
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/tablestatistics/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
-	  	success:function(data){
-	  		console.log(data);
-	  		$("#run1Cust").text(data.total);
-	  		$("#run2Cust").text(data.total);
-	  		$("#run1CustAlerted").text(data.run1_customer);
-	  		$("#run1CustAlertedPer").text(data.run1_customer_percent+'%');
-	  		$("#run2CustAlerted").text(data.run2_customer);
-	  		$("#run2CustAlertedPer").text(data.run2_customer_percent+'%');
-	  		$("#run1CustNotAlerted").text(data.run1_customer_not);
-	  		$("#run1CustNotAlertedPer").text(data.run1_customer_percent_not+'%');
-	  		$("#run2CustNotAlerted").text(data.run2_customer_not);
-	  		$("#run2CustNotAlertedPer").text(data.run2_customer_percent_not+'%');
-	  		$("#missCust").text(data.run1_customer-data.run2_customer);
-
-	  	}
-	  });
+	  getHeatMap();
+	  getScatterPlot();
+	  getScatterStatistics();
+	  getTableData();
+	  getTableStatistics();
 
 	});
 
