@@ -1940,7 +1940,7 @@ class DataCenterView(BaseView):
             TargetFile = aliased(UploadHis)
             SourceFile = aliased(UploadHis)
 
-            his_result = db.session.query(ValidHis.id,TargetFile.id.label("target_id"),TargetFile.file_name.label("target_file_name"),SourceFile.id.label("source_id"),SourceFile.file_name.label("source_file_name"),ValidHis.start_date,ValidHis.end_date,func.to_char(ValidHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),case([(ValidHis.source_valid==0,'Fail'),(ValidHis.source_valid==1,'Pass')],else_='-').label("source_valid"),ValidHis.id.label("source_id"),case([(ValidHis.alert_valid==0,'Fail'),(ValidHis.alert_valid==1,'Pass')],else_='-').label("alert_valid"),ValidHis.id.label("alert_id"),User.username).join(TargetFile, ValidHis.target_file_id == TargetFile.id).join(SourceFile, ValidHis.source_file_id == SourceFile.id).join(User, ValidHis.created_by_fk == User.id).filter(ValidHis.company_id==current_user.company_id).order_by(ValidHis.created_on.desc())
+            his_result = db.session.query(ValidHis.id,TargetFile.id.label("target_id"),TargetFile.file_name.label("target_file_name"),SourceFile.id.label("source_id"),SourceFile.file_name.label("source_file_name"),ValidHis.start_date,ValidHis.end_date,func.to_char(ValidHis.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),case([(ValidHis.customer_valid==0,'Fail'),(ValidHis.customer_valid==1,'Pass')],else_='-').label("customer_valid"),ValidHis.id.label("source_id"),case([(ValidHis.account_valid==0,'Fail'),(ValidHis.account_valid==1,'Pass')],else_='-').label("account_valid"),case([(ValidHis.transaction_valid==0,'Fail'),(ValidHis.transaction_valid==1,'Pass')],else_='-').label("transaction_valid"),ValidHis.id.label("alert_id"),User.username).join(TargetFile, ValidHis.target_file_id == TargetFile.id).join(SourceFile, ValidHis.source_file_id == SourceFile.id).join(User, ValidHis.created_by_fk == User.id).filter(ValidHis.company_id==current_user.company_id).order_by(ValidHis.created_on.desc())
 
             his_result = [r._asdict() for r in his_result]
 
@@ -1961,13 +1961,11 @@ class DataCenterView(BaseView):
         if request.method == 'PUT':
 
             his_id = request.get_json()["his_id"]
-            source_valid = request.get_json()["source_valid"]
-            alert_valid = request.get_json()["alert_valid"]
-            print("======================================================================================")
-            print(his_id)
-            print(source_valid)
+            customer_valid = request.get_json()["customer_valid"]
+            account_valid = request.get_json()["account_valid"]
+            transaction_valid = request.get_json()["transaction_valid"]
 
-            validhis = self.appbuilder.get_session.query(ValidHis).filter(ValidHis.id==his_id).update({"source_valid":source_valid, "alert_valid":alert_valid})
+            validhis = self.appbuilder.get_session.query(ValidHis).filter(ValidHis.id==his_id).update({"customer_valid":customer_valid, "account_valid":account_valid, "transaction_valid":transaction_valid})
 
             self.appbuilder.get_session.commit()
             return  json.dumps({})
@@ -2159,7 +2157,7 @@ db.create_all()
 appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
 appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
-appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Data Center')
+appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Rules')
 appbuilder.add_view(RuleView, "High Risk Country Wire Activity", href='/rules/highRiskCountry/Wire',category='Quantitative')
 appbuilder.add_link("High Risk Country ACH Activity", href='/rules/highRiskCountry/ACH', category='Quantitative')
 appbuilder.add_link("Cash Activity Limit", href='/rules/highRiskVolume/Cash', category='Quantitative')

@@ -223,5 +223,6 @@ class ValidHis(AuditMixin,Model):
     target_file_id = Column(Integer)
     start_date = Column(String(8))
     end_date = Column(String(8))
-    source_valid = Column(Integer)
-    alert_valid = Column(Integer)
+    customer_valid = Column(Integer)
+    account_valid = Column(Integer)
+    transaction_valid = Column(Integer)

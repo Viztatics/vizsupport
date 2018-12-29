@@ -91,22 +91,57 @@ $(function(){
 	  }
 	};
 
-	let sourceStatusFormatter=function(value, row, index) {
+	let customerStatusFormatter=function(value, row, index) {
 		console.log(value);
 		if(value!='-'){
-			return '<a href="javascript:void(0)" class="sourcestatus" title="click to show detail">'+value+'</a>';
+			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail">'+value+'</a>';
 		}else{
 			return value;
 		}
 
 	};
 
-	window.sourceStatusEvents = {
-	  'click .sourcestatus': function(e, value, row, index) {
+	window.customerStatusEvents = {
+	  'click .customerstatus': function(e, value, row, index) {
 
 	  	 $('#sourceModal').modal('show'); 	 
 	  }
 	};
+
+	let accountStatusFormatter=function(value, row, index) {
+		console.log(value);
+		if(value!='-'){
+			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail">'+value+'</a>';
+		}else{
+			return value;
+		}
+
+	};
+
+	window.accountStatusEvents = {
+	  'click .accountstatus': function(e, value, row, index) {
+
+	  	 $('#sourceModal').modal('show'); 	 
+	  }
+	};
+
+	let transStatusFormatter=function(value, row, index) {
+		console.log(value);
+		if(value!='-'){
+			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail">'+value+'</a>';
+		}else{
+			return value;
+		}
+
+	};
+
+	window.transStatusEvents = {
+	  'click .transstatus': function(e, value, row, index) {
+
+	  	 $('#sourceModal').modal('show'); 	 
+	  }
+	};
+
 
 	let sourcevalidateFormatter=function(value, row, index) {
 	  return '<a href="javascript:void(0)" class="btn btn-primary btn-sm sourcevalid" title="Source Validate">Validate</a>';
@@ -126,7 +161,7 @@ $(function(){
 		  	url: $SCRIPT_ROOT+'/datacenter/bankdata/uploadhis',
 		  	type: 'PUT',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'his_id':row.id,'source_valid':0,'alert_valid':-1}),
+		  	data: JSON.stringify({'his_id':row.id,'customer_valid':0,'account_valid':-1,'transaction_valid':1}),
 		  	success:function(data){
 		  		$upTable.bootstrapTable('refresh');	
 		  		$(document).ajaxStop(function () {
@@ -134,25 +169,6 @@ $(function(){
 			    });
 		  	}
 		});
-
-	  }
-	};
-
-	let alertvalidateFormatter=function(value, row, index) {
-		if(row.source_valid=='Pass'){
-			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid" title="Alert Validate">Validate</a>';
-		}else{
-			return '<a href="javascript:void(0)" class="btn btn-primary btn-sm alertvalid disabled"  title="Alert Validate">Validate</a>';
-		}
-	  
-	};
-
-	window.alertvalidateEvents = {
-	  'click .alertvalid': function (e, value, row, index) {
-
-	  	console.log('alert');
-
-	  	//window.open($SCRIPT_ROOT+'/datacenter/bankdata/download/'+row.id,"_self");
 
 	  }
 	};
@@ -166,7 +182,7 @@ $(function(){
 	        title: 'ID',
 	    }, {
 	        field: 'target_file_name',
-	        title: 'Target File',
+	        title: 'AML File',
 	        events: targetEvents,
             formatter: targetFormatter,
 	    },{
@@ -184,27 +200,29 @@ $(function(){
 	        field: 'created_on',
 	        title: 'Upload Time',
 	    }, {
-	        field: 'source_valid',
-	        title: 'Source Valid Status',
+	        field: 'customer_valid',
+	        title: 'Customer Valid Status',
 	        align: 'center',
-	        events: sourceStatusEvents,
-            formatter: sourceStatusFormatter,
+	        events: customerStatusEvents,
+            formatter: customerStatusFormatter,
+	    }, {
+	        field: 'account_valid',
+	        title: 'Account Valid Status',
+	        align: 'center',
+	        events: accountStatusEvents,
+            formatter: accountStatusFormatter,
+	    }, {
+	        field: 'transaction_valid',
+	        title: 'Transaction Valid Status',
+	        align: 'center',
+	        events: transStatusEvents,
+            formatter: transStatusFormatter,
 	    },  {
             field: 'source_id',
             title: 'Source Validation',
             align: 'center',
             events: sourcevalidateEvents,
             formatter: sourcevalidateFormatter
-        }, {
-	        field: 'alert_valid',
-	        title: 'Alert Valid Status',
-	        align: 'center',
-	    },  {
-            field: 'alert_id',
-            title: 'Alert Validation',
-            align: 'center',
-            events: alertvalidateEvents,
-            formatter: alertvalidateFormatter
         }],
 	});
 
