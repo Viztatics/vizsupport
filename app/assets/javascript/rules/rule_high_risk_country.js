@@ -15,7 +15,10 @@ $(function(){
 	var heatChart = echarts.init(document.getElementById('heatChart'));
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileChart = echarts.init(document.getElementById('percentileChart'));
-	var paretoChart = echarts.init(document.getElementById('paretoChart'));
+	var run1CntChart = echarts.init(document.getElementById('run1CntChart'));
+	var run1AmtChart = echarts.init(document.getElementById('run1AmtChart'));
+	var run2CntChart = echarts.init(document.getElementById('run2CntChart'));
+	var run2AmtChart = echarts.init(document.getElementById('run2AmtChart'));
 
 
 	var mapData = [
@@ -668,69 +671,51 @@ $(function(){
 	    ]
 	};
 
-	var linebaroption = {
-		title : {
-	        text: 'Pareto Analysis(Customer Analysis)',
+	let pieOption = {
+	    title : {
+	        text: '',
+	        x:'center'
 	    },
 	    tooltip : {
-	        trigger: 'axis'
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
 	    },
-	    legend: {
-	        data:['Trans Amount','Cumulative Percentage'],
-	        left:'right',
-	    },
-	    grid:{
-	    	y2:'12%',
-	    },
-	    xAxis : [
-	        {
-	            type : 'category',
-	            axisLabel : {
-	            	rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: function(params){
-	                	return "$"+params/1000+"K"
-
-	                }
-	            },
-	        },
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: '{value} %'
-	            }
-	        }
-	    ],
+	    //color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
 	    series : [
-
 	        {
-	            name:'Trans Amount',
-	            type:'bar',
-	            data:[]
-	        },
-	        {
-	            name:'Cumulative Percentage',
-	            type:'line',
-	            yAxisIndex: 1,
-	            symbol:'diamond',
-	            symbolSize:10,
-	            data:[]
+	            name: '',
+	            type: 'pie',
+	            radius : ['50%','70%'],
+	            center: ['40%', '50%'],
+	            data: [],
+	            label:{
+	            	normal:{
+	            		show:false,
+	            		position:'center',
+	            	},
+	            	emphasis:{
+	            		show:false,
+	            		textStyle:{
+	            			fontWeight:'bold',
+	            		}
+	            	}
+	            },
+	            labelLine:{
+	            	normal:{
+	            		show:false
+	            	}
+	            }
 	        }
 	    ]
 	};
-                    
-    
-	percentileChart.setOption(lineoption);
-	paretoChart.setOption(linebaroption);                
+   
+	percentileChart.setOption(lineoption);              
 	scatterChart.setOption(scatteroption);
 	heatChart.setOption({baseOption:heatoption,options:[]});
+	run1CntChart.setOption(pieOption);
+	run1AmtChart.setOption(pieOption);
+	run2CntChart.setOption(pieOption);
+	run2AmtChart.setOption(pieOption);
 
 
 	var getHighRiskCountryStatics=function(includeOutlier){
@@ -772,81 +757,6 @@ $(function(){
 
 	};
 
-	var getHighRiskCountryPareto=function(includeOutlier){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/paretodata/'+transcode,
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,filename:$('#reportPath').data('keyname')}),
-		  	success:function(data){
-
-				if(data){
-					linebaroption.xAxis[0].data=[];
-					linebaroption.series[0].data=[];
-					linebaroption.series[1].data=[];
-					data.forEach(function(singledata){
-						linebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-						linebaroption.series[0].data.push(singledata['Trans_Amt'].toFixed(2));
-				  		linebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-					    paretoChart.setOption(linebaroption);
-				  	})
-				}				
-			}
-		});
-
-	};
-/*
-**delete file upload 
-	var upfile = $("#reportPath").uploadFile({
-		url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload/'+transcode,
-	    maxFileCount: 1, 
-	    maxFileSize:5*1024*1024,                		   
-	    allowedTypes: 'csv',  				       
-	    showFileSize: false,
-	    showDone: false,                           
-	    showDelete: true,                          
-	    showDownload:false,
-	    statusBarWidth:590,
-	    onLoad: function(obj)
-	    {	
-	    	if (typeof obj.createProgress !== "undefined") { 
-			    obj.createProgress($('#reportPath').data('keyname'));
-			}
-	    	//     	
-	    },
-	    deleteCallback: function(data,pd)
-	    {
-
-	        $.ajax({
-	            cache: false,
-	            url: $SCRIPT_ROOT+'/rules/highRiskCountry/upload/'+transcode,
-	            type: "DELETE",
-	            dataType: "json",
-	            contentType:'application/json',
-	            data: JSON.stringify({keyname:$('#reportPath').data('keyname')}),
-	            success: function(data) 
-	            {
-	            	$('#reportPath').data('keyname', "");
-	                if(!data){
-	                    pd.statusbar.hide();        
-	                 }
-	              }
-	        }); 
-	    },
-	    onSuccess: function(files,data,xhr,pd){
-	    	$('#reportPath').data('keyname', files[0]);
-	    	$("#file-error")&&$("#file-error").remove();
-	    }
-	});
-
-	console.log($('#reportPath').data('keyname'));
-
-	if($('#reportPath').data('keyname')&&upfile){
-		upfile.createProgress($('#reportPath').data('keyname'));
-	}
-*/
 
 	$('#statisticsTable').bootstrapTable({
   		pagination:false,
@@ -891,7 +801,6 @@ $(function(){
 
 	getHighRiskCountryStatics(1);
 	getHighRiskCountryPercentile(1);
-	getHighRiskCountryPareto(1);
 
 	let operateFormatter=function(value, row, index) {
 	  	if(value){
@@ -1087,7 +996,6 @@ $(function(){
 		/* Act on the event */
 		getHighRiskCountryStatics($(this).val());
 		getHighRiskCountryPercentile($(this).val());
-		getHighRiskCountryPareto($(this).val());
 
 	});
 
@@ -1100,7 +1008,6 @@ $(function(){
 
 	  getHighRiskCountryStatics($("#isOutlier").val());	  
 	  getHighRiskCountryPercentile($("#isOutlier").val());
-	  getHighRiskCountryPareto($("#isOutlier").val());	  
 /*
 	  filecount = $(".ajax-file-upload-container").find(".ajax-file-upload-filename").length;
 	  if( filecount ==0  || !$("#highRiskCtyForm").valid()){
@@ -1210,40 +1117,45 @@ $(function(){
 	  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
 	  	success:function(data){
 	  		console.log(data);
-	  		$("#amountRun1").text(data.amount.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountRun2").text(data.amount.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountBelowRun1").text(data.below_amount_below.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountBelowRun2").text(data.below_amount_above.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountAboveRun1").text(data.above_amount_below.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountAboveRun2").text(data.above_amount_above.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountPercentRun1").text(data.percent_amount_below+'%');
-	  		$("#amountPercentRun2").text(data.percent_amount_above+'%');
-	  		$("#countRun1").text(data.count);
-	  		$("#countRun2").text(data.count);
-	  		$("#countBelowRun1").text(data.below_count_below);
-	  		$("#countBelowRun2").text(data.below_count_above);	  
-	  		$("#countAboveRun1").text(data.above_count_below);
-	  		$("#countAboveRun2").text(data.above_count_above);
-	  		$("#countPercentRun1").text(data.percent_acount_below+'%');
-	  		$("#countPercentRun2").text(data.percent_acount_above+'%');	
+
+	  		let run1CntOption = $.extend(true,{},pieOption)
+	  		run1CntOption.title.text='Run1 Count';
+	  		run1CntOption.series[0].name = 'Run1 Count';
+	  		run1CntOption.series[0].data = [{value:data.below_count_below,name:"Below Threshold"},{value:data.above_count_below,name:'Above Threshold'}];
+	  		run1CntChart.setOption(run1CntOption);
+
+	  		let run1AmtOption = $.extend(true,{},pieOption)
+	  		run1AmtOption.title.text='Run1 Amount';
+	  		run1AmtOption.tooltip.formatter=function(params){
+	  											let num = params.data.value.toLocaleString('en-US', {
+																			  style: 'currency',
+																			  currency: 'USD',
+																			});
+	  											return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+	  										};
+	  		run1AmtOption.series[0].name = 'Run1 Amount';
+	  		run1AmtOption.series[0].data = [{value:data.below_amount_below,name:"Below Threshold"},{value:data.above_amount_below,name:'Above Threshold'}];
+	  		run1AmtChart.setOption(run1AmtOption);
+
+	  		let run2CntOption = $.extend(true,{},pieOption)
+	  		run2CntOption.title.text='Run2 Count';
+	  		run2CntOption.series[0].name = 'Run2 Count';
+	  		run2CntOption.series[0].data = [{value:data.below_count_above,name:"Below Threshold"},{value:data.above_count_above,name:'Above Threshold'}];
+	  		run2CntChart.setOption(run2CntOption);
+
+	  		let run2AmtOption = $.extend(true,{},pieOption)
+	  		run2AmtOption.title.text='Run2 Amount';
+	  		run2AmtOption.tooltip.formatter=function(params){
+									let num = params.data.value.toLocaleString('en-US', {
+															  style: 'currency',
+															  currency: 'USD',
+															});
+									return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+								};
+	  		run2AmtOption.series[0].name = 'Run2 Amount';
+	  		run2AmtOption.series[0].data = [{value:data.below_amount_above,name:"Below Threshold"},{value:data.above_amount_above,name:'Above Threshold'}];
+	  		run2AmtChart.setOption(run2AmtOption);
+	
 	  	}
 	  });
 

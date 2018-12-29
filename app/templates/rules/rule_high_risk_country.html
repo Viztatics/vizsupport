@@ -19,11 +19,6 @@
 		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
-		        <!--div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="reportPath">Choose your data file</label><a href="../../static/csv/rules/Trans_Min_High_Risk_Transfer.xlsx" target="_blank" id="filelink">Sample File</a></div>
-		            <div class="col-md-4 input-group" id="reportPath" data-keyname={{keyname}}>Upload</div>
-		            <div class="col-md-12 input-group"><font color='red'> * Upload CSV file with Following data elements in the specific sequence : [ACCOUNT_KEY,Trans_Code_Type,OPP_CNTRY,Country Risk Level(Promontory),Country Name,Month of Trans Date,Trans_Amt,Trans_Count]</font></div>		            
-		        </div-->
 		        <div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="dataId">Input Data Id</label></div>
 		            <div class="col-md-2 input-group">
@@ -51,7 +46,7 @@
 		</div>
 
 		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Statistics on Data</div>
+		  <div class="panel-heading" style="background-color: #dff0d8;">Transaction Analysis</div>
 		  <div class="panel-body">
 		  	<div class="form-group form-inline">
 	            <div class="col-md-2 input-group"><label for="isOutlier">Include Outlier</label></div>
@@ -66,69 +61,23 @@
 		        <table id="statisticsTable"></table>
 		    </div>
 		    <div class="row">
-		        <div id="percentileChart" style="height:600px"></div>
+		        <div class="col-md-6" id="percentileChart" style="height:500px"></div>
+		        <div class="col-md-6" id="scatterChart" style="height:500px"></div>
+		    </div>
+		    <div class="row">
+		        <div class="col-md-3" id="run1CntChart" style="height:300px"></div>
+		        <div class="col-md-3" id="run1AmtChart" style="height:300px"></div>
+		        <div class="col-md-3" id="run2CntChart" style="height:300px"></div>
+		        <div class="col-md-3" id="run2AmtChart" style="height:300px"></div>
 		    </div>
 		  </div>
 		</div>
-
-		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Scatter Identification</div>
-		  <div class="panel-body">
-		    <div class="row">
-		        <div id="scatterChart" style="height:600px"></div>
-		    </div>
-		  </div>
-		<div class="row">
-          <label class="col-md-4 control-label" style="text-align:right">Run 1</label><label class="col-md-4 control-label" style="text-align:right">Run 2</label>
-          <label class="col-md-4 control-label"></label>          
-        </div>
-		<div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% Above</label><div id="amountPercentRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">% of Above</label><div id="amountPercentRun2" class="col-md-2">-</div>          
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun2" class="col-md-2">-</div>          
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun2" class="col-md-2">-</div>          
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun2" class="col-md-2">-</div>          
-        </div>
-        <div class="row">
-          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% of Above</label><div id="countPercentRun1" class="col-md-2">-</div>
-          <label class="col-md-2 control-label">% of Above</label><div id="countPercentRun2" class="col-md-2">-</div>          
-        </div>	
 
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Geography Heat Map</div>
 		  <div class="panel-body">
 		    <div class="row">
 		        <div id="heatChart" style="height:600px"></div>
-		    </div>
-		  </div>
-		</div>
-
-		<div class="panel panel-default">
-		  <div class="panel-heading" style="background-color: #dff0d8;">Customer Distribution</div>
-		  <div class="panel-body">
-		    <div class="row">
-		        <div id="paretoChart" style="height:600px"></div>
 		    </div>
 		  </div>
 		</div>
