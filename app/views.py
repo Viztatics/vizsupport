@@ -437,11 +437,9 @@ class RuleView(BaseView):
 
         table_data_3 = table_data_1[~table_data_1['ACCOUNT_KEY'].isin(df_common['ACCOUNT_KEY'])]
 
-        rundiff = table_data_3.groupby(['ACCOUNT_KEY']).size()
+        rundiff = table_data_3.groupby(['ACCOUNT_KEY']).size().to_frame('size').reset_index()
 
-        print(rundiff)
-
-        return Response(rundiff.to_json(), mimetype='application/json')
+        return Response(rundiff.to_json(orient='records'), mimetype='application/json')
 
     @expose('/highRiskCountry/alertdata/<transCode>',methods=['POST'])
     @has_access

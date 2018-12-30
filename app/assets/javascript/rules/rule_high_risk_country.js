@@ -1178,6 +1178,19 @@ $(function(){
 		  });
 	});
 
+	$('#missingTable').bootstrapTable({
+	  		pagination:true,
+	  		exportDataType: 'all',
+	  		search:true,  			
+		    columns: [{
+		        field: 'ACCOUNT_KEY',
+		        title: 'ACCOUNT',
+		    }, {
+		        field: 'size',
+		        title: 'Count of Transanctions',
+		    }],
+		});
+
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
@@ -1223,15 +1236,18 @@ $(function(){
 		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
 		  	success:function(data){
 		  		console.log(data);
+		  		$('#missingTabs a:first').tab('show');
 		  		$('#missingModal').modal('show'); 
 		  		$('#missChart').height(400);
 		  		$('#missChart').width(600);
 		  		var missChart = echarts.init(document.getElementById('missChart'));		
-		  		roseOption.series[0].data = [];  			
-		  		$.each( data, function( key, value ) {
-		  			roseOption.series[0].data.push({'value':value,'name':key});
-		  		});
+		  		roseOption.series[0].data = [];  
+		  		data.forEach(function (missingdata){	
+					roseOption.series[0].data.push({'value':missingdata['size'],'name':missingdata['ACCOUNT_KEY']});
+
+		  		})
 		  		missChart.setOption(roseOption);
+		  		$('#missingTable').bootstrapTable('load',data);
 
 		  	}
 		});
