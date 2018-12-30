@@ -407,6 +407,42 @@ class RuleView(BaseView):
         return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
 
 
+    @expose('/highRiskCountry/runDiff/<transCode>',methods=['POST'])
+    @has_access
+    def getHighRiskCountryRunDiff(self,transCode):
+
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        threshold = request.get_json()["threshNum"]
+
+        threshold2 = request.get_json()["threshNum2"]
+
+        def_data_no_county = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_data_no_county,usecols=['ACCOUNT_KEY','Month of Trans Date','OPP_CNTRY','Country Name','Trans_Amt','Trans_Code_Type'])
+
+        table_data = table_data[(table_data['Trans_Amt']>=int(threshold))&(table_data['Trans_Code_Type']==transDesc(transCode))&(table_data['OPP_CNTRY'].notnull())&((table_data['OPP_CNTRY'])!='US')]
+
+        table_data['run2'] = np.where(table_data['Trans_Amt']>=int(threshold2), '1', '0')
+
+        table_data_1 = table_data[table_data['run2']=='0']
+
+        table_data_2 = table_data[table_data['run2']=='1']
+
+        df_common = table_data_1.merge(table_data_2,on=['ACCOUNT_KEY'])
+
+        table_data_3 = table_data_1[~table_data_1['ACCOUNT_KEY'].isin(df_common['ACCOUNT_KEY'])]
+
+        rundiff = table_data_3.groupby(['ACCOUNT_KEY']).size()
+
+        print(rundiff)
+
+        return Response(rundiff.to_json(), mimetype='application/json')
+
     @expose('/highRiskCountry/alertdata/<transCode>',methods=['POST'])
     @has_access
     def createHighRiskCountryAlertData(self,transCode):

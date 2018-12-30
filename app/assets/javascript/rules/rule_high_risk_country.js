@@ -19,7 +19,7 @@ $(function(){
 	var run1AmtChart = echarts.init(document.getElementById('run1AmtChart'));
 	var run2CntChart = echarts.init(document.getElementById('run2CntChart'));
 	var run2AmtChart = echarts.init(document.getElementById('run2AmtChart'));
-
+	
 
 	var mapData = [
 			{'code':'AF' , 'name':'Afghanistan', 'value':32358260, 'color':'#eea638'},
@@ -709,6 +709,32 @@ $(function(){
 	        }
 	    ]
 	};
+
+	let roseOption = {
+	    
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
+	    },
+	    legend: {
+	        x : 'center',
+	        y : 'bottom',
+	        data:[],
+	        show:false,
+	    },
+	    series : [
+	        {
+	            name:'Missing Cusomter From Run1',
+	            type:'pie',
+	            radius : [20, 110],
+	            roseType : 'area',
+	            x: '50%',               // for funnel
+	            max: 40,                // for funnel
+	            sort : 'ascending',     // for funnel
+	            data:[]
+	        }
+	    ]
+	};
    
 	percentileChart.setOption(lineoption);              
 	scatterChart.setOption(scatteroption);
@@ -717,7 +743,6 @@ $(function(){
 	run1AmtChart.setOption(pieOption);
 	run2CntChart.setOption(pieOption);
 	run2AmtChart.setOption(pieOption);
-
 
 	var getHighRiskCountryStatics=function(includeOutlier){
 
@@ -1185,6 +1210,33 @@ $(function(){
 		getHighRiskCountryStatics($(this).val());
 		getHighRiskCountryPercentile($(this).val());
 
+	});
+
+	$("#missCust").on('click', function(event) {
+		event.preventDefault();
+
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/runDiff/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({filename:$('#reportPath').data('keyname'),threshNum:$('#threshNum').val(),threshNum2:$('#threshNum2').val()}),
+		  	success:function(data){
+		  		console.log(data);
+		  		$('#missingModal').modal('show'); 
+		  		$('#missChart').height(400);
+		  		$('#missChart').width(600);
+		  		var missChart = echarts.init(document.getElementById('missChart'));		
+		  		roseOption.series[0].data = [];  			
+		  		$.each( data, function( key, value ) {
+		  			roseOption.series[0].data.push({'value':value,'name':key});
+		  		});
+		  		missChart.setOption(roseOption);
+
+		  	}
+		});
+		
+		/* Act on the event */
 	});
 
 	$( "form" ).submit(function( event ) {
