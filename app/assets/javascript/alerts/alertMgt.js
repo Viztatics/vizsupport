@@ -80,6 +80,30 @@ $(function(){
 
 	};
 
+	barChart.on('click', function(data){
+		console.log(data);
+		var old_status=$('#alertMgt').data('status');
+		if(old_status==0){
+			$('#alertMgt').data('status',data.data.name);
+		}else{
+			if(old_status==data.data.name){//cancel select
+				$('#alertMgt').data('status','0');
+			}else{
+				$('#alertMgt').data('status',data.data.name);
+			}
+		}
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('status'),
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	success:function(data){
+		  		$alerttable.bootstrapTable('load',data);	  	
+		  	}
+		  });
+		
+	});
+
 	let operateFormatter=function(value, row, index) {
 	  return '<a href="javascript:void(0)" class="btn btn-primary btn-sm note" title="Add note">Add Note</a>';
 	};
@@ -427,7 +451,7 @@ $(function(){
 
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
-		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
+		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('status'),
   		pagination:true,
   		search:true,
 	    columns: [{
