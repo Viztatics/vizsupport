@@ -8,142 +8,12 @@ $(function(){
         $('#mask').addClass('lmask');	
     });
 
-    let statusChart = echarts.init(document.getElementById('statusChart'));
-	let typeChart = echarts.init(document.getElementById('typeChart'));
-	let custop10BarChart = echarts.init(document.getElementById('custop10BarChart'));
+
 	let barChart = echarts.init(document.getElementById('barChart'));
-
-	let statusOption = {
-	    title : {
-	        text: 'Alerts Aging',
-	        x:'center'
-	    },
-	    tooltip : {
-	        trigger: 'item',
-	        formatter: "{a} <br/>{b} : {c} ({d}%)"
-	    },
-	    legend: {
-	        orient: 'vertical',
-	        x : 'right',
-	        data: []
-	    },
-	    color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
-	    series : [
-	        {
-	            name: 'status',
-	            type: 'pie',
-	            radius : '55%',
-	            center: ['40%', '50%'],
-	            data: [],
-	            selectedMode:'single',
-	            itemStyle: {
-	            	normal:{
-	            		label:{
-							textStyle:{
-								color:'#000',
-							}
-	            		},
-	            	},
-	                emphasis: {
-	                    shadowBlur: 10,
-	                    shadowOffsetX: 0,
-	                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-	                }
-	            }
-	        }
-	    ]
-	};
-
-	let typeOption = {
-	    title : {
-	        text: 'Alerts Rule Types',
-	        x:'center'
-	    },
-	    tooltip : {
-	        trigger: 'item',
-	        formatter: "{a} <br/>{b} : {c} ({d}%)"
-	    },
-	    legend: {
-	        orient: 'vertical',
-        	x : 'right',
-	        data: ['High_Risk_Country','High_Volume_Value','Profiling','Flow_Through']
-	    },
-	    color:['#ff3333','#4d94ff','#ffff66','#7b68ee'],
-	    series : [
-	        {
-	            name: 'rules',
-	            type: 'pie',
-	            radius : '55%',
-	            center: ['40%', '50%'],
-	            data: [],
-	            selectedMode:'single',	            
-				textStyle:{
-					color:'black',
-				},
-	            itemStyle: {
-	            	normal:{
-	            		label:{
-							textStyle:{
-								color:'#000',
-							}
-	            		},
-	            	},
-	                emphasis: {
-	                    shadowBlur: 10,
-	                    shadowOffsetX: 0,
-	                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-	                }
-	            }
-	        }
-	    ]
-	};
-
-	let custop10BarOption = {
-		title : {
-	        text: 'Top 10 Alerts Distribution By Customer',
-	        x:'center'
-	    },
-	    tooltip : {
-	        trigger: 'axis',
-	        axisPointer : {            
-	            type : 'line'        
-	        }
-	    },
-	    xAxis : [
-	        {
-	        	name : 'Customer',
-	            type : 'category',
-	            axisLabel : {
-	            	rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	        	name : 'Alert No.',
-	            type : 'value'
-	        }
-	    ],
-	    series : [
-	        {
-	            name:'Alerts',
-	            type:'bar',
-	            stack: 'status',
-	            selectedMode:'single',
-	            itemStyle: {
-				    normal: {
-				       color:'#ff3333',
-				    },
-				},
-	            data:[],
-	        }
-	    ]
-	};
 
 	let barOption = {
 		title : {
-	        text: 'Alerts Analysts Distribution',
+	        text: 'Alerts Status Distribution',
 	        x:'center'
 	    },
 	    tooltip : {
@@ -153,15 +23,16 @@ $(function(){
 	        }
 	    },
 	    legend: {
+	    	show:false,
 	    	orient: 'vertical',
         	x : 'right',
-	        data:['Open','Close_True','Close_False']
+	        data:[]
 	    },
 	    xAxis : [
 	        {
-	        	name : 'analyst',
+	        	name : 'status',
 	            type : 'category',
-	            data : []
+	            data : ['Open','Close_True','Close_False']
 	        }
 	    ],
 	    yAxis : [
@@ -172,122 +43,18 @@ $(function(){
 	    ],
 	    series : [
 	        {
-	            name:'Close_True',
+	            name:'Alert Status',
 	            type:'bar',
-	            stack: 'status',
 	            itemStyle: {
 				    normal: {
-				       color:'#ff3333',
+				       //color:'#ff3333',
 				    },
 				},
 	            data:[],
-	        },
-	        {
-	            name:'Close_False',
-	            type:'bar',
-	            stack: 'status',
-	            itemStyle: {
-				    normal: {
-				       color:'#4d94ff',
-				    },
-				},
-	            data:[],
-	        },
-	        {
-	            name:'Open',
-	            type:'bar',
-	            stack: 'status',
-	            itemStyle: {
-				    normal: {
-				       color:'#ffff66',
-				    },
-				},
-	            data:[],
-	        },
+	        }
 	    ]
 	};
 
-	statusChart.setOption(statusOption);
-	typeChart.setOption(typeOption);
-
-	let getStatusChart=function(){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/dateagingchart',
-		  	type: 'GET',
-		  	contentType:'application/json',
-		  	success:function(data){
-
-		  		console.log(data);
-
-				if(data){
-					statusOption.legend.data=[];
-					statusOption.series[0].data=[];
-					for (let i = 0; i < data.length; i++)
-					{
-						statusOption.legend.data.push(data[i]['aging']);
-						if(data[i]['aging']=='Due Today(30)'){
-							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count'],itemStyle:{normal:{color:'#ff3333'}}});
-						}else{
-							statusOption.series[0].data.push({name:data[i]['aging'],value:data[i]['count']});
-						}
-					    
-					}
-					statusChart.setOption(statusOption);
-				}				
-			}
-		});
-
-	};
-
-	let getTypeChart=function(){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/typechart',
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({}),
-		  	success:function(data){
-
-				if(data){
-					typeOption.series[0].data=[];
-					for (let i = 0; i < data.length; i++)
-					{
-					    typeOption.series[0].data.push({name:data[i][1],value:data[i][0]})
-					}
-					typeChart.setOption(typeOption);
-				}				
-			}
-		});
-
-	};
-
-	let getCustop10BarChart=function(){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/cusalertstop10',
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({}),
-		  	success:function(data){
-
-				if(data){
-					custop10BarOption.xAxis[0].data=[];
-					custop10BarOption.series[0].data=[];
-					for (let i = 0; i < data.length; i++)
-					{
-						custop10BarOption.xAxis[0].data.push(data[i][1]);
-						custop10BarOption.series[0].data.push({name:data[i][1],value:data[i][0]});																    
-					}						
-					custop10BarChart.setOption(custop10BarOption);
-				}			
-			}
-		});
-
-	};
 
 	let getBarChart=function(){
 
@@ -300,22 +67,12 @@ $(function(){
 		  	success:function(data){
 
 				if(data){
-					barOption.xAxis[0].data=[];
+					console.log(data);
 					barOption.series[0].data=[];
-					for (let i = 0; i < data.length; i++)
-					{
-						if($.inArray(data[i][1], barOption.xAxis[0].data) === -1) barOption.xAxis[0].data.push(data[i][1]);																    
-					}
-					for(let j=0;j<3;j++){
-						for(let k=0;k<barOption.xAxis[0].data.length;k++){
-							barOption.series[j].data[k]=0;
-							for (let i = 0; i < data.length; i++){
-								if(barOption.series[j].name == data[i][2]&&barOption.xAxis[0].data[k]==data[i][1]){
-									barOption.series[j].data[k]=data[i][0];
-								}
-							}														
-						}						
-					}	
+					data.forEach(function(ele){	
+						barOption.series[0].data.push({'name':ele[1],'value':ele[0]});	  	  	
+				  	});
+					
 					barChart.setOption(barOption);
 				}			
 			}
@@ -670,7 +427,7 @@ $(function(){
 
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
-		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
+		url: $SCRIPT_ROOT+'/alerts/management/gettabledata',
   		pagination:true,
   		search:true,
 	    columns: [{
@@ -808,92 +565,6 @@ $(function(){
 		  }) 	 
 	});
 
-	statusChart.on('click', function(data){
-		console.log(data);
-		var old_start=$('#alertMgt').data('start');
-		var old_end = $('#alertMgt').data('end');
-        var aging = data.data.name;
-        if(data.data.name.startsWith('Due')){
-        	aging='30~30';
-        }else if(data.data.name.endsWith('+')){
-        	aging='31~1000000';
-        }
-
-		if(old_start==0&&old_end==0){
-			$('#alertMgt').data('start',aging.split("~")[0]);
-			$('#alertMgt').data('end',aging.split("~")[1]);
-		}else{
-			if(old_start==aging.split("~")[0]&&old_end==aging.split("~")[1]){//cancel select
-				$('#alertMgt').data('start',0);
-				$('#alertMgt').data('end',0);
-			}else{
-				$('#alertMgt').data('start',data.data.name.split("~")[0]);
-				$('#alertMgt').data('end',data.data.name.split("~")[1]);
-			}
-		}
-		
-		$.ajax({
-		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
-		  	type: 'GET',
-		  	contentType:'application/json',
-		  	success:function(data){
-		  		$alerttable.bootstrapTable('load',data);	  	
-		  	}
-		  });
-
-	});
-
-	typeChart.on('click', function(data){
-		console.log(data);
-		var old_type=$('#alertMgt').data('type');
-
-		if(old_type==0){
-			$('#alertMgt').data('type',data.data.name);
-		}else{
-			if(old_type==data.data.name){//cancel select
-				$('#alertMgt').data('type','0');
-			}else{
-				$('#alertMgt').data('type',data.data.name);
-			}
-		}
-		$.ajax({
-		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
-		  	type: 'GET',
-		  	contentType:'application/json',
-		  	success:function(data){
-		  		$alerttable.bootstrapTable('load',data);	  	
-		  	}
-		  });
-		
-	});
-
-	custop10BarChart.on('click', function(data){
-		console.log(data);
-		var old_customer=$('#alertMgt').data('customer');
-
-		if(old_customer==0){
-			$('#alertMgt').data('customer',data.data.name);
-		}else{
-			if(old_customer==data.data.name){//cancel select
-				$('#alertMgt').data('customer','0');
-			}else{
-				$('#alertMgt').data('customer',data.data.name);
-			}
-		}
-		$.ajax({
-		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('start')+'/'+$('#alertMgt').data('end')+'/'+$('#alertMgt').data('type')+'/'+$('#alertMgt').data('customer'),
-		  	type: 'GET',
-		  	contentType:'application/json',
-		  	success:function(data){
-		  		$alerttable.bootstrapTable('load',data);	  	
-		  	}
-		  });
-		
-		
-	});
 
 	$('#alertTable').on('load-success.bs.table', function (data) {
 
@@ -983,11 +654,6 @@ $(function(){
 			$('#barChart').css('display', 'none');
 			$("#toolbar").css('display','none');
 		}
-		getStatusChart();
-		getTypeChart();
-		getCustop10BarChart();
-		//getAlertTable();
-		//initTransTable();
 				
 
 	};

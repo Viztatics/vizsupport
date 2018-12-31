@@ -19,21 +19,9 @@
 {{ lib.panel_begin('Alert Management') }}
 
 <div class="panel panel-default">
-  <div id='alertMgt' data-ismanager={{is_analysis_manager}} data-start='0' data-end='0' data-type='0' data-customer='0'></div>
+  <div id='alertMgt' data-ismanager={{is_analysis_manager}}></div>
   <div class="panel-heading" style="background-color: #dff0d8;">Alert Distribution</div>
-  <div class="panel-body">
-    <div class="row">
-        <div class="col-md-6" id="statusChart" style="height:400px">
-        </div>
-        <div class="col-md-6" id="typeChart" style="height:400px">
-        </div>
-    </div>
-  </div>
-  <div class="panel-body">
-    <div class="row">
-        <div id="custop10BarChart" style="height:400px"></div>
-    </div>
-  </div>
+
   <div id="managerBar" class="panel-body">
     <div class="row">
         <div id="barChart" style="height:400px"></div>
@@ -42,7 +30,7 @@
 </div>
 
 <div class="panel panel-default">
-  <div class="panel-heading" style="background-color: #dff0d8;">Alert Table</div>
+  <div class="panel-heading" style="background-color: #dff0d8;">Qualitative Testing Alerts</div>
   <div class="panel-body">
     <div class="row">
         <div id="toolbar" style="position: relative;top: 45px;margin-top: -45px;">

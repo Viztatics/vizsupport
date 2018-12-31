@@ -544,7 +544,6 @@ $(function(){
 	        borderColor: '#777',
 	        borderWidth: 1,
 		    formatter : function (params) {
-		    	console.log(params);
 	            return "Account Key: "+params.data.value[2]+"<br/>"
 		                          +"Trans Month:  "+params.data.value[3]+"<br/>"
 		                          +"Trans Count: "+params.data.value[0]+"<br/>"
@@ -864,7 +863,6 @@ $(function(){
 				                    name: itemOpt.name,
 				                    tooltip:{
 				                    	formatter:function(params){
-				                    		console.log(params);
 				                    		return params.data.name+"</br>$"+itemOpt.value
 				                    	}
 				                    },

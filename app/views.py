@@ -1645,31 +1645,28 @@ class AlertView(BaseView):
     @has_access
     def getBarChartData(self):
 
-    	type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(User.id)
-    	type_result = [r for r in type_result]
-    	return Response(pd.io.json.dumps(type_result), mimetype='application/json')
+        #type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(User.id)
+        is_analysis_manager = isManager()
 
-    @expose('/management/gettabledata/<start>/<end>/<atype>/<customer>',methods=['GET'])
+        if is_analysis_manager is True:
+            type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.rule_status)
+        else:
+            type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_status).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.rule_status)
+        type_result = [r for r in type_result]
+        return Response(pd.io.json.dumps(type_result), mimetype='application/json')
+
+    @expose('/management/gettabledata',methods=['GET'])
     @has_access
-    def getAlertTableData(self,start,end,atype,customer):
+    def getAlertTableData(self,):
 
         data_result = []
-        iStart = int(start)
-        iEnd = int(end)
 
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id,VizAlerts.rule_status==StatusEnum.Open.name).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
         else:            
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id,VizAlerts.rule_status==StatusEnum.Open.name).order_by(VizAlerts.operated_on.desc())
-
-        if iStart>=0 and iEnd!=0 : 
-            alert_result = alert_result.filter(func.date_part('day',func.current_date()-VizAlerts.created_on)>=iStart,func.date_part('day',func.current_date()-VizAlerts.created_on)<=iEnd,VizAlerts.rule_type==atype)
-        if atype!='0':
-            alert_result = alert_result.filter(VizAlerts.rule_type==atype)
-        if customer!='0':
-            alert_result = alert_result.filter(VizAlerts.account_key==customer)
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
 
         data_result = [r._asdict() for r in alert_result]
 
@@ -2206,6 +2203,6 @@ appbuilder.add_link("Wire Transfer Activity Profiling", href='/rules/profiling/W
 appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/ACH', category='Quantitative')
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Quantitative')
 appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Quanlitative')
-appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Quanlitative')
+#appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Quanlitative')
 appbuilder.add_view_no_menu(HomeView())
 
