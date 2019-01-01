@@ -87,6 +87,16 @@ def row2dict(row):
 class CompanyModelView(ModelView):
     datamodel = SQLAInterface(Company)
 
+class TransView(BaseView):
+    
+    route_base = '/trans'
+
+    @expose('/category')
+    @has_access
+    def category(self):
+
+        return self.render_template('trans/monitoring_category.html')
+
 
 class RuleView(BaseView):
     
@@ -2192,6 +2202,7 @@ appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
 appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
 appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Rules')
+appbuilder.add_view(TransView, "Transaction Monitoring", href='/trans/category',category='Quantitative Testing')
 appbuilder.add_view(RuleView, "High Risk Country Wire Activity", href='/rules/highRiskCountry/Wire',category='Quantitative')
 appbuilder.add_link("High Risk Country ACH Activity", href='/rules/highRiskCountry/ACH', category='Quantitative')
 appbuilder.add_link("Cash Activity Limit", href='/rules/highRiskVolume/Cash', category='Quantitative')
