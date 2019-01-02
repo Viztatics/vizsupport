@@ -1,0 +1,36 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/3rd_party/mdb/css/mdb.min.css')}}"></link>
+{% endblock %}
+{% block content %}
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+      <h3 class="panel-title">AML Program Management</h3>
+  </div>
+  <div class="panel-body">
+
+    <div class="row">
+      <div class="col-sm-6 col-md-4">
+        
+        
+
+      </div>
+      
+    </div>
+
+  </div>
+</div>
+
+
+{% endblock %}
+{% block tail_js %}
+	{{super()}}
+    <script type="text/javascript">
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script src="{{url_for('static',filename='assets/3rd_party/mdb/js/mdb.min.js')}}"></script>
+{% endblock %}

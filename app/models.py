@@ -1,10 +1,11 @@
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Numeric
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Date, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from flask_appbuilder.security.sqla.models import User
+from flask_appbuilder.filemanager import get_file_original_name
 from flask import Markup, url_for
 import enum
 import datetime
@@ -226,3 +227,13 @@ class ValidHis(AuditMixin,Model):
     customer_valid = Column(Integer)
     account_valid = Column(Integer)
     transaction_valid = Column(Integer)
+
+class AmlProgram(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100))
+    last_update_date = Column(Date, nullable=True)
+    next_review_date = Column(Date, nullable=True)
+    file = Column(FileColumn)
+
+    def file_name(self):
+        return get_file_original_name(str(self.file))
