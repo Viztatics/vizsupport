@@ -230,6 +230,7 @@ class ValidHis(AuditMixin,Model):
 
 class AmlProgram(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
     title = Column(String(100))
     last_update_date = Column(Date, nullable=True)
     next_review_date = Column(Date, nullable=True)

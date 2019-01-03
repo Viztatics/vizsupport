@@ -2195,7 +2195,14 @@ class VizAlertsView(ModelView):
 class AMLProgView(ModelView):
 
     datamodel = SQLAInterface(AmlProgram)
-    
+
+    list_columns = ['title','last_update_date','next_review_date','file_name']
+    add_columns =  ['title','last_update_date','next_review_date','file']
+    edit_columns = ['title','last_update_date','next_review_date','file']
+
+    def pre_add(self, item):
+        item.company_id = current_user.company_id
+   
 
 
 

@@ -12,4 +12,4 @@ nohup.out
 .DS_Store
 config.py
 
-app/static/uploads/rules/*
+app/static/uploads/*
