@@ -1,6 +1,6 @@
-from flask import render_template, request, Response, jsonify, make_response
+from flask import render_template, request, Response, jsonify, make_response,g
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.models.sqla.filters import FilterEqual
+from flask_appbuilder.models.sqla.filters import FilterEqual,FilterEqualFunction
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder import AppBuilder, BaseView, ModelView, expose, has_access
 from flask_login import current_user
@@ -45,6 +45,9 @@ def jsonconverter(o):
         return o.__str__()
     if isinstance(o, decimal.Decimal):
         return str(o)
+
+def getCompany():
+    return g.user.company_id
 
 def isManager():
 
@@ -2196,14 +2199,15 @@ class AMLProgView(ModelView):
 
     datamodel = SQLAInterface(AmlProgram)
 
-    list_columns = ['title','last_update_date','next_review_date','file_name']
+    label_columns = {'days_between':'Days to Next Review'}
+    list_columns = ['title','last_update_date','next_review_date','file_name','days_between','status']
     add_columns =  ['title','last_update_date','next_review_date','file']
     edit_columns = ['title','last_update_date','next_review_date','file']
+    base_filters = [['company_id',FilterEqualFunction,getCompany]]
+    #base_filters = [['created_by',FilterEqualFunction,getUser]]
 
     def pre_add(self, item):
         item.company_id = current_user.company_id
-   
-
 
 
 @appbuilder.app.errorhandler(404)

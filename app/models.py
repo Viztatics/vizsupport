@@ -238,3 +238,17 @@ class AmlProgram(AuditMixin,Model):
 
     def file_name(self):
         return get_file_original_name(str(self.file))
+
+    def days_between(self):
+        d1 = datetime.date.today()
+        return (self.next_review_date - d1).days if (self.next_review_date - d1).days >0 else 0
+
+    def status(self):
+        d1 = datetime.date.today()
+        days = (self.next_review_date - d1).days if (self.next_review_date - d1).days >0 else 0
+        if days >=60 :
+            return Markup('<i class="glyphicon glyphicon-flag" style="color:green" title="No Action Needed"></i>')
+        elif days>=30 and days<60:
+            return Markup('<i class="glyphicon glyphicon-flag" style="color:yellow" title="Action Needed Soon"></i>')
+        else:
+            return Markup('<i class="glyphicon glyphicon-flag" style="color:red" title="Action Needed"></i>')
