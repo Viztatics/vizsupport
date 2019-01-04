@@ -252,3 +252,7 @@ class AmlProgram(AuditMixin,Model):
             return Markup('<i class="glyphicon glyphicon-flag" style="color:yellow" title="Action Needed Soon"></i>')
         else:
             return Markup('<i class="glyphicon glyphicon-flag" style="color:red" title="Action Needed"></i>')
+
+    def download(self):
+        return Markup(
+            '<a href="' + url_for('AMLProgView.download', filename=str(self.file)) + '">Download</a>')

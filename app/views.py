@@ -2199,8 +2199,9 @@ class AMLProgView(ModelView):
 
     datamodel = SQLAInterface(AmlProgram)
 
-    label_columns = {'days_between':'Days to Next Review'}
-    list_columns = ['title','last_update_date','next_review_date','file_name','days_between','status']
+    label_columns = {'days_between':'Days to Next Review', 'download': 'Download'}
+    list_columns = ['title','last_update_date','next_review_date','file_name','days_between','status','download']
+    show_columns = ['title','last_update_date','next_review_date','file_name','days_between','status','created_by','created_on','changed_by','changed_on','download']
     add_columns =  ['title','last_update_date','next_review_date','file']
     edit_columns = ['title','last_update_date','next_review_date','file']
     base_filters = [['company_id',FilterEqualFunction,getCompany]]
