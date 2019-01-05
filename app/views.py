@@ -98,7 +98,53 @@ class TransView(BaseView):
     @has_access
     def category(self):
 
-        return self.render_template('trans/monitoring_category.html')
+        rule_groups = []
+
+        rules = []
+
+        result = dict()
+
+        rule_num = db.session.query(func.count(Rules.id).label('count')).filter(Rules.company_id==current_user.company_id)
+
+        rule_num = [r._asdict() for r in rule_num]
+
+        print(rule_num)
+
+        if rule_num[0]['count'] == 0: 
+
+            rule_data = pd.read_csv(RULE_DEFAULT_FOLDER+'/initRule.csv')
+
+            for index, row in rule_data.iterrows():
+                rule = Rules(company_id=current_user.company_id, rule_code=row['RuleCode'], rule_group=row['RuleGroup'], product_type=row['ProductType'], viz_template=row['VizTemplate'], rule_description_short=row['RuleDescShort'], rule_description=('' if pd.isna(row['RuleDescription']) else row['RuleDescription']), rule_type=('' if pd.isna(row['Type']) else row['Type'])
+                    , susp_type=('' if pd.isna(row['SuspType']) else row['SuspType']), schedule=('' if pd.isna(row['Schedule']) else row['Schedule']), viz_schedule=('' if pd.isna(row['VizSchedule']) else row['VizSchedule']), pre_post_EOD=('' if pd.isna(row['PrePostEOD']) else row['PrePostEOD']), cust_acct=('' if pd.isna(row['CustAcct']) else row['CustAcct']), template_rule=('' if pd.isna(row['TemplateRule']) else row['TemplateRule'])
+                    , time_horizon=('' if pd.isna(row['TimeHorizon']) else row['TimeHorizon']), customer_type=('' if pd.isna(row['CustomerType']) else row['CustomerType']), customer_risk_level=('' if pd.isna(row['CustomerRiskLevel']) else row['CustomerRiskLevel']), customer_risk_class=('' if pd.isna(row['CustomerRiskClass']) else row['CustomerRiskClass']), min_trans_no=(-1 if pd.isna(row['Min_Trans_No']) else row['Min_Trans_No']), min_ind_trans_amt=(-1 if pd.isna(row['Min_Ind_Trans_Amt']) else row['Min_Ind_Trans_Amt'])
+                    , max_ind_trans_amt=(-1 if pd.isna(row['Max_Ind_Trans_Amt']) else row['Max_Ind_Trans_Amt']), min_agg_trans_amt=(-1 if pd.isna(row['Min_Agg_Trans_Amt']) else row['Min_Agg_Trans_Amt']), max_agg_trans_amt=(-1 if pd.isna(row['Max_Agg_Trans_Amt']) else row['Max_Agg_Trans_Amt']), additional=('' if pd.isna(row['Additional']) else row['Additional']), cash_ind=(-1 if pd.isna(row['Cash_Ind']) else row['Cash_Ind']), trans_code=('' if pd.isna(row['Trans_Code']) else row['Trans_Code'])
+                    , trans_code_group=('' if pd.isna(row['Trans_Code_Group']) else row['Trans_Code_Group']), in_cash_ind=(-1 if pd.isna(row['In_Cash_Ind']) else row['In_Cash_Ind']), in_trans_code=('' if pd.isna(row['In_Trans_Code']) else row['In_Trans_Code']), in_trans_code_group=('' if pd.isna(row['In_Trans_Code_Group']) else row['In_Trans_Code_Group']), out_cash_ind=(-1 if pd.isna(row['Out_Cash_Ind']) else row['Out_Cash_Ind']), out_trans_code=('' if pd.isna(row['Out_Trans_Code']) else row['Out_Trans_Code'])
+                    , out_trans_code_group=('' if pd.isna(row['Out_Trans_Code_Group']) else row['Out_Trans_Code_Group']), in_out_ratio_min=(-1 if pd.isna(row['In_Out_Ratio_Min']) else row['In_Out_Ratio_Min']*100.00), in_out_ratio_max=(-1 if pd.isna(row['In_Out_Ratio_Max']) else row['In_Out_Ratio_Max']*100.00))
+                self.appbuilder.get_session.add(rule)
+            self.appbuilder.get_session.commit()
+
+        rule_groups = db.session.query(Rules.rule_group).distinct().order_by(Rules.rule_group)
+
+        rule_groups = [r._asdict() for r in rule_groups]
+
+        rules = db.session.query(Rules.id,Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description_short,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
+            Rules.pre_post_EOD,Rules.cust_acct,Rules.template_rule,Rules.time_horizon,Rules.customer_type,Rules.customer_risk_level,Rules.customer_risk_class,Rules.min_trans_no,Rules.min_ind_trans_amt,
+            Rules.max_ind_trans_amt,Rules.min_agg_trans_amt,Rules.max_agg_trans_amt,Rules.additional,Rules.cash_ind,Rules.trans_code,Rules.trans_code_group,Rules.in_cash_ind,Rules.in_trans_code,
+            Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==current_user.company_id).order_by(Rules.rule_group,Rules.id)
+
+        rules = [r._asdict() for r in rules]
+
+        for group in rule_groups:
+            result[group['rule_group']]=[]
+            for rule in rules:
+                if group['rule_group'] == rule['rule_group']:
+                    result[group['rule_group']].append(rule)
+                if rule["rule_code"]=='blvelshwir':
+                    print(rule)
+        print(result)
+
+        return self.render_template('trans/monitoring_category.html',rules=result)
 
 
 class RuleView(BaseView):
