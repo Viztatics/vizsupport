@@ -124,7 +124,7 @@ class TransView(BaseView):
                 self.appbuilder.get_session.add(rule)
             self.appbuilder.get_session.commit()
 
-        rule_groups = db.session.query(Rules.rule_group).distinct().order_by(Rules.rule_group)
+        rule_groups = db.session.query(Rules.rule_group).distinct().order_by(Rules.id)
 
         rule_groups = [r._asdict() for r in rule_groups]
 
@@ -142,7 +142,6 @@ class TransView(BaseView):
                     result[group['rule_group']].append(rule)
                 if rule["rule_code"]=='blvelshwir':
                     print(rule)
-        print(result)
 
         return self.render_template('trans/monitoring_category.html',rules=result)
 

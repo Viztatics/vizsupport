@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
     <link rel="stylesheet" href="{{url_for('static',filename='assets/3rd_party/mdb/css/mdb.min.css')}}"></link>
     <link rel="stylesheet" href="{{url_for('static',filename='assets/css/conflict.css')}}"></link>
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/bootstrap4.css')}}"></link>
 {% endblock %}
 {% block content %}
 
@@ -14,78 +15,59 @@
   </div>
   <div class="panel-body">
 
-{% for key,vals in rules.items() %}
+  <!-- Card -->
+  <div class="card card-image" style="background-image: url(https://mdbootstrap.com/img/Photos/Horizontal/Work/4-col/img%20%2814%29.jpg);">
 
-      {%if loop.index % 3 == 0 %}
-        <div class="row">
+    <!-- Content -->
+    <div class="rgba-black-strong py-5 px-4">
+      <div class="row d-flex justify-content-center">
+        <div class="col-md-10 col-xl-8">
 
-          <div class="col-sm-6 col-md-4">
-            
-            <!-- Card -->
-            <div class="card card-cascade wider">
+          <!--Accordion wrapper-->
+          <div class="accordion md-accordion accordion-5" id="accordionEx5" role="tablist" aria-multiselectable="true">
 
-              <!-- Card image -->
-              <div class="view view-cascade gradient-card-header peach-gradient">
+            {% for key,vals in rules.items() %}
 
-                <!-- Title -->
-                <h2 class="card-header-title mb-3">{{key|e}}</h2>
-                <!-- Text -->
+            <!-- Accordion card -->
+            <div class="card mb-4">
 
-              </div>
-
-              <!-- Card content -->
-              <div class="card-body card-body-cascade text-center">
-                {% for rule in vals %}
-                <!-- Link -->
-                <a href="#!" class="d-flex flex-row-reverse p-2">
-                  <h5 class="waves-effect waves-light">{{rule.rule_description_short|e}}<i class="fas fa-angle-double-right ml-2"></i></h5>
+              <!-- Card header -->
+              <div class="card-header p-0 z-depth-1" role="tab" id="heading{{loop.index}}">
+                <a data-toggle="collapse" data-parent="#accordionEx5" href="#collapse{{loop.index}}" aria-expanded="{{'true' if loop.index==1 else 'false'}}""
+                  aria-controls="collapse{{loop.index}}">
+                  <i class="fas fa-cloud fa-2x p-3 mr-4 float-left black-text" aria-hidden="true"></i>
+                  <h4 class="text-uppercase white-text mb-0 py-3 mt-1">
+                    {{key|e}}
+                  </h4>
                 </a>
-                {% endfor %}
-
               </div>
-              <!-- Card content -->
 
+              <!-- Card body -->
+              <div id="collapse{{loop.index}}" class="collapse {{'in' if loop.index==1 else ''}}" role="tabpanel" aria-labelledby="heading{{loop.index}}" data-parent="#accordionEx5">
+                <div class="card-body rgba-black-light white-text z-depth-1">                  
+                    <p class="p-md-4 mb-0" style="padding: 1.5rem;font-size: 1.5rem">
+                      {% for rule in vals %}
+                        {{rule.rule_description_short}}</br>
+                      {% endfor %}
+                    </p>
+                </div>
+              </div>
             </div>
-            <!-- Card -->
+            <!-- Accordion card -->
+
+            {% endfor%}
 
           </div>
-          
+          <!--/.Accordion wrapper-->
+
         </div>
-      {% else %}
-         <div class="col-sm-6 col-md-4">
-            
-            <!-- Card -->
-            <div class="card card-cascade wider">
+      </div>
+    </div>
+    <!-- Content -->
+  </div>
+  <!-- Card -->
 
-              <!-- Card image -->
-              <div class="view view-cascade gradient-card-header peach-gradient">
 
-                <!-- Title -->
-                <h2 class="card-header-title mb-3">{{key|e}}</h2>
-                <!-- Text -->
-
-              </div>
-
-              <!-- Card content -->
-              <div class="card-body card-body-cascade text-center">
-
-                {% for rule in vals %}
-                <!-- Link -->
-                <a href="#!" class="d-flex flex-row-reverse p-2">
-                  <h5 class="waves-effect waves-light">{{rule.rule_description_short|e}}<i class="fas fa-angle-double-right ml-2"></i></h5>
-                </a>
-                {% endfor %}
-
-              </div>
-              <!-- Card content -->
-
-            </div>
-            <!-- Card -->
-
-          </div>
-        {% endif%}
-
-    {% endfor%}
 
   </div>
 </div>
