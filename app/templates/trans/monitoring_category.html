@@ -47,7 +47,25 @@
                 <div class="card-body rgba-black-light white-text z-depth-1">                  
                     <p class="p-md-4 mb-0" style="padding: 1.5rem;font-size: 1.5rem">
                       {% for rule in vals %}
-                        {{rule.rule_description_short}}</br>
+                        {% if rule.rule_group == "High Risk Country" %}
+                          <a href="{{url_for('RuleView.highRiskCountry',transCode='Wire')}}">                                              
+                            {{rule.rule_description_short}}                      
+                          </a></br>
+                        {% elif rule.rule_group == "High Value Detection" %}
+                          <a href="{{url_for('RuleView.highRiskVolume',transCode='Wire')}}">                                              
+                            {{rule.rule_description_short}}                                                  
+                          </a></br>
+                        {% elif rule.rule_group == "Profiling" %}
+                          <a href="{{url_for('RuleView.activityprofiling',transCode='Wire')}}">                                              
+                            {{rule.rule_description_short}}                                                  
+                          </a></br>
+                        {% elif rule.rule_group == "Flow-Through" %}
+                          <a href="{{url_for('RuleView.activityflowthrough')}}">                                              
+                            {{rule.rule_description_short}}                                                  
+                          </a></br>
+                        {% else %}
+                            {{rule.rule_description_short}}</br>
+                        {% endif %}
                       {% endfor %}
                     </p>
                 </div>
