@@ -2280,7 +2280,7 @@ appbuilder.add_link("Remote Deposit Activity Profiling", href='/rules/profiling/
 appbuilder.add_link("Wire Transfer Activity Profiling", href='/rules/profiling/Wire', category='Quantitative')
 appbuilder.add_link("ACH Transfer Activity Profiling", href='/rules/profiling/ACH', category='Quantitative')
 appbuilder.add_link("FLow Through Activity Pattern", href='/rules/flowthrough', category='Quantitative')
-appbuilder.add_view(AlertView, "Alert Management", href='/alerts/management/index',category='Quanlitative')
+appbuilder.add_view(AlertView, "Transaction Monitoring Q/A Alerts", href='/alerts/management/index',category='Quanlitative Testing')
 #appbuilder.add_link("Alert Archive", href='/alerts/archive',category='Quanlitative')
 appbuilder.add_view_no_menu(HomeView())
 
