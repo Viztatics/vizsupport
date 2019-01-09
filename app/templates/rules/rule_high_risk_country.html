@@ -26,14 +26,45 @@
 		            </div>
 		        </div>
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="threshNum">Threshold Below The Line</label></div>
+		            <div class="col-md-2 input-group"><label for="custType">Customer Type</label></div>
+		            <div class="col-md-2 input-group">
+		            	<select class="form-control" id="custType">
+		            	  <option value="">All</option>
+						  <option value="B">Business</option>
+						  <option value="I">Individual</option>
+						</select>
+		            </div>
+		            <div class="col-md-2 input-group"></div>
+		            <div class="col-md-2 input-group"><label for="custRLel">Customer Risk Level</label></div>
+		            <div class="col-md-2 input-group">
+		            	<select class="form-control" id="custRLel">
+		            	  <option value="">All</option>
+						  <option value="High">High</option>
+						  <option value="Medium">Medium</option>
+						  <option value="Low">Low</option>
+						</select>
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="threshNum">Current Threshold</label></div>
 		            <div class="col-md-2 input-group">
 		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="1000" value="1000">
 		            </div>
 		            <div class="col-md-2 input-group"></div>
-		            <div class="col-md-2 input-group"><label for="threshNum2">Threshold Above The Line</label></div>
+		            <div class="col-md-2 input-group"><label for="threshNum2">Testing Threshold</label></div>
 		            <div class="col-md-2 input-group">
 		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum2" name="threshNum2" placeholder="10000" value="10000">
+		            </div>
+		        </div>
+		        <div class="form-group form-inline">
+		            <div class="col-md-2 input-group"><label for="circleName">Circle Name</label></div>
+		            <div class="col-md-2 input-group">
+		            	<input class="form-control" type="text" class="" maxlength="20" id="circleName" name="circleName" value="circel1">
+		            </div>
+		            <div class="col-md-2 input-group"></div>
+		            <div class="col-md-2 input-group"><label for="runName">Run Name</label></div>
+		            <div class="col-md-2 input-group">
+		            	<input class="form-control" type="text" class="" maxlength="20" id="runName" name="runName" value="run1">
 		            </div>
 		        </div>
 		        <div class="form-group form-inline">

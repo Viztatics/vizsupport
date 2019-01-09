@@ -83,6 +83,7 @@ class VizAlerts(AuditMixin,Model):
     score = Column(Integer, default=0)
     operated_on = Column(DateTime, default=datetime.datetime.now, nullable=True)
     finished_on = Column(DateTime, nullable=True)
+    run_id = Column(Integer)
 
     @declared_attr
     def operated_by_fk(cls):
@@ -256,3 +257,25 @@ class AmlProgram(AuditMixin,Model):
     def download(self):
         return Markup(
             '<a href="' + url_for('AMLProgView.download', filename=str(self.file)) + '">Download</a>')
+
+class Circle(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return self.name
+
+class Run(AuditMixin,Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+    circle_id = Column(Integer)
+    rule_group = Column(String(100))
+    product_type = Column(String(100))
+    customer_type = Column(String(100))
+    customer_risk_level = Column(String(100))
+    current_threshold = Column(Numeric(10,2))
+    testing_threshold = Column(Numeric(10,2))
+    data_id = Column(Integer)
+
+    def __repr__(self):
+        return self.name

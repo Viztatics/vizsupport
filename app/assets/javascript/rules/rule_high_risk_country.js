@@ -1151,6 +1151,12 @@ $(function(){
 	});
 
 	$('#crtAlertBtn').click(() => {
+
+		if(!$("form").valid()){
+			$("#circleName").focus();
+		  	return false;
+		}
+
 		ids = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
     		return item.ID;
     	});
@@ -1168,7 +1174,10 @@ $(function(){
 		  	url: $SCRIPT_ROOT+'/rules/highRiskCountry/alertdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'items':items}),
+		  	data: JSON.stringify({'items':items,'dataId':$('#dataId').val(),'custType':$('#custType').val(),
+		  						  'custRLel':$('#custRLel').val(),'threshNum':$('#threshNum').val(),
+		  						  'threshNum2':$('#threshNum2').val(),'circleName':$('#circleName').val(),
+		  						  'runName':$('#runName').val()}),
 		  	success:function(data){
 		  		$('#alertNum').text(items.length);
 		  		$('#alertModal').modal('show');   	
@@ -1202,6 +1211,12 @@ $(function(){
 		    digits:true,
 		    min: 0,
 		    greaterThan: "#threshNum"
+		  },
+		  circleName: {
+		    required: true,
+		  },
+		  runName: {
+		    required: true,
 		  },
 	    },
 	});
