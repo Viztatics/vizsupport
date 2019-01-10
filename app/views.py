@@ -528,11 +528,11 @@ class RuleView(BaseView):
             circle = [r._asdict() for r in circle]
             circle_id = circle[0]["id"]
 
-        run = db.session.query(Run.id).filter(Run.name==runName,Run.rule_group=='High Risk Country',Run.product_type==transCode,Run.customer_type==custType,Run.customer_risk_level==custRLel,Run.current_threshold==threshNum,Run.testing_threshold==threshNum2,Run.data_id==dataId)
+        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='High Risk Country',Run.product_type==transCode,Run.customer_type==custType,Run.customer_risk_level==custRLel,Run.current_threshold==threshNum,Run.testing_threshold==threshNum2,Run.data_id==dataId)
 
         if run.count() == 0 :
             new_run = Run(circle_id=circle_id,name=runName,rule_group='High Risk Country',product_type=transCode,customer_type=custType,customer_risk_level=custRLel,current_threshold=threshNum,testing_threshold=threshNum2,data_id=dataId)
-            self.appbuilder.get_session.add(new_circle)
+            self.appbuilder.get_session.add(new_run)
             self.appbuilder.get_session.flush()
             run_id = new_run.id
         else :
@@ -1751,9 +1751,9 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,Circle.name.label('cycle_name'),Run.name.label('run_name'),Run.rule_group,Run.product_type,Run.customer_type,Run.customer_risk_level,Run.current_threshold,Run.testing_threshold,Run.data_id).join(User, VizAlerts.operated_by_fk == User.id).outerjoin(Run,VizAlerts.run_id == Run.id).outerjoin(Circle,Run.circle_id == Circle.id).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
         else:            
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name).join(User, VizAlerts.operated_by_fk == User.id).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,Circle.name.label('cycle_name'),Run.name.label('run_name'),Run.rule_group,Run.product_type,Run.customer_type,Run.customer_risk_level,Run.current_threshold,Run.testing_threshold,Run.data_id).join(User, VizAlerts.operated_by_fk == User.id).outerjoin(Run,VizAlerts.run_id == Run.id).outerjoin(Circle,Run.circle_id == Circle.id).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
 
         if status!='0':
             alert_result = alert_result.filter(VizAlerts.rule_status==status)

@@ -527,6 +527,38 @@ $(function(){
 	        title: 'Current Step',
 	        sortable:true,
 	    },{
+	        field: 'cycle_name',
+	        title: 'Cycle Name',
+	        sortable:true,
+	    },{
+	        field: 'run_name',
+	        title: 'Run Name',
+	        sortable:true,
+	    },{
+	        field: 'product_type',
+	        title: 'Product Type',
+	        sortable:true,
+	    },{
+	        field: 'customer_type',
+	        title: 'Customer Type',
+	        sortable:true,
+	    },{
+	        field: 'customer_risk_level',
+	        title: 'Customer Risk Level',
+	        sortable:true,
+	    },{
+	        field: 'current_threshold',
+	        title: 'Current Threshold',
+	        sortable:true,
+	    },{
+	        field: 'testing_threshold',
+	        title: 'Testing Threshold',
+	        sortable:true,
+	    },{
+	        field: 'data_id',
+	        title: 'Data Id',
+	        sortable:true,
+	    },{
 	        field: 'username',
 	        title: 'Operator',
 	        /**
