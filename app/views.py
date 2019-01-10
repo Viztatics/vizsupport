@@ -1736,9 +1736,9 @@ class AlertView(BaseView):
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.rule_status)
+            type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_type).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.rule_type)
         else:
-            type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_status).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.rule_status)
+            type_result = db.session.query(func.count(VizAlerts.rule_type).label('count'),VizAlerts.rule_type.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_type).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.rule_type)
         type_result = [r for r in type_result]
         return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 

@@ -13,7 +13,7 @@ $(function(){
 
 	let barOption = {
 		title : {
-	        text: 'Alerts Status Distribution',
+	        text: 'Alerts Rule Group Distribution',
 	        x:'center'
 	    },
 	    tooltip : {
@@ -30,20 +30,21 @@ $(function(){
 	    },
 	    xAxis : [
 	        {
-	        	name : 'status',
-	            type : 'category',
-	            data : ['Open','Close_True','Close_False']
+	        	name : 'alerts',
+	            type : 'value',
+	            data : []
 	        }
 	    ],
 	    yAxis : [
 	        {
-	        	name : 'alerts',
-	            type : 'value'
+	        	name : 'Rule Group',
+	            type : 'category',
+	            data : []
 	        }
 	    ],
 	    series : [
 	        {
-	            name:'Alert Status',
+	            name:'Alerts',
 	            type:'bar',
 	            itemStyle: {
 				    normal: {
@@ -68,8 +69,10 @@ $(function(){
 
 				if(data){
 					console.log(data);
+					barOption.yAxis[0].data=[];
 					barOption.series[0].data=[];
 					data.forEach(function(ele){	
+						barOption.yAxis[0].data.push(ele[1]);
 						barOption.series[0].data.push({'name':ele[1],'value':ele[0]});	  	  	
 				  	});
 					
