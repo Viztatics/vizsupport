@@ -14,9 +14,11 @@ $(function(){
 
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileAmountChart = echarts.init(document.getElementById('percentileAmountChart'));
-	var paretoAmountChart = echarts.init(document.getElementById('paretoAmountChart'));
 	var percentileCountChart = echarts.init(document.getElementById('percentileCountChart'));
-	var paretoCountChart = echarts.init(document.getElementById('paretoCountChart'));
+	var run1CntChart = echarts.init(document.getElementById('run1CntChart'));
+	var run1AmtChart = echarts.init(document.getElementById('run1AmtChart'));
+	var run2CntChart = echarts.init(document.getElementById('run2CntChart'));
+	var run2AmtChart = echarts.init(document.getElementById('run2AmtChart'));
 
 	var scatteroption = {
 	    title: {
@@ -167,63 +169,6 @@ $(function(){
 	    ]
 	};
 
-	var amtlinebaroption = {
-		title : {
-	        text: 'Amount Pareto Analysis(Customer Analysis)',
-	    },
-	    tooltip : {
-	        trigger: 'axis'
-	    },
-	    legend: {
-	        data:['Trans Amount','Cumulative Percentage'],
-	        left:'right',
-	    },
-	    grid:{
-	    	y2:'12%',
-	    },
-	    xAxis : [
-	        {
-	            type : 'category',
-	            axisLabel : {
-	            	rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: function(params){
-	                	return "$"+params/1000+"K"
-
-	                }
-	            },
-	        },
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: '{value} %'
-	            }
-	        }
-	    ],
-	    series : [
-
-	        {
-	            name:'Trans Amount',
-	            type:'bar',
-	            data:[]
-	        },
-	        {
-	            name:'Cumulative Percentage',
-	            type:'line',
-	            yAxisIndex: 1,
-	            symbol:'diamond',
-	            symbolSize:10,
-	            data:[]
-	        }
-	    ]
-	};
 
 	var cntlineoption = {
 	    title : {
@@ -263,63 +208,51 @@ $(function(){
 	    ]
 	};
 
-	var cntlinebaroption = {
-		title : {
-	        text: 'Count Pareto Analysis(Customer Analysis)',
+	let pieOption = {
+	    title : {
+	        text: '',
+	        x:'center'
 	    },
 	    tooltip : {
-	        trigger: 'axis'
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
 	    },
-	    legend: {
-	        data:['Trans Count','Cumulative Percentage'],
-	        left:'right',
-	    },
-	    grid:{
-	    	y2:'12%',
-	    },
-	    xAxis : [
-	        {
-	            type : 'category',
-	            axisLabel : {
-	            	rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	            type : 'value',
-	        },
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: '{value} %'
-	            }
-	        }
-	    ],
+	    //color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
 	    series : [
-
 	        {
-	            name:'Trans Count',
-	            type:'bar',
-	            data:[]
-	        },
-	        {
-	            name:'Cumulative Percentage',
-	            type:'line',
-	            yAxisIndex: 1,
-	            symbol:'diamond',
-	            symbolSize:10,
-	            data:[]
+	            name: '',
+	            type: 'pie',
+	            radius : ['50%','70%'],
+	            center: ['40%', '50%'],
+	            data: [],
+	            label:{
+	            	normal:{
+	            		show:false,
+	            		position:'center',
+	            	},
+	            	emphasis:{
+	            		show:false,
+	            		textStyle:{
+	            			fontWeight:'bold',
+	            		}
+	            	}
+	            },
+	            labelLine:{
+	            	normal:{
+	            		show:false
+	            	}
+	            }
 	        }
 	    ]
 	};
 
 	scatterChart.setOption(scatteroption);
 	percentileAmountChart.setOption(amtlineoption);
-	paretoAmountChart.setOption(amtlinebaroption);
 	percentileCountChart.setOption(cntlineoption);
-	paretoCountChart.setOption(cntlinebaroption);
+	run1CntChart.setOption(pieOption);
+	run1AmtChart.setOption(pieOption);
+	run2CntChart.setOption(pieOption);
+	run2AmtChart.setOption(pieOption);
 
 	var getHighRiskVolumeStatics=function(includeOutlier){
 
@@ -330,8 +263,7 @@ $(function(){
 		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
-		  		$('#statisticsAmountTable').bootstrapTable('load',data);
-		  		$('#statisticsCountTable').bootstrapTable('load',data);
+		  		$('#statisticsTable').bootstrapTable('load',data);
 
 		  	}
 		});
@@ -360,32 +292,6 @@ $(function(){
 
 	};
 
-	var getHighRiskVolumeAmountPareto=function(includeOutlier){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/paretodata/amt/'+transcode,
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
-		  	success:function(data){
-
-		  		if(data){
-	  				amtlinebaroption.xAxis[0].data=[];
-	  				amtlinebaroption.series[0].data=[];
-	  				amtlinebaroption.series[1].data=[];
-		  			data.forEach(function(singledata){
-						amtlinebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-						amtlinebaroption.series[0].data.push(singledata['TRANS_AMT'].toFixed(2));
-				  		amtlinebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-					    paretoAmountChart.setOption(amtlinebaroption);
-				  	})
-		  		}				
-			}
-		});
-
-	};
-
 	var getHighRiskVolumeCountPercentile=function(includeOutlier){
 
 		$.ajax({
@@ -407,31 +313,7 @@ $(function(){
 
 	};
 
-	var getHighRiskVolumeCountPareto=function(includeOutlier){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/paretodata/cnt/'+transcode,
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')}),
-		  	success:function(data){
-
-	  			cntlinebaroption.xAxis[0].data=[];
-	  			cntlinebaroption.series[0].data=[];
-	  			cntlinebaroption.series[1].data=[];
-				data.forEach(function(singledata){
-					cntlinebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-					cntlinebaroption.series[0].data.push(singledata['TRANS_CNT'].toFixed(2));
-			  		cntlinebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-				    paretoCountChart.setOption(cntlinebaroption);
-			  	})
-			}
-		});
-
-	};
-
-	$('#statisticsAmountTable').bootstrapTable({
+	$('#statisticsTable').bootstrapTable({
   		pagination:false,
 	    columns: [{
 	        field: 'amt_min_data',
@@ -469,12 +351,7 @@ $(function(){
 				  currency: 'USD',
 				});
 			}
-	    }],
-	});
-
-	$('#statisticsCountTable').bootstrapTable({
-  		pagination:false,
-	    columns: [{
+	    },{
 	        field: 'cnt_min_data',
 	        title: 'MIN_COUNT',
 	        formatter: function formatter(value, row, index, field) {
@@ -620,73 +497,7 @@ $(function(){
 		});
 	});
 
-	getHighRiskVolumeStatics(1);
-	getHighRiskVolumeAmountPercentile(1);
-	getHighRiskVolumeAmountPareto(1);
-	getHighRiskVolumeCountPercentile(1);
-	getHighRiskVolumeCountPareto(1);
-
-	$("#highRiskCtyForm").validate({
-		ignore:"input[type=file]",
-	    rules: {
-	      amtThreshNum:{
-	      	required: true,
-	      	digits:true,
-	      },
-	      amtThreshNum2: {
-		    digits:true,
-		    min: 0,
-		    greaterThan: "#amtThreshNum"
-		  },
-	      cntThreshNum:{
-	      	required: true,
-	      	digits:true,
-	      },
-	      cntThreshNum2: {
-		    digits:true,
-		    min: 0,
-		    greaterThan: "#cntThreshNum"
-		  },
-	    },
-	});
-
-	$("#crDb").on('change', function(event) {
-		event.preventDefault();
-		/* Act on the event */
-		getHighRiskVolumeStatics($("#isOutlier").val());
-		getHighRiskVolumeAmountPercentile($("#isOutlier").val());
-		getHighRiskVolumeAmountPareto($("#isOutlier").val());
-		getHighRiskVolumeCountPercentile($("#isOutlier").val());
-		getHighRiskVolumeCountPareto($("#isOutlier").val());		
-
-	});
-
-	$("#isOutlier").on('change', function(event) {
-		event.preventDefault();
-		/* Act on the event */
-		getHighRiskVolumeStatics($(this).val());		
-		getHighRiskVolumeAmountPercentile($(this).val());
-		getHighRiskVolumeAmountPareto($(this).val());
-		getHighRiskVolumeCountPercentile($(this).val());
-		getHighRiskVolumeCountPareto($(this).val());		
-
-
-	});
-
-	$( "form" ).submit(function( event ) {
-	  event.preventDefault();
-
-	  debugger;
-
-	  if(!$("form").valid()){
-	  	return false;
-	  }
-
-	  getHighRiskVolumeStatics($("#isOutlier").val());
-	  getHighRiskVolumeAmountPercentile($("#isOutlier").val());
-	  getHighRiskVolumeAmountPareto($("#isOutlier").val());
-	  getHighRiskVolumeCountPercentile($("#isOutlier").val());
-	  getHighRiskVolumeCountPareto($("#isOutlier").val());
+	let getScatterPlot=function(){
 
 	  $.ajax({
 	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterplot/'+transcode,
@@ -708,55 +519,63 @@ $(function(){
 		  	scatterChart.setOption(scatteroption);
 	  	}
 	  });
+	};
 
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterstatistics/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')
+	var getScatterStatistics=function(){
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/scatterstatistics/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  		  	data: JSON.stringify({'crDb':$('#crDb').val(),'filename':$('#reportPath').data('keyname')
 	  		,amtThreshNum:$('#amtThreshNum').val(),amtThreshNum2:$('#amtThreshNum2').val()
 	  		,cntThreshNum:$('#cntThreshNum').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
-	  	success:function(data){
-	  		console.log(data);
-	  		$("#amountRun1").text(data.amount.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountRun2").text(data.amount.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountBelowRun1").text(data.below_amount_below.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountBelowRun2").text(data.below_amount_above.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountAboveRun1").text(data.above_amount_below.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountAboveRun2").text(data.above_amount_above.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountPercentRun1").text(data.percent_amount_below+'%');
-	  		$("#amountPercentRun2").text(data.percent_amount_above+'%');
-	  		$("#countRun1").text(data.count);
-	  		$("#countRun2").text(data.count);
-	  		$("#countBelowRun1").text(data.below_count_below);
-	  		$("#countBelowRun2").text(data.below_count_above);	  
-	  		$("#countAboveRun1").text(data.above_count_below);
-	  		$("#countAboveRun2").text(data.above_count_above);
-	  		$("#countPercentRun1").text(data.percent_acount_below+'%');
-	  		$("#countPercentRun2").text(data.percent_acount_above+'%');	
-	  	}
-	  });
-	  
+	  		success:function(data){
+		  		console.log(data);
+
+		  		let run1CntOption = $.extend(true,{},pieOption)
+		  		run1CntOption.title.text='Run1 Count';
+		  		run1CntOption.series[0].name = 'Run1 Count';
+		  		run1CntOption.series[0].data = [{value:data.below_count_below,name:"Below Threshold"},{value:data.above_count_below,name:'Above Threshold'}];
+		  		run1CntChart.setOption(run1CntOption);
+
+		  		let run1AmtOption = $.extend(true,{},pieOption)
+		  		run1AmtOption.title.text='Run1 Amount';
+		  		run1AmtOption.tooltip.formatter=function(params){
+		  											let num = params.data.value.toLocaleString('en-US', {
+																				  style: 'currency',
+																				  currency: 'USD',
+																				});
+		  											return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+		  										};
+		  		run1AmtOption.series[0].name = 'Run1 Amount';
+		  		run1AmtOption.series[0].data = [{value:data.below_amount_below,name:"Below Threshold"},{value:data.above_amount_below,name:'Above Threshold'}];
+		  		run1AmtChart.setOption(run1AmtOption);
+
+		  		let run2CntOption = $.extend(true,{},pieOption)
+		  		run2CntOption.title.text='Run2 Count';
+		  		run2CntOption.series[0].name = 'Run2 Count';
+		  		run2CntOption.series[0].data = [{value:data.below_count_above,name:"Below Threshold"},{value:data.above_count_above,name:'Above Threshold'}];
+		  		run2CntChart.setOption(run2CntOption);
+
+		  		let run2AmtOption = $.extend(true,{},pieOption)
+		  		run2AmtOption.title.text='Run2 Amount';
+		  		run2AmtOption.tooltip.formatter=function(params){
+										let num = params.data.value.toLocaleString('en-US', {
+																  style: 'currency',
+																  currency: 'USD',
+																});
+										return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+									};
+		  		run2AmtOption.series[0].name = 'Run2 Amount';
+		  		run2AmtOption.series[0].data = [{value:data.below_amount_above,name:"Below Threshold"},{value:data.above_amount_above,name:'Above Threshold'}];
+		  		run2AmtChart.setOption(run2AmtOption);
+		
+		  	}
+	  	});
+	}
+
+	let getTableData = function(){
 	  $.ajax({
 	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/tabledata/'+transcode,
 	  	type: 'POST',
@@ -771,7 +590,9 @@ $(function(){
 
 	  	}
 	  });
+	};
 
+	let getTableStatistics = function(){
 	  $.ajax({
 	  	cache: false,
 	  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/tablestatistics/'+transcode,
@@ -796,6 +617,81 @@ $(function(){
 
 	  	}
 	  });
+	}
+
+	getHighRiskVolumeStatics(1);
+	getHighRiskVolumeAmountPercentile(1);
+	getHighRiskVolumeCountPercentile(1);
+	getScatterPlot();
+	getScatterStatistics();
+	getTableData();
+	getTableStatistics();
+
+	$("#highRiskCtyForm").validate({
+		ignore:"input[type=file]",
+	    rules: {
+	      amtThreshNum:{
+	      	required: true,
+	      	digits:true,
+	      },
+	      amtThreshNum2: {
+		    digits:true,
+		    min: 0,
+		    greaterThan: "#amtThreshNum"
+		  },
+	      cntThreshNum:{
+	      	required: true,
+	      	digits:true,
+	      },
+	      cntThreshNum2: {
+		    digits:true,
+		    min: 0,
+		    greaterThan: "#cntThreshNum"
+		  },		  
+		  circleName: {
+		    required: true,
+		  },
+		  runName: {
+		    required: true,
+		  },
+	    },
+	});
+
+	$("#crDb").on('change', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		getHighRiskVolumeStatics($("#isOutlier").val());
+		getHighRiskVolumeAmountPercentile($("#isOutlier").val());
+		getHighRiskVolumeCountPercentile($("#isOutlier").val());	
+
+	});
+
+	$("#isOutlier").on('change', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		getHighRiskVolumeStatics($(this).val());		
+		getHighRiskVolumeAmountPercentile($(this).val());
+		getHighRiskVolumeCountPercentile($(this).val());	
+
+
+	});
+
+	$( "form" ).submit(function( event ) {
+	  event.preventDefault();
+
+	  debugger;
+
+	  if(!$("form").valid()){
+	  	return false;
+	  }
+
+	  getHighRiskVolumeStatics($("#isOutlier").val());
+	  getHighRiskVolumeAmountPercentile($("#isOutlier").val());
+	  getHighRiskVolumeCountPercentile($("#isOutlier").val());
+	  getScatterPlot();
+	  getScatterStatistics();
+	  getTableData();	  
+	  getTableStatistics();
 
 	});
 
