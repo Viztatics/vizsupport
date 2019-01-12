@@ -246,6 +246,32 @@ $(function(){
 	    ]
 	};
 
+	let roseOption = {
+	    
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
+	    },
+	    legend: {
+	        x : 'center',
+	        y : 'bottom',
+	        data:[],
+	        show:false,
+	    },
+	    series : [
+	        {
+	            name:'Missing Cusomter From Run1',
+	            type:'pie',
+	            radius : [20, 110],
+	            roseType : 'area',
+	            x: '50%',               // for funnel
+	            max: 40,                // for funnel
+	            sort : 'ascending',     // for funnel
+	            data:[]
+	        }
+	    ]
+	};
+
 	scatterChart.setOption(scatteroption);
 	percentileAmountChart.setOption(amtlineoption);
 	percentileCountChart.setOption(cntlineoption);
@@ -676,10 +702,53 @@ $(function(){
 
 	});
 
+	$("#missCust").on('click', function(event) {
+		event.preventDefault();
+
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/runDiff/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'filename':$('#reportPath').data('keyname'),crDb:$('#crDb').val()
+	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  		,amtThreshNum2:$('#amtThreshNum2').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
+		  	success:function(data){
+		  		console.log(data);
+		  		$('#missingTabs a:first').tab('show');
+		  		$('#missingModal').modal('show'); 
+		  		$('#missChart').height(400);
+		  		$('#missChart').width(600);
+		  		var missChart = echarts.init(document.getElementById('missChart'));		
+		  		roseOption.series[0].data = [];  
+		  		data.forEach(function (missingdata){	
+					roseOption.series[0].data.push({'value':missingdata['size'],'name':missingdata['ACCOUNT_KEY']});
+
+		  		})
+		  		missChart.setOption(roseOption);
+		  		$('#missingTable').bootstrapTable('load',data);
+
+		  	}
+		});
+		
+		/* Act on the event */
+	});
+
+	$('#missingTable').bootstrapTable({
+  		pagination:true,
+  		exportDataType: 'all',
+  		search:true,  			
+	    columns: [{
+	        field: 'ACCOUNT_KEY',
+	        title: 'ACCOUNT',
+	    }, {
+	        field: 'size',
+	        title: 'Count of Transanctions',
+	    }],
+	});
+
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
-
-	  debugger;
 
 	  if(!$("form").valid()){
 	  	return false;

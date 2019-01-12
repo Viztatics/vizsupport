@@ -902,6 +902,49 @@ class RuleView(BaseView):
         return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
 
 
+    @expose('/highRiskVolume/runDiff/<transCode>',methods=['POST'])
+    @has_access
+    def getHighRiskCountryRunDiff(self,transCode):
+
+        highRiskVolumnFolder = self.HIGH_VALUE_VOLUMN_FOLDER_PREFIX+transCode
+
+        dst_path = RULE_UPLOAD_FOLDER+highRiskVolumnFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        crDb = request.get_json()["crDb"]
+
+        amtThreshold = request.get_json()["amtThreshNum"]
+
+        cntThreshold = request.get_json()["cntThreshNum"]
+
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        cntThreshold2 = request.get_json()["cntThreshNum2"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_volume_data)
+
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&(table_data['TRANS_CNT']>=int(cntThreshold))&(table_data['Trans Code Type']==transDesc(transCode))&(table_data['Cr_Db']==crDb)]
+
+        table_data = table_data[['ACCOUNT_KEY','Month of Trans Date','TRANS_AMT','TRANS_CNT']]
+
+        table_data['run2'] = np.where((table_data['TRANS_AMT']>=int(amtThreshold2))&(table_data['TRANS_CNT']>=int(cntThreshold2)), '1', '0')
+
+        table_data_1 = table_data[table_data['run2']=='0']
+
+        table_data_2 = table_data[table_data['run2']=='1']
+
+        df_common = table_data_1.merge(table_data_2,on=['ACCOUNT_KEY'])
+
+        table_data_3 = table_data_1[~table_data_1['ACCOUNT_KEY'].isin(df_common['ACCOUNT_KEY'])]
+
+        rundiff = table_data_3.groupby(['ACCOUNT_KEY']).size().to_frame('size').reset_index()
+
+        return Response(rundiff.to_json(orient='records'), mimetype='application/json')
+
+
     @expose('/highRiskVolume/alertdata/<transCode>',methods=['POST'])
     @has_access
     def createHighRiskVolumeAlertData(self,transCode):
