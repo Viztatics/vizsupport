@@ -15,9 +15,7 @@ $(function(){
 
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileAmountChart = echarts.init(document.getElementById('percentileAmountChart'));
-	var paretoAmountChart = echarts.init(document.getElementById('paretoAmountChart'));
 	var percentileCountChart = echarts.init(document.getElementById('percentileCountChart'));
-	var paretoCountChart = echarts.init(document.getElementById('paretoCountChart'));
 
 	var scatteroption = {
 	    title: {
@@ -167,64 +165,6 @@ $(function(){
 	    ]
 	};
 
-	var amtlinebaroption = {
-		title : {
-	        text: 'Amount Pareto Analysis(Customer Analysis)',
-	    },
-	    tooltip : {
-	        trigger: 'axis'
-	    },
-	    legend: {
-	        data:['Trans Amount','Cumulative Percentage'],
-	        left:'right',
-	    },
-	    grid:{
-	    	y2:'12%',
-	    },
-	    xAxis : [
-	        {
-	            type : 'category',
-	            axisLabel : {
-	            	rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: function(params){
-	                	return "$"+params/1000+"K"
-
-	                }
-	            },
-	        },
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: '{value} %'
-	            }
-	        }
-	    ],
-	    series : [
-
-	        {
-	            name:'Trans Amount',
-	            type:'bar',
-	            data:[]
-	        },
-	        {
-	            name:'Cumulative Percentage',
-	            type:'line',
-	            yAxisIndex: 1,
-	            symbol:'diamond',
-	            symbolSize:10,
-	            data:[]
-	        }
-	    ]
-	};
-
 	var cntlineoption = {
 	    title : {
 	        text: 'Count Percentile Distribution(Transanction Analysis)',
@@ -259,58 +199,6 @@ $(function(){
 		                {name: 'run2',yAxis:10,itemStyle:{normal:{color:'#dc143c'}}},
 	                ]
 	            },
-	        }
-	    ]
-	};
-
-	var cntlinebaroption = {
-		title : {
-	        text: 'Count Pareto Analysis(Customer Analysis)',
-	    },
-	    tooltip : {
-	        trigger: 'axis'
-	    },
-	    legend: {
-	        data:['Trans Count','Cumulative Percentage'],
-	        left:'right',
-	    },
-	    grid:{
-	    	y2:'12%',
-	    },
-	    xAxis : [
-	        {
-	            type : 'category',
-	            axisLabel : {
-	            	rotate:30,
-	            },
-	            data : []
-	        }
-	    ],
-	    yAxis : [
-	        {
-	            type : 'value',
-	        },
-	        {
-	            type : 'value',
-	            axisLabel : {
-	                formatter: '{value} %'
-	            }
-	        }
-	    ],
-	    series : [
-
-	        {
-	            name:'Trans Count',
-	            type:'bar',
-	            data:[]
-	        },
-	        {
-	            name:'Cumulative Percentage',
-	            type:'line',
-	            yAxisIndex: 1,
-	            symbol:'diamond',
-	            symbolSize:10,
-	            data:[]
 	        }
 	    ]
 	};
@@ -363,9 +251,7 @@ $(function(){
 
 	scatterChart.setOption(scatteroption);
 	percentileAmountChart.setOption(amtlineoption);
-	paretoAmountChart.setOption(amtlinebaroption);
 	percentileCountChart.setOption(cntlineoption);
-	paretoCountChart.setOption(cntlinebaroption);
 	
 	scatterChart.on('click', function(data){
 		console.log(data);
@@ -415,9 +301,7 @@ $(function(){
 		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
 		  	success:function(data){
 
-		  		$('#statisticsAmountTable').bootstrapTable('load',data);
-		  		$('#statisticsCountTable').bootstrapTable('load',data);
-
+		  		$('#statisticsTable').bootstrapTable('load',data);
 		  	}
 		});
 
@@ -445,32 +329,6 @@ $(function(){
 
 	};
 
-	var getprofilingAmountPareto=function(includeOutlier){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/profiling/paretodata/amt/'+transcode,
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
-		  	success:function(data){
-
-		  		if(data){
-	  				amtlinebaroption.xAxis[0].data=[];
-	  				amtlinebaroption.series[0].data=[];
-	  				amtlinebaroption.series[1].data=[];
-		  			data.forEach(function(singledata){
-						amtlinebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-						amtlinebaroption.series[0].data.push(singledata['TRANS_AMT'].toFixed(2));
-				  		amtlinebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-					    paretoAmountChart.setOption(amtlinebaroption);
-				  	})
-		  		}				
-			}
-		});
-
-	};
-
 	var getprofilingCountPercentile=function(includeOutlier){
 
 		$.ajax({
@@ -492,31 +350,7 @@ $(function(){
 
 	};
 
-	var getprofilingCountPareto=function(includeOutlier){
-
-		$.ajax({
-			cache: false,
-		  	url: $SCRIPT_ROOT+'/rules/profiling/paretodata/cnt/'+transcode,
-		  	type: 'POST',
-		  	contentType:'application/json',
-		  	data: JSON.stringify({'outlier':includeOutlier,'filename':$('#reportPath').data('keyname')}),
-		  	success:function(data){
-
-	  			cntlinebaroption.xAxis[0].data=[];
-	  			cntlinebaroption.series[0].data=[];
-	  			cntlinebaroption.series[1].data=[];
-				data.forEach(function(singledata){
-					cntlinebaroption.xAxis[0].data.push(singledata['ACCOUNT_KEY']);
-					cntlinebaroption.series[0].data.push(singledata['TRANS_CNT'].toFixed(2));
-			  		cntlinebaroption.series[1].data.push(singledata['percentage'].toFixed(2)); 
-				    paretoCountChart.setOption(cntlinebaroption);
-			  	})
-			}
-		});
-
-	};
-
-	$('#statisticsAmountTable').bootstrapTable({
+	$('#statisticsTable').bootstrapTable({
   		pagination:false,
 	    columns: [{
 	        field: 'amt_min_data',
@@ -554,12 +388,7 @@ $(function(){
 				  currency: 'USD',
 				});
 			}
-	    }],
-	});
-
-	$('#statisticsCountTable').bootstrapTable({
-  		pagination:false,
-	    columns: [{
+	    }, {
 	        field: 'cnt_min_data',
 	        title: 'MIN_COUNT',
 	        formatter: function formatter(value, row, index, field) {
@@ -707,13 +536,16 @@ $(function(){
 
 	getprofilingStatics(1);
 	getprofilingAmountPercentile(1);
-	getprofilingAmountPareto(1);
 	getprofilingCountPercentile(1);
-	getprofilingCountPareto(1);
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
-	    rules: {
+	    rules: {	    	
+	      dataId: {
+		    required: true,
+		    digits:true,
+	      	min:1,
+		  },
 	      amtThreshNum:{
 	      	required: true,
 	      	digits:true,
@@ -732,6 +564,12 @@ $(function(){
 		    min: 0,
 		    greaterThan: "#cntThreshNum"
 		  },
+		  circleName: {
+		    required: true,
+		  },
+		  runName: {
+		    required: true,
+		  },
 	    },
 	});
 
@@ -740,9 +578,7 @@ $(function(){
 		/* Act on the event */
 		getprofilingStatics($(this).val());		
 		getprofilingAmountPercentile($(this).val());
-		getprofilingAmountPareto($(this).val());
 		getprofilingCountPercentile($(this).val());
-		getprofilingCountPareto($(this).val());		
 
 
 	});
@@ -756,9 +592,7 @@ $(function(){
 
 	  getprofilingStatics($("#isOutlier").val());
 	  getprofilingAmountPercentile($("#isOutlier").val());
-	  getprofilingAmountPareto($("#isOutlier").val());
 	  getprofilingCountPercentile($("#isOutlier").val());
-	  getprofilingCountPareto($("#isOutlier").val());
 
 	  $.ajax({
 	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterplot/'+transcode,
