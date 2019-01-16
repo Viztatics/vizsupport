@@ -16,6 +16,10 @@ $(function(){
 	var scatterChart = echarts.init(document.getElementById('scatterChart'));
 	var percentileAmountChart = echarts.init(document.getElementById('percentileAmountChart'));
 	var percentileCountChart = echarts.init(document.getElementById('percentileCountChart'));
+	var run1CntChart = echarts.init(document.getElementById('run1CntChart'));
+	var run1AmtChart = echarts.init(document.getElementById('run1AmtChart'));
+	var run2CntChart = echarts.init(document.getElementById('run2CntChart'));
+	var run2AmtChart = echarts.init(document.getElementById('run2AmtChart'));
 
 	var scatteroption = {
 	    title: {
@@ -246,12 +250,80 @@ $(function(){
 	        }
 	    ]
 	};
+
+	let pieOption = {
+	    title : {
+	        text: '',
+	        x:'center'
+	    },
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
+	    },
+	    //color:['#4d94ff','#ffff66','#7b68ee','#00fa9a'],
+	    series : [
+	        {
+	            name: '',
+	            type: 'pie',
+	            radius : ['50%','70%'],
+	            center: ['40%', '50%'],
+	            data: [],
+	            label:{
+	            	normal:{
+	            		show:false,
+	            		position:'center',
+	            	},
+	            	emphasis:{
+	            		show:false,
+	            		textStyle:{
+	            			fontWeight:'bold',
+	            		}
+	            	}
+	            },
+	            labelLine:{
+	            	normal:{
+	            		show:false
+	            	}
+	            }
+	        }
+	    ]
+	};
+
+	let roseOption = {
+	    
+	    tooltip : {
+	        trigger: 'item',
+	        formatter: "{a} <br/>{b} : {c} ({d}%)"
+	    },
+	    legend: {
+	        x : 'center',
+	        y : 'bottom',
+	        data:[],
+	        show:false,
+	    },
+	    series : [
+	        {
+	            name:'Missing Cusomter From Run1',
+	            type:'pie',
+	            radius : [20, 110],
+	            roseType : 'area',
+	            x: '50%',               // for funnel
+	            max: 40,                // for funnel
+	            sort : 'ascending',     // for funnel
+	            data:[]
+	        }
+	    ]
+	};
                     
                     
 
 	scatterChart.setOption(scatteroption);
 	percentileAmountChart.setOption(amtlineoption);
 	percentileCountChart.setOption(cntlineoption);
+	run1CntChart.setOption(pieOption);
+	run1AmtChart.setOption(pieOption);
+	run2CntChart.setOption(pieOption);
+	run2AmtChart.setOption(pieOption);
 	
 	scatterChart.on('click', function(data){
 		console.log(data);
@@ -534,9 +606,139 @@ $(function(){
 		  });
 	});
 
+	let getScatterPlot=function(){
+	  $.ajax({
+	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterplot/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({
+	  		'filename':$('#reportPath').data('keyname')
+	  	}),
+	  	success:function(data){
+	  		var normaldata = [];
+	  		var outlierdata = [];
+	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
+		  	scatteroption.series[0].data = normaldata;
+		  	scatteroption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
+		  	scatteroption.series[0].markLine.data[1].xAxis=$('#cntThreshNum').val();
+		  	scatteroption.series[0].markLine.data[2].yAxis=$('#amtThreshNum2').val();
+		  	scatteroption.series[0].markLine.data[3].xAxis=$('#cntThreshNum2').val();
+		  	scatteroption.series[1].data = outlierdata;
+		  	scatterChart.setOption(scatteroption);
+	  	}
+	  });
+	};
+
+	var getScatterStatistics=function(){
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterstatistics/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
+	  		,amtThreshNum:$('#amtThreshNum').val(),amtThreshNum2:$('#amtThreshNum2').val()
+	  		,cntThreshNum:$('#cntThreshNum').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
+	  	success:function(data){
+	  		console.log(data);
+	  		let run1CntOption = $.extend(true,{},pieOption)
+	  		run1CntOption.title.text='Run1 Count';
+	  		run1CntOption.series[0].name = 'Run1 Count';
+	  		run1CntOption.series[0].data = [{value:data.below_count_below,name:"Below Threshold"},{value:data.above_count_below,name:'Above Threshold'}];
+	  		run1CntChart.setOption(run1CntOption);
+
+	  		let run1AmtOption = $.extend(true,{},pieOption)
+	  		run1AmtOption.title.text='Run1 Amount';
+	  		run1AmtOption.tooltip.formatter=function(params){
+	  											let num = params.data.value.toLocaleString('en-US', {
+																			  style: 'currency',
+																			  currency: 'USD',
+																			});
+	  											return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+	  										};
+	  		run1AmtOption.series[0].name = 'Run1 Amount';
+	  		run1AmtOption.series[0].data = [{value:data.below_amount_below,name:"Below Threshold"},{value:data.above_amount_below,name:'Above Threshold'}];
+	  		run1AmtChart.setOption(run1AmtOption);
+
+	  		let run2CntOption = $.extend(true,{},pieOption)
+	  		run2CntOption.title.text='Run2 Count';
+	  		run2CntOption.series[0].name = 'Run2 Count';
+	  		run2CntOption.series[0].data = [{value:data.below_count_above,name:"Below Threshold"},{value:data.above_count_above,name:'Above Threshold'}];
+	  		run2CntChart.setOption(run2CntOption);
+
+	  		let run2AmtOption = $.extend(true,{},pieOption)
+	  		run2AmtOption.title.text='Run2 Amount';
+	  		run2AmtOption.tooltip.formatter=function(params){
+									let num = params.data.value.toLocaleString('en-US', {
+															  style: 'currency',
+															  currency: 'USD',
+															});
+									return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
+								};
+	  		run2AmtOption.series[0].name = 'Run2 Amount';
+	  		run2AmtOption.series[0].data = [{value:data.below_amount_above,name:"Below Threshold"},{value:data.above_amount_above,name:'Above Threshold'}];
+	  		run2AmtChart.setOption(run2AmtOption);
+	  	}
+	  });
+
+	};
+
+	let getTableData = function(){
+
+	  $.ajax({
+	  	url: $SCRIPT_ROOT+'/rules/profiling/tabledata/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
+	  		,'amtThreshNum':$('#amtThreshNum').val(),'cntThreshNum':$('#cntThreshNum').val()
+	  		,'amtThreshNum2':$('#amtThreshNum2').val(),'cntThreshNum2':$('#cntThreshNum2').val()
+	  	}),
+	  	success:function(data){
+
+	  		$('#alertTable').bootstrapTable('load',data);
+
+	  	}
+	  });
+
+	};
+
+	let getTableStatistics = function(){
+
+	  $.ajax({
+	  	cache: false,
+	  	url: $SCRIPT_ROOT+'/rules/profiling/tablestatistics/'+transcode,
+	  	type: 'POST',
+	  	contentType:'application/json',
+	  	data: JSON.stringify({filename:$('#reportPath').data('keyname')
+	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  		,amtThreshNum2:$('#amtThreshNum2').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
+	  	success:function(data){
+	  		console.log(data);
+	  		$("#run1Cust").text(data.total);
+	  		$("#run2Cust").text(data.total);
+	  		$("#run1CustAlerted").text(data.run1_customer);
+	  		$("#run1CustAlertedPer").text(data.run1_customer_percent+'%');
+	  		$("#run2CustAlerted").text(data.run2_customer);
+	  		$("#run2CustAlertedPer").text(data.run2_customer_percent+'%');
+	  		$("#run1CustNotAlerted").text(data.run1_customer_not);
+	  		$("#run1CustNotAlertedPer").text(data.run1_customer_percent_not+'%');
+	  		$("#run2CustNotAlerted").text(data.run2_customer_not);
+	  		$("#run2CustNotAlertedPer").text(data.run2_customer_percent_not+'%');
+	  		$("#missCust").text(data.run1_customer-data.run2_customer);
+
+	  	}
+	  });
+
+
+	};
+
 	getprofilingStatics(1);
 	getprofilingAmountPercentile(1);
 	getprofilingCountPercentile(1);
+	getScatterPlot();
+	getScatterStatistics();
+	getTableData();
+	getTableStatistics();
 
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
@@ -583,6 +785,51 @@ $(function(){
 
 	});
 
+	$("#missCust").on('click', function(event) {
+		event.preventDefault();
+
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/rules/profiling/runDiff/'+transcode,
+		  	type: 'POST',
+		  	contentType:'application/json',
+		  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
+	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
+	  		,amtThreshNum2:$('#amtThreshNum2').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
+		  	success:function(data){
+		  		console.log(data);
+		  		$('#missingTabs a:first').tab('show');
+		  		$('#missingModal').modal('show'); 
+		  		$('#missChart').height(400);
+		  		$('#missChart').width(600);
+		  		var missChart = echarts.init(document.getElementById('missChart'));		
+		  		roseOption.series[0].data = [];  
+		  		data.forEach(function (missingdata){	
+					roseOption.series[0].data.push({'value':missingdata['size'],'name':missingdata['ACCOUNT_KEY']});
+
+		  		})
+		  		missChart.setOption(roseOption);
+		  		$('#missingTable').bootstrapTable('load',data);
+
+		  	}
+		});
+		
+		/* Act on the event */
+	});
+
+	$('#missingTable').bootstrapTable({
+  		pagination:true,
+  		exportDataType: 'all',
+  		search:true,  			
+	    columns: [{
+	        field: 'ACCOUNT_KEY',
+	        title: 'ACCOUNT',
+	    }, {
+	        field: 'size',
+	        title: 'Count of Transanctions',
+	    }],
+	});
+
 	$( "form" ).submit(function( event ) {
 	  event.preventDefault();
 
@@ -593,114 +840,11 @@ $(function(){
 	  getprofilingStatics($("#isOutlier").val());
 	  getprofilingAmountPercentile($("#isOutlier").val());
 	  getprofilingCountPercentile($("#isOutlier").val());
+  	  getScatterPlot();
+	  getScatterStatistics();
+	  getTableData();
+	  getTableStatistics();
 
-	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterplot/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({
-	  		'filename':$('#reportPath').data('keyname')
-	  	}),
-	  	success:function(data){
-	  		var normaldata = [];
-	  		var outlierdata = [];
-	  		data.data.map(x => x[4]==1?outlierdata.push(x):normaldata.push(x));
-		  	scatteroption.series[0].data = normaldata;
-		  	scatteroption.series[0].markLine.data[0].yAxis=$('#amtThreshNum').val();
-		  	scatteroption.series[0].markLine.data[1].xAxis=$('#cntThreshNum').val();
-		  	scatteroption.series[0].markLine.data[2].yAxis=$('#amtThreshNum2').val();
-		  	scatteroption.series[0].markLine.data[3].xAxis=$('#cntThreshNum2').val();
-		  	scatteroption.series[1].data = outlierdata;
-		  	scatterChart.setOption(scatteroption);
-	  	}
-	  });
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/profiling/scatterstatistics/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
-	  		,amtThreshNum:$('#amtThreshNum').val(),amtThreshNum2:$('#amtThreshNum2').val()
-	  		,cntThreshNum:$('#cntThreshNum').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
-	  	success:function(data){
-	  		console.log(data);
-	  		$("#amountRun1").text(data.amount.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountRun2").text(data.amount.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountBelowRun1").text(data.below_amount_below.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountBelowRun2").text(data.below_amount_above.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountAboveRun1").text(data.above_amount_below.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountAboveRun2").text(data.above_amount_above.toLocaleString('en-US', {
-						  style: 'currency',
-						  currency: 'USD',
-						}));
-	  		$("#amountPercentRun1").text(data.percent_amount_below+'%');
-	  		$("#amountPercentRun2").text(data.percent_amount_above+'%');
-	  		$("#countRun1").text(data.count);
-	  		$("#countRun2").text(data.count);
-	  		$("#countBelowRun1").text(data.below_count_below);
-	  		$("#countBelowRun2").text(data.below_count_above);	  
-	  		$("#countAboveRun1").text(data.above_count_below);
-	  		$("#countAboveRun2").text(data.above_count_above);
-	  		$("#countPercentRun1").text(data.percent_acount_below+'%');
-	  		$("#countPercentRun2").text(data.percent_acount_above+'%');	
-	  	}
-	  });
-	  
-	  $.ajax({
-	  	url: $SCRIPT_ROOT+'/rules/profiling/tabledata/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({'filename':$('#reportPath').data('keyname')
-	  		,'amtThreshNum':$('#amtThreshNum').val(),'cntThreshNum':$('#cntThreshNum').val()
-	  		,'amtThreshNum2':$('#amtThreshNum2').val(),'cntThreshNum2':$('#cntThreshNum2').val()
-	  	}),
-	  	success:function(data){
-
-	  		$('#alertTable').bootstrapTable('load',data);
-
-	  	}
-	  });
-
-	  $.ajax({
-	  	cache: false,
-	  	url: $SCRIPT_ROOT+'/rules/profiling/tablestatistics/'+transcode,
-	  	type: 'POST',
-	  	contentType:'application/json',
-	  	data: JSON.stringify({filename:$('#reportPath').data('keyname')
-	  		,amtThreshNum:$('#amtThreshNum').val(),cntThreshNum:$('#cntThreshNum').val()
-	  		,amtThreshNum2:$('#amtThreshNum2').val(),cntThreshNum2:$('#cntThreshNum2').val()}),
-	  	success:function(data){
-	  		console.log(data);
-	  		$("#run1Cust").text(data.total);
-	  		$("#run2Cust").text(data.total);
-	  		$("#run1CustAlerted").text(data.run1_customer);
-	  		$("#run1CustAlertedPer").text(data.run1_customer_percent+'%');
-	  		$("#run2CustAlerted").text(data.run2_customer);
-	  		$("#run2CustAlertedPer").text(data.run2_customer_percent+'%');
-	  		$("#run1CustNotAlerted").text(data.run1_customer_not);
-	  		$("#run1CustNotAlertedPer").text(data.run1_customer_percent_not+'%');
-	  		$("#run2CustNotAlerted").text(data.run2_customer_not);
-	  		$("#run2CustNotAlertedPer").text(data.run2_customer_percent_not+'%');
-	  		$("#missCust").text(data.run1_customer-data.run2_customer);
-
-	  	}
-	  });
 
 	});
 

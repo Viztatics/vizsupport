@@ -110,42 +110,12 @@
 		        <div id="scatterChart" style="height:600px"></div>
 		    </div>
 
-			<div class="row">
-	          <label class="col-md-4 control-label" style="text-align:right">Run 1</label><label class="col-md-4 control-label" style="text-align:right">Run 2</label>
-	          <label class="col-md-4 control-label"></label>          
-	        </div>
-			<div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">Total Sum of Trans</label><div id="amountRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">Total Below Threshold</label><div id="amountBelowRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">Total Above Threshold</label><div id="amountAboveRun2" class="col-md-2">-</div><label class="col-md-2 control-label"></label>
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% Above</label><div id="amountPercentRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">% of Above</label><div id="amountPercentRun2" class="col-md-2">-</div>          
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">Total Count of Trans</label><div id="countRun2" class="col-md-2">-</div>          
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">Total Below Threshold</label><div id="countBelowRun2" class="col-md-2">-</div>          
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">Total Above Threshold</label><div id="countAboveRun2" class="col-md-2">-</div>          
-	        </div>
-	        <div class="row">
-	          <label class="col-md-2 control-label"></label><label class="col-md-2 control-label">% of Above</label><div id="countPercentRun1" class="col-md-2">-</div>
-	          <label class="col-md-2 control-label">% of Above</label><div id="countPercentRun2" class="col-md-2">-</div>          
-	        </div>
+		    <div class="row">
+		        <div class="col-md-3" id="run1CntChart" style="height:300px"></div>
+		        <div class="col-md-3" id="run1AmtChart" style="height:300px"></div>
+		        <div class="col-md-3" id="run2CntChart" style="height:300px"></div>
+		        <div class="col-md-3" id="run2AmtChart" style="height:300px"></div>
+		    </div>
 
 		  </div>
 		</div>
@@ -194,7 +164,7 @@
 		    	</table>
 		    </div>
 		    <div class="row">
-		    	<label class="col-md-3 control-label">Run2 Customers missed from Run1</label><div id="missCust" class="col-md-2">-</div>
+		    	<label class="col-md-3 control-label">Run2 Customers missed from Run1</label><div id="missCust" class="col-md-2"><a id="missCust" href="javascript:void(0)" class="note" >-</a></div>
 		    </div>
 
 		    <div class="row">
@@ -235,6 +205,40 @@
 		      </div>
 		      <div class="modal-body">
 		        <p><span id="alertNum" style="color:red"></span> Output Results sent to Quanlitative!</p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<div class="modal fade" id="missingModal" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Missing Accounts</h4>
+		      </div>
+		      <div class="modal-body">
+<!-- Nav tabs -->
+		          <ul id="missingTabs" class="nav nav-tabs" role="tablist">
+		            <li role="presentation" class="active"><a href="#aRose" aria-controls="aRose" role="tab" data-toggle="tab">Nightingale's Rose Diagram</a></li>
+		            <li role="presentation" ><a href="#aTable" aria-controls="aTable" role="tab" data-toggle="tab">Table of Missing Accounts</a></li>
+		          </ul>
+		          <div class="tab-content">
+		            <div role="tabpanel" class="tab-pane active" id="aRose">   
+		            	<div id="missChart" style="width:600px,height:400px"></div>           
+		            </div>
+
+		            <div role="tabpanel" class="tab-pane" id="aTable"> 
+		              <div class="row">
+		                  <table id="missingTable" data-show-export="true" data-page-list="[10, 25, 50, 100, ALL]"></table>
+		              </div>             
+		            </div>
+		          </div> 
+
+
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
