@@ -1414,10 +1414,39 @@ class RuleView(BaseView):
             rule_name = RuleEnum.ACH_Transfer_Activity_Profiling
 
         items = request.get_json()["items"]
+        dataId = request.get_json()["dataId"]
+        amtThreshNum = request.get_json()["amtThreshNum"]
+        amtThreshNum2 = request.get_json()["amtThreshNum2"]
+        cntThreshNum = request.get_json()["cntThreshNum"]
+        cntThreshNum2 = request.get_json()["cntThreshNum2"]
+        circleName = request.get_json()["circleName"]
+        runName = request.get_json()["runName"]
+
+        circle = db.session.query(Circle.id).filter(Circle.name==circleName)
+
+        if circle.count() == 0 :
+            new_circle = Circle(name=circleName)
+            self.appbuilder.get_session.add(new_circle)
+            self.appbuilder.get_session.flush()
+            circle_id = new_circle.id
+        else :
+            circle = [r._asdict() for r in circle]
+            circle_id = circle[0]["id"]
+
+        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='High Value Dectection',Run.product_type==transCode,Run.customer_type=='',Run.customer_risk_level=='',Run.current_threshold==amtThreshNum,Run.testing_threshold==amtThreshNum2,Run.current_cnt_threshold==cntThreshNum,Run.testing_cnt_threshold==cntThreshNum2,Run.data_id==dataId)
+
+        if run.count() == 0 :
+            new_run = Run(circle_id=circle_id,name=runName,rule_group='High Value Dectection',product_type=transCode,customer_type='',customer_risk_level='',current_threshold=amtThreshNum,testing_threshold=amtThreshNum2,current_cnt_threshold=cntThreshNum,testing_cnt_threshold=cntThreshNum2,data_id=dataId)
+            self.appbuilder.get_session.add(new_run)
+            self.appbuilder.get_session.flush()
+            run_id = new_run.id
+        else :
+            run = [r._asdict() for r in run]
+            run_id = run[0]["id"]
 
         for item in items:
 
-            alertdata = VizAlerts(company_id=current_user.company_id,account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(run_id=run_id,company_id=current_user.company_id,account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],cnt=item['TRANS_CNT'],rule_type=TypeEnum.Profiling,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
             alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))

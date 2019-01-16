@@ -598,7 +598,10 @@ $(function(){
 		  	url: $SCRIPT_ROOT+'/rules/profiling/alertdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'items':items}),
+		  	data: JSON.stringify({'items':items,'dataId':$('#dataId').val()
+		  						  ,amtThreshNum:$('#amtThreshNum').val(),amtThreshNum2:$('#amtThreshNum2').val()
+	  							  ,cntThreshNum:$('#cntThreshNum').val(),cntThreshNum2:$('#cntThreshNum2').val()
+		  						  ,'circleName':$('#circleName').val(),'runName':$('#runName').val()}),
 		  	success:function(data){	  	
 		  		$('#alertNum').text(items.length);
 		  		$('#alertModal').modal('show'); 
