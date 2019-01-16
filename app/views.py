@@ -528,7 +528,7 @@ class RuleView(BaseView):
             circle = [r._asdict() for r in circle]
             circle_id = circle[0]["id"]
 
-        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='High Risk Country',Run.product_type==transCode,Run.customer_type==custType,Run.customer_risk_level==custRLel,Run.current_threshold==threshNum,Run.testing_threshold==threshNum2,Run.current_cnt_threshold==cntThreshNum,Run.testing_cnt_threshold==cntThreshNum2,Run.data_id==dataId)
+        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='High Risk Country',Run.product_type==transCode,Run.customer_type==custType,Run.customer_risk_level==custRLel,Run.current_threshold==threshNum,Run.testing_threshold==threshNum2,Run.current_cnt_threshold==0,Run.testing_cnt_threshold==0,Run.data_id==dataId)
 
         if run.count() == 0 :
             new_run = Run(circle_id=circle_id,name=runName,rule_group='High Risk Country',product_type=transCode,customer_type=custType,customer_risk_level=custRLel,current_threshold=threshNum,testing_threshold=threshNum2,current_cnt_threshold=0,testing_cnt_threshold=0,data_id=dataId)
@@ -1433,10 +1433,10 @@ class RuleView(BaseView):
             circle = [r._asdict() for r in circle]
             circle_id = circle[0]["id"]
 
-        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='High Value Dectection',Run.product_type==transCode,Run.customer_type=='',Run.customer_risk_level=='',Run.current_threshold==amtThreshNum,Run.testing_threshold==amtThreshNum2,Run.current_cnt_threshold==cntThreshNum,Run.testing_cnt_threshold==cntThreshNum2,Run.data_id==dataId)
+        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='Profiling',Run.product_type==transCode,Run.customer_type=='',Run.customer_risk_level=='',Run.current_threshold==amtThreshNum,Run.testing_threshold==amtThreshNum2,Run.current_cnt_threshold==cntThreshNum,Run.testing_cnt_threshold==cntThreshNum2,Run.data_id==dataId)
 
         if run.count() == 0 :
-            new_run = Run(circle_id=circle_id,name=runName,rule_group='High Value Dectection',product_type=transCode,customer_type='',customer_risk_level='',current_threshold=amtThreshNum,testing_threshold=amtThreshNum2,current_cnt_threshold=cntThreshNum,testing_cnt_threshold=cntThreshNum2,data_id=dataId)
+            new_run = Run(circle_id=circle_id,name=runName,rule_group='Profiling',product_type=transCode,customer_type='',customer_risk_level='',current_threshold=amtThreshNum,testing_threshold=amtThreshNum2,current_cnt_threshold=cntThreshNum,testing_cnt_threshold=cntThreshNum2,data_id=dataId)
             self.appbuilder.get_session.add(new_run)
             self.appbuilder.get_session.flush()
             run_id = new_run.id
@@ -1621,7 +1621,7 @@ class RuleView(BaseView):
         #plot_data = plot_data[['Debit+TRANS_AMT','Credit+TRANS_AMT','ACCOUNT_KEY','YearMonth','outlier']]
         #plot_data = plot_data.groupby(['ACCOUNT_KEY','Month of Trans Date'],as_index=False).sum()
         plot_data['Trans_Amt'] = plot_data['Debit+TRANS_AMT']+plot_data['Credit+TRANS_AMT']
-        plot_data['Trans_Count'] = plot_data['Debit+TRANS_AMT']+plot_data['Credit+TRANS_AMT']
+        plot_data['Trans_Count'] = plot_data['Debit+TRANS_CNT']+plot_data['Credit+TRANS_CNT']
         #plot_data = plot_data[plot_data['Trans_Code_Type']==transDesc(transCode)]
         amount = np.round(plot_data['Trans_Amt'].sum(),decimals=2)
         count = plot_data['Trans_Count'].sum()
@@ -1737,6 +1737,44 @@ class RuleView(BaseView):
 
         return Response(pd.io.json.dumps({'total':total,'run1_customer':run1_customer,'run1_customer_percent':run1_customer_percent,'run2_customer':run2_customer,'run2_customer_percent':run2_customer_percent,'run1_customer_not':run1_customer_not,'run1_customer_percent_not':run1_customer_percent_not,'run2_customer_not':run2_customer_not,'run2_customer_percent_not':run2_customer_percent_not}), mimetype='application/json')
 
+    @expose('/flowthrough/runDiff',methods=['POST'])
+    @has_access
+    def getFlowThroughRunDiff(self):
+
+        flowthroughFolder = self.ACTIVITY_FLOW_THROUGH_FOLDER_PREFIX+'Flow'
+
+        dst_path = RULE_UPLOAD_FOLDER+flowthroughFolder+"/"+str(current_user.id)
+
+        dst_file = request.get_json()["filename"]
+
+        amtThreshold = request.get_json()["amtThreshNum"]
+
+        amtThreshold2 = request.get_json()["amtThreshNum2"]
+
+        lowerRatio = request.get_json()["lowerRatio"]
+
+        upperRatio = request.get_json()["upperRatio"]
+
+        def_volume_data = dst_path+"/"+dst_file
+
+        table_data = pd.read_csv(def_volume_data,usecols=['ACCOUNT_KEY','YearMonth','Credit+TRANS_AMT','Debit+TRANS_AMT','TRANS_AMT','outlier'])
+
+        table_data = table_data[(table_data['TRANS_AMT']>=int(amtThreshold))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)>=int(lowerRatio))&((table_data['Credit+TRANS_AMT']/table_data['Debit+TRANS_AMT']*100.00)<=int(upperRatio))]     
+
+        table_data['run2'] = np.where(table_data['TRANS_AMT']>=int(amtThreshold2), '1', '0')
+
+        table_data_1 = table_data[table_data['run2']=='0']
+
+        table_data_2 = table_data[table_data['run2']=='1']
+
+        df_common = table_data_1.merge(table_data_2,on=['ACCOUNT_KEY'])
+
+        table_data_3 = table_data_1[~table_data_1['ACCOUNT_KEY'].isin(df_common['ACCOUNT_KEY'])]
+
+        rundiff = table_data_3.groupby(['ACCOUNT_KEY']).size().to_frame('size').reset_index()
+
+        return Response(rundiff.to_json(orient='records'), mimetype='application/json')
+
 
     @expose('/flowthrough/alertdata',methods=['POST'])
     @has_access
@@ -1745,10 +1783,39 @@ class RuleView(BaseView):
         rule_name = RuleEnum.FLow_Through_Activity_Pattern
 
         items = request.get_json()["items"]
+        dataId = request.get_json()["dataId"]
+        custType = request.get_json()["custType"]
+        custRLel = request.get_json()["custRLel"]
+        threshNum = request.get_json()["threshNum"]
+        threshNum2 = request.get_json()["threshNum2"]
+        circleName = request.get_json()["circleName"]
+        runName = request.get_json()["runName"]
+
+        circle = db.session.query(Circle.id).filter(Circle.name==circleName)
+
+        if circle.count() == 0 :
+            new_circle = Circle(name=circleName)
+            self.appbuilder.get_session.add(new_circle)
+            self.appbuilder.get_session.flush()
+            circle_id = new_circle.id
+        else :
+            circle = [r._asdict() for r in circle]
+            circle_id = circle[0]["id"]
+
+        run = db.session.query(Run.id).filter(Run.circle_id==circle_id,Run.name==runName,Run.rule_group=='Flow_Through',Run.product_type=='ALL',Run.customer_type==custType,Run.customer_risk_level==custRLel,Run.current_threshold==threshNum,Run.testing_threshold==threshNum2,Run.current_cnt_threshold==0,Run.testing_cnt_threshold==0,Run.data_id==dataId)
+
+        if run.count() == 0 :
+            new_run = Run(circle_id=circle_id,name=runName,rule_group='Flow_Through',product_type='ALL',customer_type=custType,customer_risk_level=custRLel,current_threshold=threshNum,testing_threshold=threshNum2,current_cnt_threshold=0,testing_cnt_threshold=0,data_id=dataId)
+            self.appbuilder.get_session.add(new_run)
+            self.appbuilder.get_session.flush()
+            run_id = new_run.id
+        else :
+            run = [r._asdict() for r in run]
+            run_id = run[0]["id"]
 
         for item in items:
 
-            alertdata = VizAlerts(company_id=current_user.company_id,account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
+            alertdata = VizAlerts(run_id=run_id,company_id=current_user.company_id,account_key=item['ACCOUNT_KEY'], trans_month=item['YearMonth'], amount=item['TRANS_AMT'],rule_type=TypeEnum.Flow_Through,rule_status=StatusEnum.Open,trigger_rule=rule_name,current_step=ProcessEnum.Manager_Assign,operated_by_fk=current_user.id)
             self.appbuilder.get_session.add(alertdata)
             self.appbuilder.get_session.flush()
             alertproc = AlertProcess(alert_id=alertdata.id,process_type=ProcessEnum.Alert_Created,assigned_to_fk=current_user.id,syslog=Alert_Created.format(current_user.username,datetime.now(),rule_name.name,TypeEnum.High_Risk_Country.name,StatusEnum.Open.name))
