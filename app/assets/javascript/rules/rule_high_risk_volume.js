@@ -498,6 +498,12 @@ $(function(){
 	});
 
 	$('#crtAlertBtn').click(() => {
+
+		if(!$("form").valid()){
+			$("#dataId").focus();
+		  	return false;
+		}
+
 		ids = $.map($('#alertTable').bootstrapTable('getSelections'), function(item, index) {
     		return item.ID;
     	});
@@ -515,7 +521,10 @@ $(function(){
 		  	url: $SCRIPT_ROOT+'/rules/highRiskVolume/alertdata/'+transcode,
 		  	type: 'POST',
 		  	contentType:'application/json',
-		  	data: JSON.stringify({'items':items}),
+		  	data: JSON.stringify({'items':items,'dataId':$('#dataId').val(),'custType':$('#custType').val(),'custRLel':$('#custRLel').val()
+		  						  ,amtThreshNum:$('#amtThreshNum').val(),amtThreshNum2:$('#amtThreshNum2').val()
+	  							  ,cntThreshNum:$('#cntThreshNum').val(),cntThreshNum2:$('#cntThreshNum2').val()
+		  						  ,'circleName':$('#circleName').val(),'runName':$('#runName').val()}),
 		  	success:function(data){
 		  		$('#alertNum').text(items.length);
 		  		$('#alertModal').modal('show'); 	  	
@@ -656,6 +665,11 @@ $(function(){
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
+	      dataId: {
+		    required: true,
+		    digits:true,
+	      	min:1,
+		  },
 	      amtThreshNum:{
 	      	required: true,
 	      	digits:true,

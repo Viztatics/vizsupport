@@ -267,7 +267,7 @@ class Circle(AuditMixin,Model):
 
 class Run(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True, nullable=False)
+    name = Column(String(50), nullable=False)
     circle_id = Column(Integer)
     rule_group = Column(String(100))
     product_type = Column(String(100))
@@ -275,6 +275,8 @@ class Run(AuditMixin,Model):
     customer_risk_level = Column(String(100))
     current_threshold = Column(Numeric(10,2))
     testing_threshold = Column(Numeric(10,2))
+    current_cnt_threshold = Column(Numeric(10,2))
+    testing_cnt_threshold = Column(Numeric(10,2))
     data_id = Column(Integer)
 
     def __repr__(self):

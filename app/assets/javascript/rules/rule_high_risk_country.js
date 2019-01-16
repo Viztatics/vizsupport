@@ -1153,7 +1153,7 @@ $(function(){
 	$('#crtAlertBtn').click(() => {
 
 		if(!$("form").valid()){
-			$("#circleName").focus();
+			$("#dataId").focus();
 		  	return false;
 		}
 
@@ -1202,6 +1202,11 @@ $(function(){
 	$("#highRiskCtyForm").validate({
 		ignore:"input[type=file]",
 	    rules: {
+	      dataId: {
+		    required: true,
+		    digits:true,
+	      	min:1,
+		  },
 	      threshNum:{
 	      	required: true,
 	      	digits:true,
