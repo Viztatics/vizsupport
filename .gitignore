@@ -10,6 +10,6 @@ venv
 nohup.out
 #mac file
 .DS_Store
-config.py
+#config.py
 
 app/static/uploads/*
