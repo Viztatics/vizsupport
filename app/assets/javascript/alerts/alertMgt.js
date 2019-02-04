@@ -23,10 +23,10 @@ $(function(){
 	        }
 	    },
 	    legend: {
-	    	show:false,
+	    	show:true,
 	    	orient: 'vertical',
         	x : 'right',
-	        data:[]
+	        data:['Open','Close_True','Close_False']
 	    },
 	    xAxis : [
 	        {
@@ -44,11 +44,34 @@ $(function(){
 	    ],
 	    series : [
 	        {
-	            name:'Alerts',
+	            name:'Open',
 	            type:'bar',
+	            stack:'status',
 	            itemStyle: {
 				    normal: {
-				       //color:'#ff3333',
+				       color:'#ffff66',
+				    },
+				},
+	            data:[],
+	        },
+	        {
+	            name:'Close_True',
+	            type:'bar',
+	            stack:'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#ff3333',
+				    },
+				},
+	            data:[],
+	        },
+	        {
+	            name:'Close_False',
+	            type:'bar',
+	            stack:'status',
+	            itemStyle: {
+				    normal: {
+				       color:'#4d94ff',
 				    },
 				},
 	            data:[],
@@ -71,10 +94,20 @@ $(function(){
 					console.log(data);
 					barOption.yAxis[0].data=[];
 					barOption.series[0].data=[];
-					data.forEach(function(ele){	
-						barOption.yAxis[0].data.push(ele[1]);
-						barOption.series[0].data.push({'name':ele[1],'value':ele[0]});	  	  	
-				  	});
+					for(let i=0;i<data.length;i++){
+						if($.inArray(data[i][1],barOption.yAxis[0].data) === -1 ) barOption.yAxis[0].data.push(data[i][1]);
+					}
+
+					for (let j=0;j<3;j++){
+						for(let k=0;k<barOption.yAxis[0].data.length;k++){
+							barOption.series[j].data[k]=0;
+							for(let i=0;i<data.length;i++){
+								if(barOption.series[j].name ==  data[i][2]&&barOption.yAxis[0].data[k]==data[i][1]){
+									barOption.series[j].data[k] = data[i][0];
+								}
+							}
+						}
+					}
 					
 					barChart.setOption(barOption);
 				}			
@@ -87,12 +120,12 @@ $(function(){
 		console.log(data);
 		var old_status=$('#alertMgt').data('status');
 		if(old_status==0){
-			$('#alertMgt').data('status',data.data.name);
+			$('#alertMgt').data('status',data.name);
 		}else{
 			if(old_status==data.data.name){//cancel select
 				$('#alertMgt').data('status','0');
 			}else{
-				$('#alertMgt').data('status',data.data.name);
+				$('#alertMgt').data('status',data.name);
 			}
 		}
 		$.ajax({
