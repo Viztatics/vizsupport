@@ -1938,32 +1938,32 @@ class AlertView(BaseView):
         return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
     #only for manager
-    @expose('/management/barchart',methods=['POST'])
+    @expose('/management/barchart/<run>',methods=['POST'])
     @has_access
-    def getBarChartData(self):
+    def getBarChartData(self,run):
 
         #type_result = db.session.query(func.count(VizAlerts.rule_status).label('count'),User.username,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(User.id,User.username,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(User.id)
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            type_result = db.session.query(func.count(VizAlerts.id).label('count'),VizAlerts.rule_type.name,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_type,VizAlerts.rule_status).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.rule_type)
+            type_result = db.session.query(func.count(VizAlerts.id).label('count'),VizAlerts.rule_type.name,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_type,VizAlerts.rule_status).filter(VizAlerts.run_id == run,VizUser.company_id==current_user.company_id).order_by(VizAlerts.rule_type)
         else:
-            type_result = db.session.query(func.count(VizAlerts.id).label('count'),VizAlerts.rule_type.name,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_type,VizAlerts.rule_status).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.rule_type)
+            type_result = db.session.query(func.count(VizAlerts.id).label('count'),VizAlerts.rule_type.name,VizAlerts.rule_status.name).outerjoin(User, VizAlerts.operated_by_fk == User.id).group_by(VizAlerts.rule_type,VizAlerts.rule_status).filter(VizAlerts.run_id == run,VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.rule_type)
         type_result = [r for r in type_result]
         return Response(pd.io.json.dumps(type_result), mimetype='application/json')
 
-    @expose('/management/gettabledata/<status>',methods=['GET'])
+    @expose('/management/gettabledata/<run>/<status>',methods=['GET'])
     @has_access
-    def getAlertTableData(self,status):
+    def getAlertTableData(self,run,status):
 
         data_result = []
 
         is_analysis_manager = isManager()
 
         if is_analysis_manager is True:
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,Circle.name.label('cycle_name'),Run.name.label('run_name'),Run.rule_group,Run.product_type,Run.customer_type,Run.customer_risk_level,Run.current_threshold,Run.testing_threshold,Run.data_id).join(User, VizAlerts.operated_by_fk == User.id).outerjoin(Run,VizAlerts.run_id == Run.id).outerjoin(Circle,Run.circle_id == Circle.id).filter(VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,Circle.name.label('cycle_name'),Run.name.label('run_name'),Run.rule_group,Run.product_type,Run.customer_type,Run.customer_risk_level,Run.current_threshold,Run.testing_threshold,Run.data_id).join(User, VizAlerts.operated_by_fk == User.id).outerjoin(Run,VizAlerts.run_id == Run.id).outerjoin(Circle,Run.circle_id == Circle.id).filter(VizAlerts.run_id == run,VizUser.company_id==current_user.company_id).order_by(VizAlerts.operated_on.desc())
         else:            
-            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,Circle.name.label('cycle_name'),Run.name.label('run_name'),Run.rule_group,Run.product_type,Run.customer_type,Run.customer_risk_level,Run.current_threshold,Run.testing_threshold,Run.data_id).join(User, VizAlerts.operated_by_fk == User.id).outerjoin(Run,VizAlerts.run_id == Run.id).outerjoin(Circle,Run.circle_id == Circle.id).filter(VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
+            alert_result = db.session.query(VizAlerts.id,VizAlerts.rule_type.name,VizAlerts.account_key,VizAlerts.trans_month,VizAlerts.country_abbr,VizAlerts.country_name,VizAlerts.amount,VizAlerts.cnt,VizAlerts.rule_status.name,User.id.label('uid'),User.username,VizAlerts.trigger_rule.name,func.to_char(VizAlerts.created_on, 'YYYY-MM-DD HH24:MI:SS').label("created_on"),func.to_char(VizAlerts.finished_on, 'YYYY-MM-DD HH24:MI:SS').label("finished_on"),VizAlerts.current_step.name,Circle.name.label('cycle_name'),Run.name.label('run_name'),Run.rule_group,Run.product_type,Run.customer_type,Run.customer_risk_level,Run.current_threshold,Run.testing_threshold,Run.data_id).join(User, VizAlerts.operated_by_fk == User.id).outerjoin(Run,VizAlerts.run_id == Run.id).outerjoin(Circle,Run.circle_id == Circle.id).filter(VizAlerts.run_id == run,VizAlerts.operated_by_fk==current_user.id).order_by(VizAlerts.operated_on.desc())
 
         if status!='0':
             alert_result = alert_result.filter(VizAlerts.rule_type==status)

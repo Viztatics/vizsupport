@@ -84,7 +84,7 @@ $(function(){
 
 		$.ajax({
 			cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/barchart',
+		  	url: $SCRIPT_ROOT+'/alerts/management/barchart/'+$('#mgtRun').val(),
 		  	type: 'POST',
 		  	contentType:'application/json',
 		  	data: JSON.stringify({}),
@@ -130,7 +130,7 @@ $(function(){
 		}
 		$.ajax({
 		  	cache: false,
-		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('status'),
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#mgtRun').val()+'/'+$('#alertMgt').data('status'),
 		  	type: 'GET',
 		  	contentType:'application/json',
 		  	success:function(data){
@@ -487,7 +487,7 @@ $(function(){
 
 	var $alerttable = $('#alertTable').bootstrapTable({
 		idField: 'id',
-		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#alertMgt').data('status'),
+		url: $SCRIPT_ROOT+'/alerts/management/gettabledata/1/'+$('#alertMgt').data('status'),
   		pagination:true,
   		search:true,
 	    columns: [{
@@ -759,9 +759,28 @@ $(function(){
 						  	  	data.forEach(function(opt,index){
 							  		$('#mgtRun').append('<option value="'+opt.id+'">'+opt.name+'</option>');	
 									});
+								if($('#alertMgt').data('ismanager')=='True'){		
+									getBarChart();
+									$("#toolbar").css('display','block');
+								}else{
+									$('#barChart').css('display', 'none');
+									$("#toolbar").css('display','none');
 								}
-						  	  }
+
+							 }
+
+						  	}
 			  			});
+
+			  			$.ajax({
+						  	cache: false,
+						  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#mgtRun').val()+'/'+$('#alertMgt').data('status'),
+						  	type: 'GET',
+						  	contentType:'application/json',
+						  	success:function(data){
+						  		$alerttable.bootstrapTable('load',data);	  	
+						  	}
+						  });
 
 			  			$('#mgtCycle').on('change', function(event) {
 			  				event.preventDefault();
@@ -778,6 +797,22 @@ $(function(){
 							  	  	data.forEach(function(opt,index){
 								  		$('#mgtRun').append('<option value="'+opt.id+'">'+opt.name+'</option>');	
 										});
+							  	  	if($('#alertMgt').data('ismanager')=='True'){		
+										getBarChart();
+										$("#toolbar").css('display','block');
+									}else{
+										$('#barChart').css('display', 'none');
+										$("#toolbar").css('display','none');
+									}
+							  	  	$.ajax({
+									  	cache: false,
+									  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#mgtRun').val()+'/'+$('#alertMgt').data('status'),
+									  	type: 'GET',
+									  	contentType:'application/json',
+									  	success:function(data){
+									  		$alerttable.bootstrapTable('load',data);	  	
+									  	}
+									  });
 									}
 							  	  }
 				  			});
@@ -792,18 +827,28 @@ $(function(){
 		})
 	};
 
+	$('#mgtRun').on('change', function(event) {
+		$.ajax({
+		  	cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/gettabledata/'+$('#mgtRun').val()+'/'+$('#alertMgt').data('status'),
+		  	type: 'GET',
+		  	contentType:'application/json',
+		  	success:function(data){
+		  		if($('#alertMgt').data('ismanager')=='True'){		
+					getBarChart();
+					$("#toolbar").css('display','block');
+				}else{
+					$('#barChart').css('display', 'none');
+					$("#toolbar").css('display','none');
+				}
+		  		$alerttable.bootstrapTable('load',data);	  	
+		  	}
+		  });
+	})
+
 	let init=function(){
 
-		if($('#alertMgt').data('ismanager')=='True'){		
-			getBarChart();
-			$("#toolbar").css('display','block');
-		}else{
-			$('#barChart').css('display', 'none');
-			$("#toolbar").css('display','none');
-		}
-
-		getCycleData();
-				
+		getCycleData();		
 
 	};
 
