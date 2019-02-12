@@ -260,6 +260,7 @@ class AmlProgram(AuditMixin,Model):
 
 class Circle(AuditMixin,Model):
     id = Column(Integer, primary_key=True)
+    company_id = Column(Integer)
     name = Column(String(50), unique=True, nullable=False)
 
     def __repr__(self):

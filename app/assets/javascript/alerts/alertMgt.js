@@ -737,6 +737,61 @@ $(function(){
 		  })
 	};
 
+	let getCycleData = function(){
+		$.ajax({
+			cache: false,
+		  	url: $SCRIPT_ROOT+'/alerts/management/getCycleData',
+		  	type: 'GET',
+		  	data: JSON.stringify({}),
+		  	success:function(data){ 	 
+		  	  if(data){
+		  	  	data.forEach(function(opt,index){
+			  		$('#mgtCycle').append('<option value="'+opt.id+'">'+opt.name+'</option>');
+			  		if(index==0){
+						$.ajax({
+							cache: false,
+						  	url: $SCRIPT_ROOT+'/alerts/management/getRunDataByCycle/'+opt.id,
+						  	type: 'GET',
+						  	data: JSON.stringify({}),
+						  	success:function(data){ 	 
+						  	  console.log(data);  
+						  	  if(data){
+						  	  	data.forEach(function(opt,index){
+							  		$('#mgtRun').append('<option value="'+opt.id+'">'+opt.name+'</option>');	
+									});
+								}
+						  	  }
+			  			});
+
+			  			$('#mgtCycle').on('change', function(event) {
+			  				event.preventDefault();
+			  				/* Act on the event */
+			  				$.ajax({
+								cache: false,
+							  	url: $SCRIPT_ROOT+'/alerts/management/getRunDataByCycle/'+$(this).val(),
+							  	type: 'GET',
+							  	data: JSON.stringify({}),
+							  	success:function(data){ 	 
+							  	  console.log(data);  
+							  	  if(data){
+							  	  	$('#mgtRun').empty();
+							  	  	data.forEach(function(opt,index){
+								  		$('#mgtRun').append('<option value="'+opt.id+'">'+opt.name+'</option>');	
+										});
+									}
+							  	  }
+				  			});
+			  			});
+			  			
+			  	  }
+			  	  
+			  	}); 
+			  } 
+			  					  	
+		  	}
+		})
+	};
+
 	let init=function(){
 
 		if($('#alertMgt').data('ismanager')=='True'){		
@@ -746,6 +801,8 @@ $(function(){
 			$('#barChart').css('display', 'none');
 			$("#toolbar").css('display','none');
 		}
+
+		getCycleData();
 				
 
 	};

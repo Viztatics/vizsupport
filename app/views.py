@@ -520,7 +520,7 @@ class RuleView(BaseView):
         circle = db.session.query(Circle.id).filter(Circle.name==circleName)
 
         if circle.count() == 0 :
-            new_circle = Circle(name=circleName)
+            new_circle = Circle(name=circleName,company_id=current_user.company_id)
             self.appbuilder.get_session.add(new_circle)
             self.appbuilder.get_session.flush()
             circle_id = new_circle.id
@@ -974,7 +974,7 @@ class RuleView(BaseView):
         circle = db.session.query(Circle.id).filter(Circle.name==circleName)
 
         if circle.count() == 0 :
-            new_circle = Circle(name=circleName)
+            new_circle = Circle(name=circleName,company_id=current_user.company_id)
             self.appbuilder.get_session.add(new_circle)
             self.appbuilder.get_session.flush()
             circle_id = new_circle.id
@@ -1425,7 +1425,7 @@ class RuleView(BaseView):
         circle = db.session.query(Circle.id).filter(Circle.name==circleName)
 
         if circle.count() == 0 :
-            new_circle = Circle(name=circleName)
+            new_circle = Circle(name=circleName,company_id=current_user.company_id)
             self.appbuilder.get_session.add(new_circle)
             self.appbuilder.get_session.flush()
             circle_id = new_circle.id
@@ -1794,7 +1794,7 @@ class RuleView(BaseView):
         circle = db.session.query(Circle.id).filter(Circle.name==circleName)
 
         if circle.count() == 0 :
-            new_circle = Circle(name=circleName)
+            new_circle = Circle(name=circleName,company_id=current_user.company_id)
             self.appbuilder.get_session.add(new_circle)
             self.appbuilder.get_session.flush()
             circle_id = new_circle.id
@@ -2199,6 +2199,27 @@ class AlertView(BaseView):
         trans_result = db.session.query(Transanction.id,Transanction.customer_id,Transanction.account_key,Transanction.account_key10,Transanction.trans_amt,Transanction.trans_code
             ,Transanction.trans_date,Transanction.bene_name,Transanction.bene_country,Transanction.bene_bank_country,Transanction.by_order_name
             ,Transanction.by_order_country,Transanction.by_order_bank_country).filter(Transanction.customer_id==custid).order_by(Transanction.trans_date.desc())
+
+        data_result = [r._asdict() for r in trans_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+
+    @expose('/management/getCycleData',methods=['GET'])
+    @has_access
+    def getCycleData(self):
+
+        trans_result = db.session.query(Circle.id,Circle.name).filter(Circle.company_id==current_user.company_id).order_by(Circle.id)
+
+        data_result = [r._asdict() for r in trans_result]
+
+        return Response(pd.io.json.dumps(data_result), mimetype='application/json')
+
+    @expose('/management/getRunDataByCycle/<cycleid>',methods=['GET'])
+    @has_access
+    def getRunDataByCycle(self,cycleid):
+
+        trans_result = db.session.query(Run.id,func.concat(Run.id,'-',Run.name).label('name')).filter(Run.circle_id==cycleid).order_by(Run.id)
 
         data_result = [r._asdict() for r in trans_result]
 
