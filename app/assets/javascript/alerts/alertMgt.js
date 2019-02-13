@@ -94,6 +94,8 @@ $(function(){
 					console.log(data);
 					barOption.yAxis[0].data=[];
 					barOption.series[0].data=[];
+					barOption.series[1].data=[];
+					barOption.series[2].data=[];
 					for(let i=0;i<data.length;i++){
 						if($.inArray(data[i][1],barOption.yAxis[0].data) === -1 ) barOption.yAxis[0].data.push(data[i][1]);
 					}
