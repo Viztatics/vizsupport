@@ -60,7 +60,7 @@
                             {{rule.rule_description_short}}                                                  
                           </a></br>
                         {% elif rule.rule_group == "Flow-Through" %}
-                          <a href="{{url_for('RuleView.activityflowthrough')}}">                                              
+                          <a href="{{url_for('RuleView.activityflowthrough',rule_code=rule.rule_code)}}">                                              
                             {{rule.rule_description_short}}                                                  
                           </a></br>
                         {% else %}
