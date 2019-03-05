@@ -52,7 +52,7 @@
                             {{rule.rule_description_short}}                      
                           </a></br>
                         {% elif rule.rule_group == "High Value Detection" %}
-                          <a href="{{url_for('RuleView.highRiskVolume',transCode='Wire')}}">                                              
+                          <a href="{{url_for('RuleView.highRiskVolume',rule_code=rule.rule_code,transCode='Wire')}}">                                              
                             {{rule.rule_description_short}}                                                  
                           </a></br>
                         {% elif rule.rule_group == "Profiling" %}
