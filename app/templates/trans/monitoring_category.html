@@ -48,7 +48,7 @@
                     <p class="p-md-4 mb-0" style="padding: 1.5rem;font-size: 1.5rem">
                       {% for rule in vals %}
                         {% if rule.rule_group == "High Risk Country" %}
-                          <a href="{{url_for('RuleView.highRiskCountry',transCode='Wire')}}">                                              
+                          <a href="{{url_for('RuleView.highRiskCountry',rule_code=rule.rule_code,transCode='Wire')}}">                                              
                             {{rule.rule_description_short}}                      
                           </a></br>
                         {% elif rule.rule_group == "High Value Detection" %}

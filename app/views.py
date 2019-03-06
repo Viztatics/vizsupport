@@ -124,14 +124,14 @@ class TransView(BaseView):
                 self.appbuilder.get_session.add(rule)
             self.appbuilder.get_session.commit()
 
-        rule_groups = db.session.query(Rules.rule_group).distinct().order_by(Rules.rule_group)
+        rule_groups = db.session.query(Rules.rule_group).distinct().filter(Rules.company_id==current_user.company_id,Rules.rule_group!='Profiling').order_by(Rules.rule_group)
 
         rule_groups = [r._asdict() for r in rule_groups]
 
         rules = db.session.query(Rules.id,Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description_short,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
             Rules.pre_post_EOD,Rules.cust_acct,Rules.template_rule,Rules.time_horizon,Rules.customer_type,Rules.customer_risk_level,Rules.customer_risk_class,Rules.min_trans_no,Rules.min_ind_trans_amt,
             Rules.max_ind_trans_amt,Rules.min_agg_trans_amt,Rules.max_agg_trans_amt,Rules.additional,Rules.cash_ind,Rules.trans_code,Rules.trans_code_group,Rules.in_cash_ind,Rules.in_trans_code,
-            Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==current_user.company_id).order_by(Rules.rule_group,Rules.id)
+            Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==current_user.company_id,Rules.rule_group!='Profiling').order_by(Rules.rule_group,Rules.id)
 
         rules = [r._asdict() for r in rules]
 
@@ -173,31 +173,30 @@ class RuleView(BaseView):
     Rule1: High Risk Countries Wire
     """        
 
-    @expose('/highRiskCountry/<transCode>')
+    @expose('/highRiskCountry/<rule_code>/<transCode>')
     @has_access
-    def highRiskCountry(self,transCode):
+    def highRiskCountry(self,rule_code,transCode):
 
-    	keyname = ''
-    	highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
-    	src_file = RULE_DEFAULT_FOLDER+highRiskCountryFolder+"/highRiskCountry.csv"
-    	dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
-    	if request.method == 'GET':
-    		"""
-    		for bucket in self.s3.buckets.all():
-    			for key in bucket.objects.all():
-    				words = key.key.split('/')
-    				if len(words)==2 and words[0]=='highRiskCountry' and words[1]!='':
-    					keyname=words[1]
-    		"""
-    		if not os.path.exists(dst_path):   
-    			os.makedirs(dst_path)
-    		if not os.listdir(dst_path):
-    			shutil.copy(src_file, dst_path)
-    		p = Path(dst_path)
-    		for child in p.iterdir():
-    			keyname = PurePath(child).name
-        	#self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
-    		return self.render_template('rules/rule_high_risk_country.html',keyname=keyname,transCode=transTitle(transCode))
+        keyname = ''
+        highRiskCountryFolder = self.HIGH_RISK_COUNTRY_FOLDER_PREFIX+transCode
+        src_file = RULE_DEFAULT_FOLDER+highRiskCountryFolder+"/highRiskCountry.csv"
+        dst_path = RULE_UPLOAD_FOLDER+highRiskCountryFolder+"/"+str(current_user.id)
+        if request.method == 'GET':
+
+            if not os.path.exists(dst_path):   
+                os.makedirs(dst_path)
+            if not os.listdir(dst_path):
+                shutil.copy(src_file, dst_path)
+            p = Path(dst_path)
+            for child in p.iterdir():
+                keyname = PurePath(child).name
+            rules = db.session.query(Rules.id,Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description_short,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
+                    Rules.pre_post_EOD,Rules.cust_acct,Rules.template_rule,Rules.time_horizon,Rules.customer_type,Rules.customer_risk_level,Rules.customer_risk_class,Rules.min_trans_no,Rules.min_ind_trans_amt,
+                    Rules.max_ind_trans_amt,Rules.min_agg_trans_amt,Rules.max_agg_trans_amt,Rules.additional,Rules.cash_ind,Rules.trans_code,Rules.trans_code_group,Rules.in_cash_ind,Rules.in_trans_code,
+                    Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==current_user.company_id,Rules.rule_code==rule_code)
+
+            rules = [r._asdict() for r in rules]
+        return self.render_template('rules/rule_high_risk_country.html',keyname=keyname,rulename=rules[0]["rule_description_short"],customertype=rules[0]["customer_type"],customerrisklevel=rules[0]["customer_risk_level"],transCode=transTitle(transCode))
 
     @expose('/highRiskCountry/statisticsdata/<transCode>',methods=['POST'])
     def getHighRiskCountryStatisticsData(self,transCode):
@@ -622,14 +621,14 @@ class RuleView(BaseView):
                 keyname = PurePath(child).name
                 #self.s3.Object('vizrules', 'highRiskCountry/highRiskCountry.csv').put(Body=open('app/static/csv/rules/highRiskCountry.csv', 'rb'))
 
-                rules = db.session.query(Rules.id,Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description_short,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
-                    Rules.pre_post_EOD,Rules.cust_acct,Rules.template_rule,Rules.time_horizon,Rules.customer_type,Rules.customer_risk_level,Rules.customer_risk_class,Rules.min_trans_no,Rules.min_ind_trans_amt,
-                    Rules.max_ind_trans_amt,Rules.min_agg_trans_amt,Rules.max_agg_trans_amt,Rules.additional,Rules.cash_ind,Rules.trans_code,Rules.trans_code_group,Rules.in_cash_ind,Rules.in_trans_code,
-                    Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==current_user.company_id,Rules.rule_code==rule_code)
+            rules = db.session.query(Rules.id,Rules.company_id,Rules.rule_code,Rules.rule_group,Rules.product_type,Rules.viz_template,Rules.rule_description_short,Rules.rule_description,Rules.susp_type,Rules.schedule,Rules.viz_schedule,
+                Rules.pre_post_EOD,Rules.cust_acct,Rules.template_rule,Rules.time_horizon,Rules.customer_type,Rules.customer_risk_level,Rules.customer_risk_class,Rules.min_trans_no,Rules.min_ind_trans_amt,
+                Rules.max_ind_trans_amt,Rules.min_agg_trans_amt,Rules.max_agg_trans_amt,Rules.additional,Rules.cash_ind,Rules.trans_code,Rules.trans_code_group,Rules.in_cash_ind,Rules.in_trans_code,
+                Rules.in_trans_code_group,Rules.out_cash_ind,Rules.out_trans_code,Rules.out_trans_code_group,Rules.in_out_ratio_min,Rules.in_out_ratio_max,Rules.is_seleced).filter(Rules.company_id==current_user.company_id,Rules.rule_code==rule_code)
 
             rules = [r._asdict() for r in rules]
 
-            return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname,rulename=rules[0]["rule_description_short"],transCode=transTitle(transCode))
+            return self.render_template('rules/rule_high_risk_volume.html',keyname=keyname,rulename=rules[0]["rule_description_short"],customertype=rules[0]["customer_type"],customerrisklevel=rules[0]["customer_risk_level"],transCode=transTitle(transCode))
 
     @expose('/highRiskVolume/statisticsdata/<transCode>',methods=['POST'])
     @has_access

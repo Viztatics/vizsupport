@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-	{{ lib.panel_begin(transCode+ " Activity Limit : "+rulename) }}
+	{{ lib.panel_begin(" Activity Limit : "+rulename) }}
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
@@ -29,19 +29,19 @@
 		            <div class="col-md-3 input-group"><label for="custType">Customer Type</label></div>
 		            <div class="col-md-2 input-group">
 		            	<select class="form-control" id="custType">
-		            	  <option value="">All</option>
-						  <option value="B">Business</option>
-						  <option value="I">Individual</option>
+		            	  <option value="All" {{'selected' if customertype=='All'}}>All</option>
+						  <option value="B" {{'selected' if customertype=='B'}}>Business</option>
+						  <option value="I" {{'selected' if customertype=='I'}}>Individual</option>
 						</select>
 		            </div>
 		            <div class="col-md-1 input-group"></div>
 		            <div class="col-md-3 input-group"><label for="custRLel">Customer Risk Level</label></div>
 		            <div class="col-md-2 input-group">
 		            	<select class="form-control" id="custRLel">
-		            	  <option value="">All</option>
-						  <option value="High">High</option>
-						  <option value="Medium">Medium</option>
-						  <option value="Low">Low</option>
+		            	  <option value="All" {{'selected' if customerrisklevel=='All'}}>All</option>
+						  <option value="High" {{'selected' if customerrisklevel=='High'}}>High</option>
+						  <option value="Medium" {{'selected' if customerrisklevel=='Medium'}}>Medium</option>
+						  <option value="Low" {{'selected' if customerrisklevel=='Low'}}>Low</option>
 						</select>
 		            </div>
 		        </div>		        
