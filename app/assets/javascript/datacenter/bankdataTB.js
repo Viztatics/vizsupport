@@ -93,9 +93,9 @@ $(function(){
 
 	let customerStatusFormatter=function(value, row, index) {
 		if(value=='Pass'){
-			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="color:green"></i></a>';
+			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="font-size:20px;color:green"></i></a>';
 		}else if(value=='Fail'){
-			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="color:red"></i></a>';
+			return '<a href="javascript:void(0)" class="customerstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="font-size:20px;color:red"></i></a>';
 		}else{
 			return value;
 		}
@@ -111,9 +111,9 @@ $(function(){
 
 	let accountStatusFormatter=function(value, row, index) {
 		if(value=='Pass'){
-			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="color:green"></i></a>';
+			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="font-size:20px;color:green"></i></a>';
 		}else if(value=='Fail'){
-			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="color:red"></i></a>';
+			return '<a href="javascript:void(0)" class="accountstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="font-size:20px;color:red"></i></a>';
 		}else{
 			return value;
 		}
@@ -130,9 +130,9 @@ $(function(){
 
 	let transStatusFormatter=function(value, row, index) {
 		if(value=='Pass'){
-			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="color:green"></i></a>';
+			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail"><i class="glyphicon glyphicon-ok-sign" style="font-size:20px;color:green"></i></a>';
 		}else if(value=='Fail'){
-			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="color:red"></i></a>';
+			return '<a href="javascript:void(0)" class="transstatus" title="click to show detail"><i class="glyphicon glyphicon-exclamation-sign" style="font-size:20px;color:red"></i></a>';
 		}else{
 			return value;
 		}

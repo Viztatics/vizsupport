@@ -24,7 +24,7 @@
 {% endblock %}
 
 {% block content %}
-	{{ lib.panel_begin(' Upload Bank Data Files ') }}
+	{{ lib.panel_begin(' Compare Data Sets: Upload Source Data Files from you AML and Source Systems (files must be in .CSV format) ') }}
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Data Transfer</div>
 		  <div class="panel-body">
@@ -39,7 +39,7 @@
 		            <div class="col-md-4 input-group" id="oneFile" data-sourceid="">Upload</div>
 		        </div>
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="start_date">Start Date</label></div>
+		            <div class="col-md-2 input-group"><label for="start_date">Start Date for Data Validation</label></div>
 		            <div class="col-md-4 input-group date">
 					    <input type="text" class="form-control" id="start_date" name="start_date">
 					    <div class="input-group-addon">
@@ -48,7 +48,7 @@
 					</div>
 		        </div>	
 		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="end_date">End Date</label></div>
+		            <div class="col-md-2 input-group"><label for="end_date">End Date for Data Validation</label></div>
 		            <div class="col-md-4 input-group date">
 					    <input type="text" class="form-control" id="end_date" name="end_date">
 					    <div class="input-group-addon">
@@ -58,7 +58,7 @@
 		        </div> 
 		        <div class="form-group form-inline">
 		        	<div class="col-md-offset-2 col-md-2 input-group">
-		            	<button type="submit" class="btn btn-primary">Submit</button>
+		            	<button type="submit" class="btn btn-primary">Validate</button>
 		        	</div>
 		        </div>
 		    </form>

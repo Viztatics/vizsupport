@@ -248,11 +248,11 @@ class AmlProgram(AuditMixin,Model):
         d1 = datetime.date.today()
         days = (self.next_review_date - d1).days if (self.next_review_date - d1).days >0 else 0
         if days >=60 :
-            return Markup('<i class="glyphicon glyphicon-flag" style="color:green" title="No Action Needed"></i>')
+            return Markup('<i class="glyphicon glyphicon-flag" style="font-size: 20px;color:green" title="No Action Needed"></i>')
         elif days>=30 and days<60:
-            return Markup('<i class="glyphicon glyphicon-flag" style="color:yellow" title="Action Needed Soon"></i>')
+            return Markup('<i class="glyphicon glyphicon-flag" style="font-size: 20px;color:yellow" title="Action Needed Soon"></i>')
         else:
-            return Markup('<i class="glyphicon glyphicon-flag" style="color:red" title="Action Needed"></i>')
+            return Markup('<i class="glyphicon glyphicon-flag" style="font-size: 20px;color:red" title="Action Needed"></i>')
 
     def download(self):
         return Markup(
