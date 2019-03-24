@@ -35,7 +35,7 @@
               <div class="card-header p-0 z-depth-1" role="tab" id="heading{{loop.index}}">
                 <a data-toggle="collapse" data-parent="#accordionEx5" href="#collapse{{loop.index}}" aria-expanded="{{'true' if loop.index==1 else 'false'}}""
                   aria-controls="collapse{{loop.index}}">
-                  <i class="fas fa-cloud fa-2x p-3 mr-4 float-left black-text" aria-hidden="true"></i>
+                  <i class="fas fa-cogs fa-2x p-3 mr-4 float-left black-text" aria-hidden="true"></i>
                   <h4 class="text-uppercase white-text mb-0 py-3 mt-1">
                     {{key|e}}
                   </h4>
@@ -48,19 +48,19 @@
                     <p class="p-md-4 mb-0" style="padding: 1.5rem;font-size: 1.5rem">
                       {% for rule in vals %}
                         {% if rule.rule_group == "High Risk Country" %}
-                          <a href="{{url_for('RuleView.highRiskCountry',rule_code=rule.rule_code,transCode='Wire')}}">                                              
+                          <a href="{{url_for('RuleView.highRiskCountry',rule_code=rule.rule_code,transCode='Wire')}}" style="color: white">                                              
                             {{rule.rule_description_short}}                      
                           </a></br>
                         {% elif rule.rule_group == "High Value Detection" %}
-                          <a href="{{url_for('RuleView.highRiskVolume',rule_code=rule.rule_code,transCode='Wire')}}">                                              
+                          <a href="{{url_for('RuleView.highRiskVolume',rule_code=rule.rule_code,transCode='Wire')}}" style="color: white">                                              
                             {{rule.rule_description_short}}                                                  
                           </a></br>
                         {% elif rule.rule_group == "Profiling" %}
-                          <a href="{{url_for('RuleView.activityprofiling',transCode='Wire')}}">                                              
+                          <a href="{{url_for('RuleView.activityprofiling',transCode='Wire')}}" style="color: white">                                              
                             {{rule.rule_description_short}}                                                  
                           </a></br>
                         {% elif rule.rule_group == "Flow-Through" %}
-                          <a href="{{url_for('RuleView.activityflowthrough',rule_code=rule.rule_code)}}">                                              
+                          <a href="{{url_for('RuleView.activityflowthrough',rule_code=rule.rule_code)}}" style="color: white">                                              
                             {{rule.rule_description_short}}                                                  
                           </a></br>
                         {% else %}
