@@ -2521,11 +2521,12 @@ class AMLProgView(ModelView):
     datamodel = SQLAInterface(AmlProgram)
 
     label_columns = {'days_between':'Days to Next Review', 'download': 'Download'}
-    list_columns = ['title','last_update_date','next_review_date','file_name','days_between','status','download']
-    show_columns = ['title','last_update_date','next_review_date','file_name','days_between','status','created_by','created_on','changed_by','changed_on','download']
+    list_columns = ['file_name','title','last_update_date','next_review_date','days_between','status','created_by','download']
+    show_columns = ['file_name','title','last_update_date','next_review_date','days_between','status','created_by','created_on','changed_by','changed_on','download']
     add_columns =  ['title','last_update_date','next_review_date','file']
     edit_columns = ['title','last_update_date','next_review_date','file']
     base_filters = [['company_id',FilterEqualFunction,getCompany]]
+    list_title = 'Upload Your AML Program, Policy and Procedures Documents'
     #base_filters = [['created_by',FilterEqualFunction,getUser]]
 
     def pre_add(self, item):
