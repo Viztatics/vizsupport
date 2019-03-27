@@ -16,8 +16,12 @@
 {% endblock %}
 {% block content %}
 
-{{ lib.panel_begin('Alert Management') }}
-
+<div class="panel panel-primary">
+  <div class="panel-heading">
+      <h4 class="panel-title">Alert Management
+        <a href="/" style="float:right" title="return home"><i class="glyphicon glyphicon-home" style="font-size:20px;"></i></a>
+      </h4>
+  </div>
 <div class="panel panel-default">
   <div id='alertMgt' data-ismanager={{is_analysis_manager}}  data-status='0'></div>
   <div class="panel-heading" style="background-color: #dff0d8;">Alert Distribution</div>
@@ -239,7 +243,7 @@
 </div>
 
 <div id="mask"></div>
-
+</div>
 {% endblock %}
 {% block tail_js %}
 	{{super()}}

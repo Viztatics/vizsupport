@@ -24,7 +24,13 @@
 {% endblock %}
 
 {% block content %}
-	{{ lib.panel_begin(' Compare Data Sets: Upload Source Data Files from you AML and Source Systems (files must be in .CSV format) ') }}
+	<!--{{ lib.panel_begin(' Compare Data Sets: Upload Source Data Files from you AML and Source Systems (files must be in .CSV format) ') }}-->
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+		<h4 class="panel-title">Compare Data Sets: Upload Source Data Files from you AML and Source Systems (files must be in .CSV format)
+			<a href="/" style="float:right" title="return home"><i class="glyphicon glyphicon-home" style="font-size:20px;"></i></a>
+		</h4>
+		</div>
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Data Transfer</div>
 		  <div class="panel-body">
@@ -73,8 +79,8 @@
 		    </div>
 		  </div>
 		</div>
-
-	{{ lib.panel_end() }}
+	</div>
+	<!--{{ lib.panel_end() }}-->
 
 	<div class="modal fade" id="sourceModal" tabindex="-1" role="dialog" data-pid=''>
 	  <div class="modal-dialog" role="document">

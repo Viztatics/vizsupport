@@ -6,7 +6,12 @@
 {% endblock %}
 
 {% block content %}
-	{{ lib.panel_begin(' Rules Configuration ') }}
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+		<h4 class="panel-title">Rules Configuration
+			<a href="/" style="float:right" title="return home"><i class="glyphicon glyphicon-home" style="font-size:20px;"></i></a>
+		</h4>
+		</div>
 		<div class="panel panel-default">
 		  <div class="panel-body">
 
@@ -40,7 +45,7 @@
 			      </div>
 			    </div>
 			  </div>
-		      {% endfor%}  
+			{% endfor%}
 			  
 			</div>
 
@@ -81,7 +86,7 @@
 		  </div>
 		</div>
 
-	{{ lib.panel_end() }}
+	</div>
 {% endblock %}
 
 {% block tail_js %}
