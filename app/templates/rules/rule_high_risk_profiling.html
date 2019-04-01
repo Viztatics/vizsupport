@@ -15,6 +15,12 @@
 
 {% block content %}
 	{{ lib.panel_begin(transCode+' Activity Profiling') }}
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4 class="panel-title">{{transCode}} Activity Profiling
+				<a href="/trans/category" style="float:right" title="Back"><i class="fa fa-arrow-left" style="font-size:20px;"></i></a>
+			</h4>
+		</div>
 		<div class="panel panel-default">
 		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
@@ -249,7 +255,7 @@
 
 		<div id="mask"></div>
 
-	{{ lib.panel_end() }}
+	</div>
 {% endblock %}
 
 {% block tail_js %}
