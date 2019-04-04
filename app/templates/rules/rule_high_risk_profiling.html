@@ -25,50 +25,57 @@
 		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
-		        <div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
-		            <div class="col-md-3 input-group"><label for="dataId">Input Data Id</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="dataId" name="dataId" placeholder="1" value="1">
-		            </div>
-		            <div class="col-md-1 input-group"></div>
-		            <div class="col-md-3 input-group"><label for="minSD">Minimun Standard Deviation</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="minSD" name="minSD" placeholder="3" value="3">
-		            </div>
-		        </div>		        
-		        <div class="form-group form-inline">
-		            <div class="col-md-3 input-group"><label for="amtThreshNum">Current Amount Threshold</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum" name="amtThreshNum" placeholder="1000" value="1000">
-		            </div>
-		            <div class="col-md-1 input-group"></div>
-		            <div class="col-md-3 input-group"><label for="amtThreshNum2">Testing Amount Threshold</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum2" name="amtThreshNum2" placeholder="10000" value="10000">
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-3 input-group"><label for="cntThreshNum">Current Count Threshold</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="cntThreshNum" name="cntThreshNum" placeholder="5" value="5">
-		            </div>
-		            <div class="col-md-1 input-group"></div>
-		            <div class="col-md-3 input-group"><label for="cntThreshNum2">Testing Count Threshold</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="cntThreshNum2" name="cntThreshNum2" placeholder="10" value="10">
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-3 input-group"><label for="circleName">Cycle Name</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="text" class="" maxlength="20" id="circleName" name="circleName" value="cycle1">
-		            </div>
-		            <div class="col-md-1 input-group"></div>
-		            <div class="col-md-3 input-group"><label for="runName">Run Name</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="text" class="" maxlength="20" id="runName" name="runName" value="run1">
-		            </div>
-		        </div>
+		    	<fieldset>
+		    		<legend>Data & Modeling Settings: </legend>
+			        <div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
+			            <div class="col-md-3 input-group"><label for="dataId">Data Selection (Input Data ID from Data Center)</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="dataId" name="dataId" placeholder="1" value="1">
+			            </div>
+			            <div class="col-md-1 input-group"></div>
+			            <div class="col-md-3 input-group"><label for="minSD">Minimun Standard Deviation</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="minSD" name="minSD" placeholder="3" value="3">
+			            </div>
+			        </div>			        
+			        <div class="form-group form-inline">
+			            <div class="col-md-3 input-group"><label for="circleName">Cycle Name</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="text" class="" maxlength="20" id="circleName" name="circleName" value="cycle1">
+			            </div>
+			            <div class="col-md-1 input-group"></div>
+			            <div class="col-md-3 input-group"><label for="runName">Run Name</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="text" class="" maxlength="20" id="runName" name="runName" value="run1">
+			            </div>
+			        </div>
+			    </fieldset>
+		        <fieldset>
+		    		<legend>Transaction Count and Amount Intercept Meters: </legend>		        
+			        <div class="form-group form-inline">
+			            <div class="col-md-3 input-group"><label for="amtThreshNum">Current Amount Threshold</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum" name="amtThreshNum" placeholder="1000" value="1000">
+			            </div>
+			            <div class="col-md-1 input-group"></div>
+			            <div class="col-md-3 input-group"><label for="amtThreshNum2">Testing Amount Threshold</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="amtThreshNum2" name="amtThreshNum2" placeholder="10000" value="10000">
+			            </div>
+			        </div>
+			        <div class="form-group form-inline">
+			            <div class="col-md-3 input-group"><label for="cntThreshNum">Current Count Threshold</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="cntThreshNum" name="cntThreshNum" placeholder="5" value="5">
+			            </div>
+			            <div class="col-md-1 input-group"></div>
+			            <div class="col-md-3 input-group"><label for="cntThreshNum2">Testing Count Threshold</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="cntThreshNum2" name="cntThreshNum2" placeholder="10" value="10">
+			            </div>
+			        </div>
+			    </fieldset>
+		        
 		        <!--
 		        <div class="form-group form-inline">
 		            <div class="col-md-2 input-group"><label for="monNum">Number of Historical Months</label></div>

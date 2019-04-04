@@ -24,54 +24,63 @@
 		  <div class="panel-heading" style="background-color: #dff0d8;">Select Data From Data Center for Analysis</div>
 		  <div class="panel-body">
 		    <form id="highRiskCtyForm">
-		        <div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="dataId">Input Data Id</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="dataId" name="dataId" placeholder="1" value="1">
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="custType">Customer Type</label></div>
-		            <div class="col-md-2 input-group">
-		            	<select class="form-control" id="custType">
-		            	  <option value="All" {{'selected' if customertype=='All'}}>All</option>
-						  <option value="B" {{'selected' if customertype=='B'}}>Business</option>
-						  <option value="I" {{'selected' if customertype=='I'}}>Individual</option>
-						</select>
-		            </div>
-		            <div class="col-md-2 input-group"></div>
-		            <div class="col-md-2 input-group"><label for="custRLel">Customer Risk Level</label></div>
-		            <div class="col-md-2 input-group">
-		            	<select class="form-control" id="custRLel">
-		            	  <option value="All" {{'selected' if customerrisklevel=='All'}}>All</option>
-						  <option value="High" {{'selected' if customerrisklevel=='High'}}>High</option>
-						  <option value="Medium" {{'selected' if customerrisklevel=='Medium'}}>Medium</option>
-						  <option value="Low" {{'selected' if customerrisklevel=='Low'}}>Low</option>
-						</select>
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="threshNum">Current Threshold</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="1000" value="1000">
-		            </div>
-		            <div class="col-md-2 input-group"></div>
-		            <div class="col-md-2 input-group"><label for="threshNum2">Testing Threshold</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum2" name="threshNum2" placeholder="10000" value="10000">
-		            </div>
-		        </div>
-		        <div class="form-group form-inline">
-		            <div class="col-md-2 input-group"><label for="circleName">Cycle Name</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="text" class="" maxlength="20" id="circleName" name="circleName" value="cycle1">
-		            </div>
-		            <div class="col-md-2 input-group"></div>
-		            <div class="col-md-2 input-group"><label for="runName">Run Name</label></div>
-		            <div class="col-md-2 input-group">
-		            	<input class="form-control" type="text" class="" maxlength="20" id="runName" name="runName" value="run1">
-		            </div>
-		        </div>
+		    	<fieldset>
+		    		<legend>Data & Modeling Settings: </legend>
+			        <div id="reportPath" data-keyname={{keyname}} class="form-group form-inline">
+			            <div class="col-md-6 input-group"><label for="dataId">Data Selection (Input Data ID from Data Center)</label></div>
+			            &nbsp;&nbsp;<div class="col-md-4 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="dataId" name="dataId" placeholder="1" value="1">
+			            </div>
+			        </div>
+			        <div class="form-group form-inline">
+			            <div class="col-md-2 input-group"><label for="circleName">Cycle Name</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="text" class="" maxlength="20" id="circleName" name="circleName" value="cycle1">
+			            </div>
+			            <div class="col-md-2 input-group"></div>
+			            <div class="col-md-2 input-group"><label for="runName">Run Name</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="text" class="" maxlength="20" id="runName" name="runName" value="run1">
+			            </div>
+			        </div>
+				</fieldset>
+				<fieldset>
+		    		<legend>Segmentation: </legend>
+			        <div class="form-group form-inline">
+			            <div class="col-md-2 input-group"><label for="custType">Customer Type</label></div>
+			            <div class="col-md-2 input-group">
+			            	<select class="form-control" id="custType">
+			            	  <option value="All" {{'selected' if customertype=='All'}}>All</option>
+							  <option value="B" {{'selected' if customertype=='B'}}>Business</option>
+							  <option value="I" {{'selected' if customertype=='I'}}>Individual</option>
+							</select>
+			            </div>
+			            <div class="col-md-2 input-group"></div>
+			            <div class="col-md-2 input-group"><label for="custRLel">Customer Risk Level</label></div>
+			            <div class="col-md-2 input-group">
+			            	<select class="form-control" id="custRLel">
+			            	  <option value="All" {{'selected' if customerrisklevel=='All'}}>All</option>
+							  <option value="High" {{'selected' if customerrisklevel=='High'}}>High</option>
+							  <option value="Medium" {{'selected' if customerrisklevel=='Medium'}}>Medium</option>
+							  <option value="Low" {{'selected' if customerrisklevel=='Low'}}>Low</option>
+							</select>
+			            </div>
+			        </div>
+			    </fieldset>
+			    <fieldset>
+		    		<legend>Transaction Count and Amount Intercept Meters: </legend>
+			        <div class="form-group form-inline">
+			            <div class="col-md-2 input-group"><label for="threshNum">Current Threshold</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum" name="threshNum" placeholder="1000" value="1000">
+			            </div>
+			            <div class="col-md-2 input-group"></div>
+			            <div class="col-md-2 input-group"><label for="threshNum2">Testing Threshold</label></div>
+			            <div class="col-md-2 input-group">
+			            	<input class="form-control" type="number" class="" maxlength="8" id="threshNum2" name="threshNum2" placeholder="10000" value="10000">
+			            </div>
+			        </div>
+		        </fieldset>
 		        <div class="form-group form-inline">
 		        	<div class="col-md-offset-5 col-md-2 input-group">
 		            	<button type="submit" class="btn btn-primary">Submit</button>
