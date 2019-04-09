@@ -161,8 +161,8 @@ $(function(){
 	            markLine : {
 	            	silent:true,
 	                data : [
-	                    {name: 'run1',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
-		                {name: 'run2',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
+	                    {name: 'Current Model',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
+		                {name: 'Proposed Model',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},
 	                ]
 	            },
 	        }
@@ -199,8 +199,8 @@ $(function(){
 	            markLine : {
 	            	silent:true,
 	                data : [
-	                    {name: 'run1',yAxis:5,itemStyle:{normal:{color:'#1e90ff'}}},
-		                {name: 'run2',yAxis:10,itemStyle:{normal:{color:'#dc143c'}}},
+	                    {name: 'Current Model',yAxis:5,itemStyle:{normal:{color:'#1e90ff'}}},
+		                {name: 'Proposed Model',yAxis:10,itemStyle:{normal:{color:'#dc143c'}}},
 	                ]
 	            },
 	        }
@@ -303,7 +303,7 @@ $(function(){
 	    },
 	    series : [
 	        {
-	            name:'Missing Cusomter From Run1',
+	            name:'Missing Cusomter From Current Model',
 	            type:'pie',
 	            radius : [20, 110],
 	            roseType : 'area',
@@ -645,13 +645,13 @@ $(function(){
 	  	success:function(data){
 	  		console.log(data);
 	  		let run1CntOption = $.extend(true,{},pieOption)
-	  		run1CntOption.title.text='Run1 Count';
-	  		run1CntOption.series[0].name = 'Run1 Count';
+	  		run1CntOption.title.text='Current Model Count';
+	  		run1CntOption.series[0].name = 'Current Model Count';
 	  		run1CntOption.series[0].data = [{value:data.below_count_below,name:"Below Threshold"},{value:data.above_count_below,name:'Above Threshold'}];
 	  		run1CntChart.setOption(run1CntOption);
 
 	  		let run1AmtOption = $.extend(true,{},pieOption)
-	  		run1AmtOption.title.text='Run1 Amount';
+	  		run1AmtOption.title.text='Current Model Amount';
 	  		run1AmtOption.tooltip.formatter=function(params){
 	  											let num = params.data.value.toLocaleString('en-US', {
 																			  style: 'currency',
@@ -659,18 +659,18 @@ $(function(){
 																			});
 	  											return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
 	  										};
-	  		run1AmtOption.series[0].name = 'Run1 Amount';
+	  		run1AmtOption.series[0].name = 'Current Model Amount';
 	  		run1AmtOption.series[0].data = [{value:data.below_amount_below,name:"Below Threshold"},{value:data.above_amount_below,name:'Above Threshold'}];
 	  		run1AmtChart.setOption(run1AmtOption);
 
 	  		let run2CntOption = $.extend(true,{},pieOption)
-	  		run2CntOption.title.text='Run2 Count';
-	  		run2CntOption.series[0].name = 'Run2 Count';
+	  		run2CntOption.title.text='Proposed Model Count';
+	  		run2CntOption.series[0].name = 'Proposed Model Count';
 	  		run2CntOption.series[0].data = [{value:data.below_count_above,name:"Below Threshold"},{value:data.above_count_above,name:'Above Threshold'}];
 	  		run2CntChart.setOption(run2CntOption);
 
 	  		let run2AmtOption = $.extend(true,{},pieOption)
-	  		run2AmtOption.title.text='Run2 Amount';
+	  		run2AmtOption.title.text='Proposed Model Amount';
 	  		run2AmtOption.tooltip.formatter=function(params){
 									let num = params.data.value.toLocaleString('en-US', {
 															  style: 'currency',
@@ -678,7 +678,7 @@ $(function(){
 															});
 									return params.seriesName+"<br/>"+params.data.name+" : "+num+" ("+params.percent+"%)";
 								};
-	  		run2AmtOption.series[0].name = 'Run2 Amount';
+	  		run2AmtOption.series[0].name = 'Proposed Model Amount';
 	  		run2AmtOption.series[0].data = [{value:data.below_amount_above,name:"Below Threshold"},{value:data.above_amount_above,name:'Above Threshold'}];
 	  		run2AmtChart.setOption(run2AmtOption);
 	  	}

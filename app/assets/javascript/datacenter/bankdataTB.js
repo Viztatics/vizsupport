@@ -10,9 +10,9 @@ $(function(){
 
 /**Venn Diagram**/
 		var sets = [
-                    {sets:["Accounts Run1"], figure: 100, label: "Accounts Run1", size: 100},
-                    {sets:["Accounts Run2"], figure: 100, label: "Accounts Run2", size: 100},
-                    {sets: ["Accounts Run1", "Accounts Run2"], figure: 90, label: "Both Runs", size: 90}
+                    {sets:["Accounts Current Model"], figure: 100, label: "Accounts Current Model", size: 100},
+                    {sets:["Accounts Proposed Model"], figure: 100, label: "Accounts Proposed Model", size: 100},
+                    {sets: ["Accounts Current Model", "Accounts Proposed Model"], figure: 90, label: "Both Runs", size: 90}
                     ];
 
 

@@ -122,8 +122,8 @@ $(function(){
 				            coord: [1000000, 1100000]
 				        }
 				    ],
-				    {name: 'run1',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
-	                {name: 'run2',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},					    
+				    {name: 'Current Model',yAxis:10000,itemStyle:{normal:{color:'#1e90ff'}}},
+	                {name: 'Proposed Model',yAxis:100000,itemStyle:{normal:{color:'#dc143c'}}},					    
 				]
             },
 	    },{
