@@ -247,9 +247,9 @@ class AmlProgram(AuditMixin,Model):
     def status(self):
         d1 = datetime.date.today()
         days = (self.next_review_date - d1).days if (self.next_review_date - d1).days >0 else 0
-        if days >=60 :
+        if days >=15 :
             return Markup('<i class="glyphicon glyphicon-flag" style="font-size: 20px;color:green" title="Current"></i>')
-        elif days>=30 and days<60:
+        elif days>=1 and days<15:
             return Markup('<i class="glyphicon glyphicon-flag" style="font-size: 20px;color:yellow" title="Due Soon"></i>')
         else:
             return Markup('<i class="glyphicon glyphicon-flag" style="font-size: 20px;color:red" title="Pass Due"></i>')
