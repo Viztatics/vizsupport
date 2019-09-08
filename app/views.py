@@ -2526,7 +2526,7 @@ class AMLProgView(ModelView):
     add_columns =  ['title','last_update_date','next_review_date','file']
     edit_columns = ['title','last_update_date','next_review_date','file']
     base_filters = [['company_id',FilterEqualFunction,getCompany]]
-    list_title = 'Upload Your AML Program, Policy and Procedures Documents'
+    list_title = 'Upload Your AML Program, Policy and Procedure Documents'
     #base_filters = [['created_by',FilterEqualFunction,getUser]]
 
     def pre_add(self, item):
@@ -2540,9 +2540,9 @@ def page_not_found(e):
 db.create_all()
 appbuilder.add_separator("Security")
 appbuilder.add_view(CompanyModelView, "Companys", icon="fa-folder-open-o",category='Security')
-appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
-appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Rules')
 appbuilder.add_view(AMLProgView, "AML Program Management", category='AML Program')
+appbuilder.add_view(DataCenterView, "Bank File Upload", href='/datacenter/bankdata/tb/index',category='Data Center')
+#appbuilder.add_link("Rules Configuration", href='/datacenter/rules/index',category='Rules')
 appbuilder.add_view(TransView, "Transaction Monitoring", href='/trans/category',category='Quantitative Testing')
 #appbuilder.add_view(RuleView, "High Risk Country Wire Activity", href='/rules/highRiskCountry/Wire',category='Quantitative')
 #appbuilder.add_link("High Risk Country ACH Activity", href='/rules/highRiskCountry/ACH', category='Quantitative')
